@@ -1,0 +1,10 @@
+{
+  "domain": "thermiq_mqtt",
+  "name": "ThermIQ MQTT",
+  "documentation": "https://github.com/ThermIQ/thermiq_mqtt-ha",
+  "dependencies": ["mqtt"],
+  "config_flow": false,
+  "codeowners": ["@ThermIQ"],
+  "requirements":[""],
+  "homeassistant": "0.96.0"
+}

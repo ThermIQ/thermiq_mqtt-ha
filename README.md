@@ -20,7 +20,7 @@ https://thermiq.net
 1. Make sure that ThermIQ is properly setup and communicating with the MQTT server
 2. Make sure that MQTT Integration in Home Assistant is setup and communicating with the MQTT server
 3. Make sure you have HACS set-up (https://github.com/custom-components/hacs).
-4. In HACS, Go to settings and install custom repository: https://github.com/ThermIQ/thermiq_mqtt-ha as Integration
+4. In HACS, Go to settings and install custom repository: https://github.com/ThermIQ/thermiq_mqtt as Integration
 5. Go to the HACS integrations page, add ThermIQ-MQTT integration.
 
 ## Configuration

@@ -1,0 +1,47 @@
+# ThermIQ services.yaml entry
+
+write_msg:
+  # Write msg-string to thermiq_mqtt
+  description: Write msg-string to thermiq_mqtt
+  # Different fields that your service accepts
+  fields:
+    msg:
+      description: Text to send
+      example: 'A text that will be sent'
+     
+      
+write_id:
+  # Write value to thermiq_mqtt id
+  description: Write value to thermiq_mqtt entity_id
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    value_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "sensor.thermiq_rum_bor2"
+    value:
+      description: Value to write (Accepts json formatted numbers)
+      example: '0x14'
+    bitmask:
+      description: Optional bitmask (defaults to 0xffff)
+      example: '0x02'
+      
+      
+write_reg:
+  #  Write value to thermiq_mqtt register
+  description: Write value to thermiq_mqtt register
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+
+    reg:
+      description: Register number (in decimal) to write to
+      example: '40'
+    value:
+      description: Value to write (Accepts json formatted numbers)
+      example: '0x14'
+    bitmask:
+      description: Optional bitmask (defaults to 0xffff)
+      example: '0x02'

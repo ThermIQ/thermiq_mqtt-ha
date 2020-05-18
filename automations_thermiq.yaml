@@ -1,0 +1,143 @@
+# ############################################################################
+# ### ThermIQ, From Input number -> MQTT
+  - alias: ThermIQ, Input automation
+    trigger:
+      platform: state
+      entity_id: 
+#input_number entity_ids for ThermIQ -> automation.yaml
+        - input_number.thermiq_rum_bor2
+        - input_number.thermiq_kurva
+        - input_number.thermiq_kurva_min
+        - input_number.thermiq_kurva_max
+        - input_number.thermiq_kurva_p5
+        - input_number.thermiq_kurva_0
+        - input_number.thermiq_kurva_n5
+        - input_number.thermiq_varme_stp
+        - input_number.thermiq_sankn_t
+        - input_number.thermiq_rumfakt
+        - input_number.thermiq_kurva2
+        - input_number.thermiq_kurva2_min
+        - input_number.thermiq_kurva2_max
+        - input_number.thermiq_kurva2_bor
+        - input_number.thermiq_kurva2_ar
+        - input_number.thermiq_status6
+        - input_number.thermiq_tryckr_limit
+        - input_number.thermiq_vv_start
+        - input_number.thermiq_vv_tid
+        - input_number.thermiq_varme_tid
+        - input_number.thermiq_leg_interv
+        - input_number.thermiq_leg_stop_t
+        - input_number.thermiq_integr_a1
+        - input_number.thermiq_hyst_vp
+        - input_number.thermiq_max_ret
+        - input_number.thermiq_min_st_int
+        - input_number.thermiq_min_brine_t
+        - input_number.thermiq_kyla_bor
+        - input_number.thermiq_integr_a2
+        - input_number.thermiq_hyst_ts
+        - input_number.thermiq_max_steg_ts
+        - input_number.thermiq_max_strom
+        - input_number.thermiq_shunttid
+        - input_number.thermiq_vv_stop
+# ######
+
+    condition: 
+      condition: template
+      # This condition does not work... Temporary fix in write_id, could it work with last_triggered?
+      value_template: "{{ ( (states(trigger.to_state.state ) | int) != (states('input_number.' + trigger.to_state.object_id) | int) ) }}"
+    action: 
+    # Send an MQTT message
+      - service: thermiq_mqtt.write_id
+        data_template:
+          value_id: "{{ trigger.entity_id  }}"
+          value: '{{ trigger.to_state.state }}'
+          bitmask: 0xffff
+
+# ############################################################################
+# ### ThermIQ, From Sensor to -> Input number
+  - alias: ThermIQ, Input automation
+    trigger:
+      platform: state
+      entity_id: 
+#sensor entity_ids for ThermIQ -> automation.yaml
+        - sensor.thermiq_rum_bor2
+        - sensor.thermiq_kurva
+        - sensor.thermiq_kurva_min
+        - sensor.thermiq_kurva_max
+        - sensor.thermiq_kurva_p5
+        - sensor.thermiq_kurva_0
+        - sensor.thermiq_kurva_n5
+        - sensor.thermiq_varme_stp
+        - sensor.thermiq_sankn_t
+        - sensor.thermiq_rumfakt
+        - sensor.thermiq_kurva2
+        - sensor.thermiq_kurva2_min
+        - sensor.thermiq_kurva2_max
+        - sensor.thermiq_kurva2_bor
+        - sensor.thermiq_kurva2_ar
+        - sensor.thermiq_status6
+        - sensor.thermiq_tryckr_limit
+        - sensor.thermiq_vv_start
+        - sensor.thermiq_vv_tid
+        - sensor.thermiq_varme_tid
+        - sensor.thermiq_leg_interv
+        - sensor.thermiq_leg_stop_t
+        - sensor.thermiq_integr_a1
+        - sensor.thermiq_hyst_vp
+        - sensor.thermiq_max_ret
+        - sensor.thermiq_min_st_int
+        - sensor.thermiq_min_brine_t
+        - sensor.thermiq_kyla_bor
+        - sensor.thermiq_integr_a2
+        - sensor.thermiq_hyst_ts
+        - sensor.thermiq_max_steg_ts
+        - sensor.thermiq_max_strom
+        - sensor.thermiq_shunttid
+        - sensor.thermiq_vv_stop
+# ######
+    action: 
+      service: input_number.set_value
+      data_template:
+        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        value: "{{ trigger.to_state.state | int }}"          
+
+
+ 
+# ############################################################################
+# ### ThermIQ, From Input select -> MQTT
+  
+  - alias: ThermIQ, Inputs selects
+    trigger:
+      platform: state
+      entity_id: 
+        - input_select.thermiq_dl
+    action: 
+    # Send an MQTT message
+      - service: thermiq_mqtt.write_id
+        data_template:
+          value_id: "{{ trigger.entity_id  }}"
+          value: "{{ state_attr(trigger.entity_id,'options').index(states(trigger.entity_id)) }}"
+          bitmask: 0xffff
+
+
+
+# state_attr(trigger.entity_id,'options').index(states(trigger.entity_id)) %}
+
+# ############################################################################
+# ### ThermIQ, From Sensor to -> Input select
+
+  - alias: ThermIQ, Inputs Selects
+    trigger:
+      platform: state
+      entity_id: 
+        - sensor.thermiq_dl
+    condition:
+      condition: template
+      value_template: "{{ ( ((trigger.to_state.state | int )  >=0 ) and ((trigger.to_state.state | int )  <5 ) ) }}"
+    action: 
+      service: input_select.select_option
+      data_template:
+        entity_id: 'input_select.thermiq_dl'
+        option: "{{ state_attr('input_select.thermiq_dl','options')[(trigger.to_state.state | int )] }}"
+
+  
