@@ -1,13 +1,10 @@
 {
-  "domain": "blueprint",
-  "name": "Blueprint",
-  "documentation": "https://github.com/custom-components/blueprint",
-  "dependencies": [],
-  "config_flow": true,
-  "codeowners": [
-    "@ludeeus"
-  ],
-  "requirements": [
-    "sampleclient"
-  ]
+  "domain": "thermiq_mqtt",
+  "name": "ThermIQ MQTT",
+  "documentation": "https://github.com/ThermIQ/thermiq_mqtt-ha",
+  "dependencies": ["mqtt"],
+  "config_flow": false,
+  "codeowners": ["@ThermIQ"],
+  "requirements":[""],
+  "homeassistant": "0.96.0"
 }
