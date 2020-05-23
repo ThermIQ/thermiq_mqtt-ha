@@ -7,7 +7,6 @@ on:
       - dev
 
 jobs:
-  jobs:
   validate:
     runs-on: "ubuntu-latest"
     steps:
