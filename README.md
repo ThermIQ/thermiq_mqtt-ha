@@ -26,7 +26,8 @@ https://thermiq.net
 ## Configuration
 #### Component Configuration:
 ```yaml
-# Example configuration.yaml entry
+# ThermIQ-MQTT configuration.yaml entry
+# Set the mqtt_node name here. Thats all!
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
 
