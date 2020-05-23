@@ -30,8 +30,33 @@ https://thermiq.net
 # Set the mqtt_node name here. Thats all!
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
+  
+#Input entities for ThermIQ -> configuration.yaml
+input_number:
+  thermiq_rum_bor2:
+    name: 'Indoor target temp.'
+    initial: 11
+    min:  0
+    max:  50
+    step: 1
+    unit_of_measurement: 'C'
+    icon: 'mdi:temperature'
+    mode: slider
 
+  thermiq_kurva:
+    name: 'Curve'
+    initial: 11
+    min:  0
+    max:  200
+    step: 1
+    unit_of_measurement: 'C'
+    icon: 'mdi:temperature'
+    mode: slider
+   
+   
 ```
+The complete configuration entry can be found in configuration_thermiq.yaml and should be copied to your automations.yaml file.
+
 ### Automations configuration
 A complete automation between frontend input entities to the backend control is included in automations_thermiq.yaml and should be copied to your automations.yaml file.
 
