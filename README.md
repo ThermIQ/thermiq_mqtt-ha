@@ -20,23 +20,50 @@ https://thermiq.net
 1. Make sure that ThermIQ is properly setup and communicating with the MQTT server
 2. Make sure that MQTT Integration in Home Assistant is setup and communicating with the MQTT server
 3. Make sure you have HACS set-up (https://github.com/custom-components/hacs).
-4. In HACS, Go to settings and install custom repository: https://github.com/ThermIQ/thermiq_mqtt as Integration
-5. Go to the HACS integrations page, add ThermIQ-MQTT integration.
+4. In HACS, Go to settings and install custom repository: https://github.com/ThermIQ/thermiq_mqtt-ha as Integration
+5. Go to the HACS integrations page, add ThermIQ integration.
 
 ## Configuration
 #### Component Configuration:
+The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/configuration_thermiq.yaml) and should be copied to your configuration.yaml file.
+
 ```yaml
-# Example configuration.yaml entry
+# ThermIQ-MQTT configuration.yaml entry
+# Set the mqtt_node name here. Thats all!
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
+  
+#Input entities for ThermIQ -> configuration.yaml
+input_number:
+  thermiq_rum_bor2:
+    name: 'Indoor target temp.'
+    initial: 11
+    min:  0
+    max:  50
+    step: 1
+    unit_of_measurement: 'C'
+    icon: 'mdi:temperature'
+    mode: slider
 
+  thermiq_kurva:
+    name: 'Curve'
+    initial: 11
+    min:  0
+    max:  200
+    step: 1
+    unit_of_measurement: 'C'
+    icon: 'mdi:temperature'
+    mode: slider
+   
+   
 ```
-### Automations configuration
-A complete automation between frontend input entities to the backend control is included in automations_thermiq.yaml and should be copied to your automations.yaml file.
+
+#### Automations configuration
+A complete automation between frontend input entities to the backend control is included in [automations_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/automations_thermiq.yaml) and should be copied to your automations.yaml file.
 
 
 #### Lovelace Configuration:
-The file lovelace_config.yaml contains a complete setup of all available variables. A short example could look like:
+The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a complete setup of all available variables. A short example could look like:
 
 ```yaml
 #Input entities for ThermIQ -> configuration.yaml
@@ -79,6 +106,9 @@ The lovelace setup requires the following custom card to be installed in HACS
 
 
 ```
+
+#### Restart
+The Home Assistant server needs to be restarted once all configuration is done
 
 ## Features and Limitations
 - Currently provides all data from the heatpum in the form of sensors and binary sensors

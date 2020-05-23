@@ -1,4 +1,9 @@
-
+# ThermIQ-MQTT configuration.yaml entry
+# Set the mqtt_node name here. Thats all!
+thermiq_mqtt:
+  mqtt_node: ThermIQ/ThermIQ-mqtt
+  # Prevent updating the heatpump by sending write commands to dbg_wrt 
+  #mqtt_dbg: True
 
 # Begin ThermIQ #####
 #Input entities for ThermIQ -> configuration.yaml

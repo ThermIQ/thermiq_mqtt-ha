@@ -47,7 +47,7 @@ DEFAULT_CMD = "/WRITE"
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MQTT_NODE, default=DEFAULT_NODE): cv.string,
-        # vol.Optional(CONF_DATA,default=DEFAULT_DATA): cv.string,
+        vol.Optional(CONF_MQTT_DBG,default=False): cv.boolean,
         # vol.Optional(CONF_CMD,default=DEFAULT_CMD): cv.string,
     },
     extra=vol.ALLOW_EXTRA,
@@ -472,7 +472,10 @@ async def async_setup(hass, config):
     conf = config[DOMAIN]
     conf.entity_id = "thermiq_mqtt.timestamp"
     conf.data_topic = conf[CONF_MQTT_NODE] + "/data"
-    conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
+    if (CONF_MQTT_DBG):
+        conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
+    else:
+      conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
     _LOGGER.warning("data:" + conf.data_topic)
     _LOGGER.warning("cmd:" + conf.cmd_topic)
 
@@ -523,7 +526,7 @@ async def async_setup(hass, config):
         if bitmask is None:
             bitmask = 0xFFFF
         val = value | bitmask
-        msg = f'{{"t{reg:x}": {value} }}'
+        msg = f'{{"r{reg:x}": {value} }}'
 
         _LOGGER.warning("message.reg:[%s]", call.data.get("reg"))
         _LOGGER.warning("message.value:[%s]", call.data.get("value"))
