@@ -5,6 +5,6 @@
   "dependencies": ["mqtt"],
   "config_flow": false,
   "codeowners": ["@ThermIQ"],
-  "requirements":[""],
+  "requirements":[],
   "homeassistant": "0.96.0"
 }

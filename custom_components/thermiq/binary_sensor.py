@@ -14,7 +14,8 @@ from . import id_names as id_names
 from . import reg_id as reg_id
 
 _LOGGER = logging.getLogger(__name__)
-
+# From where should this be imported?
+ENTITY_ID_FORMAT = "binary_sensor" + ".{}"
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the available ThermIQ sensors etc."""

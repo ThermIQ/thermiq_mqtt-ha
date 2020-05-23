@@ -37,17 +37,19 @@ DEPENDENCIES = ["mqtt"]
 
 # Constants and Schema used to validate the configuration
 CONF_MQTT_NODE = "mqtt_node"
+CONF_MQTT_DBG = "mqtt_dbg"
 DEFAULT_NODE = "ThermIQ/ThermIQ-mqtt"
 CONF_DATA = "data_msg"
 DEFAULT_DATA = "/data"
 CONF_CMD = "cmd_msg"
 DEFAULT_CMD = "/WRITE"
+DEFAULT_DBG = False
 
 
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MQTT_NODE, default=DEFAULT_NODE): cv.string,
-        vol.Optional(CONF_MQTT_DBG,default=False): cv.boolean,
+        vol.Optional(CONF_MQTT_DBG, default=DEFAULT_DBG): cv.boolean,
         # vol.Optional(CONF_CMD,default=DEFAULT_CMD): cv.string,
     },
     extra=vol.ALLOW_EXTRA,
@@ -329,7 +331,7 @@ id_names = {
     "STATUS14": "DACT_MSD1",
     "DR_TIM_TS2": "Runtime 6 kW",
     "STATUS15": "DTS2_MSD1",
-    "STATUS16": "GrafCounterOffSet   ",
+    "STATUS16": "GrafCounterOffSet",
 }
 # Unit dictionary
 id_units = {
@@ -391,7 +393,7 @@ id_units = {
     "BRINE_SPEED": "%",
     "CLK_VV_STOP": "  ",
     "RUM_BOR2": "C",
-    "DL": "läge #",
+    "DL": "lage #",
     "KURVA": "C",
     "KURVA_MIN": "C",
     "KURVA_MAX": "C",
@@ -475,7 +477,7 @@ async def async_setup(hass, config):
     if (CONF_MQTT_DBG):
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
     else:
-      conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
+        conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
     _LOGGER.warning("data:" + conf.data_topic)
     _LOGGER.warning("cmd:" + conf.cmd_topic)
 
