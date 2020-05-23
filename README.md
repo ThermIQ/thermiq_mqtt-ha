@@ -25,6 +25,8 @@ https://thermiq.net
 
 ## Configuration
 #### Component Configuration:
+The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/configuration_thermiq.yaml) and should be copied to your automations.yaml file.
+
 ```yaml
 # ThermIQ-MQTT configuration.yaml entry
 # Set the mqtt_node name here. Thats all!
@@ -55,7 +57,6 @@ input_number:
    
    
 ```
-The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/configuration_thermiq.yaml) and should be copied to your automations.yaml file.
 
 ### Automations configuration
 A complete automation between frontend input entities to the backend control is included in [automations_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/automations_thermiq.yaml) and should be copied to your automations.yaml file.
