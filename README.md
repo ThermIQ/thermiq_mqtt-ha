@@ -55,14 +55,14 @@ input_number:
    
    
 ```
-The complete configuration entry can be found in configuration_thermiq.yaml and should be copied to your automations.yaml file.
+The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/configuration_thermiq.yaml) and should be copied to your automations.yaml file.
 
 ### Automations configuration
-A complete automation between frontend input entities to the backend control is included in automations_thermiq.yaml and should be copied to your automations.yaml file.
+A complete automation between frontend input entities to the backend control is included in [automations_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/automations_thermiq.yaml) and should be copied to your automations.yaml file.
 
 
 #### Lovelace Configuration:
-The file lovelace_config.yaml contains a complete setup of all available variables. A short example could look like:
+The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/lovelace_config.yaml) contains a complete setup of all available variables. A short example could look like:
 
 ```yaml
 #Input entities for ThermIQ -> configuration.yaml
