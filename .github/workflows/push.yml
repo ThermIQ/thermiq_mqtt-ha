@@ -15,7 +15,7 @@ jobs:
         uses: "hacs/integration/action@master"
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CATEGORY: "CHANGE_ME!"
+          CATEGORY: "Integration"
 
   style:
     runs-on: "ubuntu-latest"
