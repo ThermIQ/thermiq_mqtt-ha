@@ -25,7 +25,7 @@ https://thermiq.net
 
 ## Configuration
 #### Component Configuration:
-The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/configuration_thermiq.yaml) and should be copied to your automations.yaml file.
+The complete configuration entry can be found in [configuration_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/configuration_thermiq.yaml) and should be copied to your configuration.yaml file.
 
 ```yaml
 # ThermIQ-MQTT configuration.yaml entry
@@ -58,7 +58,7 @@ input_number:
    
 ```
 
-### Automations configuration
+#### Automations configuration
 A complete automation between frontend input entities to the backend control is included in [automations_thermiq.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/automations_thermiq.yaml) and should be copied to your automations.yaml file.
 
 
@@ -106,6 +106,9 @@ The lovelace setup requires the following custom card to be installed in HACS
 
 
 ```
+
+#### Restart
+The Home Assistant server needs to be restarted once all configuration is done
 
 ## Features and Limitations
 - Currently provides all data from the heatpum in the form of sensors and binary sensors
