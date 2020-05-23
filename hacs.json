@@ -1,5 +1,5 @@
 {
-    "name": "Thermiq",
+    "name": "ThermIQ MQTT",
     "hacs": "0.24.0",
     "domains": [
         "binary_sensor",
