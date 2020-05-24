@@ -69,8 +69,8 @@ async def async_setup(hass, config):
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
     else:
       conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
-    _LOGGER.warning("data:" + conf.data_topic)
-    _LOGGER.warning("cmd:" + conf.cmd_topic)
+    _LOGGER.info("data:" + conf.data_topic)
+    _LOGGER.info("cmd:" + conf.cmd_topic)
 
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
@@ -83,13 +83,13 @@ async def async_setup(hass, config):
     @callback
     def message_received(message):
         """Handle new MQTT messages."""
-        _LOGGER.warning("message.payload:[%s]", message.payload)
+        _LOGGER.debug("message.payload:[%s]", message.payload)
         try:
             json_dict = json.loads(message.payload)
-            if json_dict["app_info"][:13] == "ThermIQ-room ":
+            if json_dict["Client_Name"][:8] == "ThermIQ_":
                 for k in json_dict.keys():
                     hass.data[DOMAIN]._data[k] = json_dict[k]
-                    _LOGGER.warning("[%s] [%s]", k, json_dict[k])
+                    _LOGGER.debug("[%s] [%s]", k, json_dict[k])
                 hass.data[DOMAIN]._data["rf0"] = (
                     hass.data[DOMAIN]._data["r01"] + hass.data[DOMAIN]._data["r02"] / 10
                 )
@@ -98,16 +98,16 @@ async def async_setup(hass, config):
                 )
                 hass.bus.fire("thermiq_mqtt_msg_rec_event", {})
             else:
-                _LOGGER.warning("JSON result was not from ThermIQ-mqtt")
+                _LOGGER.error("JSON result was not from ThermIQ-mqtt")
         except ValueError:
-            _LOGGER.warning("MQTT payload could not be parsed as JSON")
+            _LOGGER.error("MQTT payload could not be parsed as JSON")
             _LOGGER.debug("Erroneous JSON: %s", payload)
 
     # Service to publish a message on MQTT.
     @callback
     def write_msg_service(call):
         """Service to send a message."""
-        _LOGGER.warning("message.entity_id:[%s]", call.data.get("entity_id"))
+        _LOGGER.debug("message.entity_id:[%s]", call.data.get("entity_id"))
         hass.components.mqtt.async_publish(conf.cmd_topic, call.data.get("msg"))
 
     # Service to write specific value_id with data, value_id will be translated to register number.
@@ -121,24 +121,24 @@ async def async_setup(hass, config):
         val = value | bitmask
         msg = f'{{"r{reg:x}": {value} }}'
 
-        _LOGGER.warning("message.reg:[%s]", call.data.get("reg"))
-        _LOGGER.warning("message.value:[%s]", call.data.get("value"))
-        _LOGGER.warning("message.bitmask:[%s]", call.data.get("bitmask"))
-        _LOGGER.warning("msg:[%s]", msg)
+        _LOGGER.debug("message.reg:[%s]", call.data.get("reg"))
+        _LOGGER.debug("message.value:[%s]", call.data.get("value"))
+        _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
+        _LOGGER.debug("msg:[%s]", msg)
         hass.components.mqtt.async_publish(conf.cmd_topic, msg)
 
     # Service to write specific value_id with data, value_id will be translated to register number.
     @callback
     def write_id_service(call):
         """Service to send a message."""
-        _LOGGER.warning("message.value_id:[%s]", call.data.get("value_id"))
-        _LOGGER.warning("message.payload:[%s]", call.data.get("value"))
+        _LOGGER.debug("message.value_id:[%s]", call.data.get("value_id"))
+        _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
 
         value_id = call.data.get("value_id").upper()
         idx = len(value_id) - (value_id.find(".THERMIQ") + 9)
         if idx > 0:
             value_id = value_id[-idx:]
-        _LOGGER.warning("message.value_id:[%s]", value_id)
+        _LOGGER.debug("message.value_id:[%s]", value_id)
         if value_id in reg_id:
             reg = reg_id[value_id][0]
             value = call.data.get("value")
@@ -149,14 +149,14 @@ async def async_setup(hass, config):
                 bitmask = 0xFFFF
             value = int(value) & int(bitmask)
             msg = f'{{"{reg}": {value} }}'
-            _LOGGER.warning("message.value:[%s]", call.data.get("value"))
-            _LOGGER.warning("message.bitmask:[%s]", call.data.get("bitmask"))
-            _LOGGER.warning("msg:[%s]", msg)
+            _LOGGER.debug("message.value:[%s]", call.data.get("value"))
+            _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
+            _LOGGER.debug("msg:[%s]", msg)
 
             if value != hass.data[DOMAIN]._data[reg]:
                 hass.components.mqtt.async_publish(conf.cmd_topic, msg)
             else:
-                _LOGGER.warning(
+                _LOGGER.debug(
                     "No need to write"
                 )  # Service to write specific value_id with data, value_id will be translated to register number.
 
@@ -164,7 +164,7 @@ async def async_setup(hass, config):
     def write_mode_service(call):
         """Service to send a message."""
 
-        _LOGGER.warning("message.payload:[%s]", call.data.get("value"))
+        _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
         reg = "r51"
         value = int(call.data.get("value"))
         if value is None:
@@ -176,13 +176,13 @@ async def async_setup(hass, config):
             return
         value = int(bits) & int(bitmask)
         msg = f'{{"t{reg}": {value} }}'
-        _LOGGER.warning("message.value:[%s]", call.data.get("value"))
-        _LOGGER.warning("message.value:[%s]", value)
-        _LOGGER.warning("msg:[%s]", msg)
+        _LOGGER.debug("message.value:[%s]", call.data.get("value"))
+        _LOGGER.debug("message.value:[%s]", value)
+        _LOGGER.debug("msg:[%s]", msg)
         if value != hass.data[DOMAIN]._data[reg]:
             hass.components.mqtt.async_publish(conf.cmd_topic, msg)
         else:
-            _LOGGER.warning("No need to write")
+            _LOGGER.debug("No need to write")
 
     # ###
     # Register our service with Home Assistant.
@@ -190,7 +190,7 @@ async def async_setup(hass, config):
     hass.services.async_register(DOMAIN, "write_id", write_id_service)
     hass.services.async_register(DOMAIN, "write_reg", write_reg_service)
     hass.services.async_register(DOMAIN, "write_mode", write_mode_service)
-    _LOGGER.warning("Subscribe:" + conf.data_topic)
+    _LOGGER.info("Subscribe:" + conf.data_topic)
     await hass.components.mqtt.async_subscribe(conf.data_topic, message_received)
     # Return boolean to indicate that initialization was successfully.
     return True
@@ -214,7 +214,7 @@ class ThermIQ_MQTT:
 
     def update_state(self, command, state_command):
         """Send update command to ThermIQ."""
-        _LOGGER.error("update_state:" + command + " " + state_command)
+        _LOGGER.debug("update_state:" + command + " " + state_command)
         self._data[state_command] = self._client.command(command)
         hass.components.mqtt.async_publish(conf.cmd_topic, self._data[state_command])
 

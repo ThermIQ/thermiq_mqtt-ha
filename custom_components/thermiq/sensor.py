@@ -118,7 +118,7 @@ class ThermIQ_MQTT(Entity):
         _LOGGER.debug("update: thermiq_"+self._idx)
         self._state = self._data.get_value(self._vp_reg)
         if self._state is None:
-            _LOGGER.debug("Could not get data for %s", self._idx)
+            _LOGGER.warning("Could not get data for %s", self._idx)
 
     async def _async_update_event(self, event):
         """Update the new state of the sensor."""

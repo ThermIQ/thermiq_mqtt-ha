@@ -128,7 +128,7 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
         #self._data.async_update()
         if ( state ) is None:
             self._state = None
-            _LOGGER.debug("Could not get data for %s", self._idx)
+            _LOGGER.error("Could not get data for %s", self._idx)
         else:           
             self._state = ( int( state ) & self._ANDbits ) > 0
 
@@ -141,7 +141,7 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
         if ( state ) is None:
             self._state = None
             bool_state = None
-            _LOGGER.debug("Could not get data for %s", self._idx)
+            _LOGGER.error("Could not get data for %s", self._idx)
         else:
         	bool_state = ( int( state ) & self._ANDbits ) > 0
         if ( True ):  #bool_state != self._state ):
