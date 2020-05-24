@@ -22,7 +22,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import discovery
 from homeassistant.util import Throttle
 
-# import ThermIQ register defines
+# import ThermIQ register defines  
 from custom_components.thermiq.thermiq_regs import reg_id, id_names, id_units, FIELD_REGNUM, FIELD_REGTYPE, FIELD_UNIT, FIELD_MINVALUE, FIELD_MAXVALUE, FIELD_BITMASK 
 
 
