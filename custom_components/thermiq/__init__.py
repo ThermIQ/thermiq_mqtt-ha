@@ -23,7 +23,7 @@ from homeassistant.helpers import discovery
 from homeassistant.util import Throttle
 
 # import ThermIQ register defines  
-from custom_components.thermiq.thermiq_regs import reg_id, id_names, id_units, FIELD_REGNUM, FIELD_REGTYPE, FIELD_UNIT, FIELD_MINVALUE, FIELD_MAXVALUE, FIELD_BITMASK 
+from custom_components.thermiq_mqtt.thermiq_regs import reg_id, id_names, id_units, FIELD_REGNUM, FIELD_REGTYPE, FIELD_UNIT, FIELD_MINVALUE, FIELD_MAXVALUE, FIELD_BITMASK 
 
 
 THERMIQ_PLATFORMS = ["binary_sensor", "sensor"]
