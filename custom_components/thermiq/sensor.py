@@ -76,7 +76,6 @@ class ThermIQ_MQTT(Entity):
         self._idx = device_id
         self._vp_reg = vp_reg
         self._unit = 'C'
-        self._sorter = int("0x"+vp_reg[1:],0)*65536
         # Listen for the ThermIQ rec event indicating new data
         hass.bus.async_listen("thermiq_mqtt_msg_rec_event", self._async_update_event)
 
@@ -101,11 +100,6 @@ class ThermIQ_MQTT(Entity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
-
-    @property
-    def sorter(self):
-        """Return the state of the sensor."""
-        return self._sorter
 
     @property
     def unit_of_measurement(self):

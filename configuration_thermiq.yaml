@@ -1,11 +1,11 @@
+# Begin ThermIQ #####
 # ThermIQ-MQTT configuration.yaml entry
 # Set the mqtt_node name here. Thats all!
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
-  # Prevent updating the heatpump by sending write commands to dbg_wrt 
-  #mqtt_dbg: True
+  #thermiq_dbg: True
 
-# Begin ThermIQ #####
+
 #Input entities for ThermIQ -> configuration.yaml
 input_number:
   thermiq_rum_bor2:
@@ -361,3 +361,4 @@ input_select:
     icon: mdi:power
 
 # End ThermIQ ######
+

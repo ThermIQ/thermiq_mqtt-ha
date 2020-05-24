@@ -33,7 +33,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             else:
                 friendly_name = None
             vp_reg = reg_id[key][0]
-            ANDbits = reg_id[key][2]
+            ANDbits = reg_id[key][3]
 
 
 
