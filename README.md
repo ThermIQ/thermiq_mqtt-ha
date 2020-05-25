@@ -111,7 +111,7 @@ The lovelace setup requires the following custom card to be installed in HACS
 The Home Assistant server needs to be restarted once all configuration is done
 
 ## Features and Limitations
-- Currently provides all data from the heatpum in the form of sensors and binary sensors
+- Currently provides all data from the heatpump in the form of sensors and binary sensors
 - Allows control over the heatpump 
 
 ## Contributing
@@ -119,6 +119,5 @@ Contributions are welcome! If you'd like to contribute, feel free to pick up any
 Also, help making a nice lovelace card would be great!
 
 ### Code Formatting
-This is a first hack. Our experience with Home Automation is limited but expanding. In the future we should try to follow the core Home Assistant style guidelines. Code should be formatted with `black` and imports sorted with `isort` (pending).
+This is a first hack. Our experience with Home Assistant is limited but expanding. In the future we should follow the core Home Assistant style guidelines. Code should be formatted with `black` and imports sorted with `isort`.
 
-## Upstream Resources Used
