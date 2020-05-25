@@ -3,31 +3,54 @@ import logging
 from datetime import timedelta
 
 import voluptuous as vol
+
+# import ThermIQ register defines
+from custom_components.thermiq_mqtt.thermiq_regs import (
+    FIELD_BITMASK,
+    FIELD_MAXVALUE,
+    FIELD_MINVALUE,
+    FIELD_REGNUM,
+    FIELD_REGTYPE,
+    FIELD_UNIT,
+    id_names,
+    id_units,
+    reg_id,
+)
+
 from homeassistant.components import mqtt
+
 # import homeassistant.components.sensor as sensor
-from homeassistant.components.input_select import (ATTR_OPTION, ATTR_OPTIONS,
-                                                   DOMAIN, SERVICE_SELECT_NEXT,
-                                                   SERVICE_SELECT_OPTION,
-                                                   SERVICE_SELECT_PREVIOUS,
-                                                   SERVICE_SET_OPTIONS)
-from homeassistant.const import (ATTR_ENTITY_ID,  # UNIT_PERCENTAGE,
-                                 ATTR_UNIT_OF_MEASUREMENT, CONF_HOST,
-                                 DEVICE_CLASS_BATTERY, DEVICE_CLASS_HUMIDITY,
-                                 DEVICE_CLASS_TEMPERATURE, POWER_WATT,
-                                 SERVICE_TOGGLE, SERVICE_TURN_OFF,
-                                 SERVICE_TURN_ON, STATE_ON, STATE_UNKNOWN,
-                                 TEMP_CELSIUS)
+from homeassistant.components.input_select import (
+    ATTR_OPTION,
+    ATTR_OPTIONS,
+    DOMAIN,
+    SERVICE_SELECT_NEXT,
+    SERVICE_SELECT_OPTION,
+    SERVICE_SELECT_PREVIOUS,
+    SERVICE_SET_OPTIONS,
+)
+from homeassistant.const import ATTR_ENTITY_ID  # UNIT_PERCENTAGE,
+from homeassistant.const import (
+    ATTR_UNIT_OF_MEASUREMENT,
+    CONF_HOST,
+    DEVICE_CLASS_BATTERY,
+    DEVICE_CLASS_HUMIDITY,
+    DEVICE_CLASS_TEMPERATURE,
+    POWER_WATT,
+    SERVICE_TOGGLE,
+    SERVICE_TURN_OFF,
+    SERVICE_TURN_ON,
+    STATE_ON,
+    STATE_UNKNOWN,
+    TEMP_CELSIUS,
+)
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import discovery
 from homeassistant.util import Throttle
 
-# import ThermIQ register defines  
-from custom_components.thermiq_mqtt.thermiq_regs import reg_id, id_names, id_units, FIELD_REGNUM, FIELD_REGTYPE, FIELD_UNIT, FIELD_MINVALUE, FIELD_MAXVALUE, FIELD_BITMASK 
-
-
 THERMIQ_PLATFORMS = ["binary_sensor", "sensor"]
-# "binary_sensor",]"input_number",
+
 DOMAIN = "thermiq_mqtt"
 
 # List of integration names (string) your integration depends upon.
@@ -58,17 +81,15 @@ CONFIG_SCHEMA = vol.Schema(
 _LOGGER = logging.getLogger(__name__)
 
 
-
-
 async def async_setup(hass, config):
     """Set up the ThermIQ_ MQTT component."""
     conf = config[DOMAIN]
     conf.entity_id = "thermiq_mqtt.timestamp"
     conf.data_topic = conf[CONF_MQTT_NODE] + "/data"
-    if (CONF_MQTT_DBG):
+    if CONF_MQTT_DBG:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
     else:
-      conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
+        conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
     _LOGGER.info("data:" + conf.data_topic)
     _LOGGER.info("cmd:" + conf.cmd_topic)
 
