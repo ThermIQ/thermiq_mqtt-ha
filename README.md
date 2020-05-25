@@ -6,7 +6,7 @@ This integration allows you to use the ThermIQ-MQTT hardware interface to contro
 Some info background information on the ThermIQ-MQTT interface can be found here:
 https://thermiq.net
 
-**This integration is in pre-release and will evolve over time**
+**This integration will evolve over time**
 
 
 ## Requirements
