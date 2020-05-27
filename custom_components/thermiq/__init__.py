@@ -86,7 +86,7 @@ async def async_setup(hass, config):
     conf = config[DOMAIN]
     conf.entity_id = "thermiq_mqtt.timestamp"
     conf.data_topic = conf[CONF_MQTT_NODE] + "/data"
-    if CONF_MQTT_DBG:
+    if CONF_MQTT_DBG == True:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
     else:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"

@@ -6,7 +6,7 @@
         "sensor",
         "switch"
     ],
-    "iot_class": "Cloud Polling",
-    "homeassistant": "0.108.0",
+    "iot_class": "Local Push",
+    "homeassistant": "0.100.0",
     "render_readme": true
 }
