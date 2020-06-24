@@ -95,10 +95,10 @@
         - sensor.thermiq_vv_stop
 # # ######
     action: 
-      service: input_number.set_value
-      data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
-        value: "{{ trigger.to_state.state | int }}"          
+      - service: input_number.set_value
+        data_template:
+          entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+          value: "{{ trigger.to_state.state | int }}"          
 
 
  
