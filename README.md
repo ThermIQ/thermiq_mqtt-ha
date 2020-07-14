@@ -117,6 +117,5 @@ The Home Assistant server needs to be restarted once all configuration is done
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
 Also, help making a nice lovelace card would be great!
 
-### Code Formatting
-This is a first hack. Our experience with Home Assistant is limited but expanding. In the future we should follow the core Home Assistant style guidelines. Code should be formatted with `black` and imports sorted with `isort`.
+
 
