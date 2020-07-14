@@ -1,7 +1,7 @@
 # Home Assistant ThermIQ-MQTT Integration
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
-This integration allows you to use the ThermIQ-MQTT hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. It is currently available as a custom component through HACS and will eventually be submit it as an official Home Assistant component.
+This integration allows you to use the ThermIQ-MQTT hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. It is available as a default component of HACS, the Home Assistant Community Store.
 
 Some info background information on the ThermIQ-MQTT interface can be found here:
 https://thermiq.net
@@ -20,8 +20,7 @@ https://thermiq.net
 1. Make sure that ThermIQ is properly setup and communicating with the MQTT server
 2. Make sure that MQTT Integration in Home Assistant is setup and communicating with the MQTT server
 3. Make sure you have HACS set-up (https://github.com/custom-components/hacs).
-4. In HACS, Go to settings and install custom repository: https://github.com/ThermIQ/thermiq_mqtt-ha as Integration
-5. Go to the HACS integrations page, add ThermIQ integration.
+4. Go to the HACS integrations page, add ThermIQ integration.
 
 ## Configuration
 #### Component Configuration:
