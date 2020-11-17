@@ -2,6 +2,7 @@
 import logging
 
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
+from homeassistant.const import STATE_OFF, STATE_ON
 
 from . import DOMAIN as THERMIQ_DOMAIN
 from . import id_names as id_names
@@ -101,9 +102,13 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
         return self._vp_reg
 
     @property
+    def is_on(self):
+    	return self._state
+
+    @property
     def state(self):
         """Return the state of the sensor."""
-        return self._state
+        return STATE_ON if self.is_on else STATE_OFF
 
     @property
     def sorter(self):
