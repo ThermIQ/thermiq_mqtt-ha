@@ -10,187 +10,187 @@ thermiq_mqtt:
 input_number:
   thermiq_rum_bor2:
     name: 'Indoor target temp.'
-    initial: 11
+    initial: 0
     min:  0
     max:  50
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_kurva:
     name: 'Curve'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva_min:
     name: 'Curve min'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva_max:
     name: 'Curve max'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva_p5:
     name: 'Curve +5'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva_0:
     name: 'Curve 0'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva_n5:
     name: 'Curve -5'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_varme_stp:
     name: 'Heatstop'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_sankn_t:
     name: 'Temp. reduction'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_rumfakt:
     name: 'Room factor'
-    initial: 11
+    initial: 0
     min:  0
-    max:  100
+    max:  2
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva2:
     name: 'Curve 2'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva2_min:
     name: 'Curve 2 min'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva2_max:
     name: 'Curve 2 max'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_kurva2_bor:
     name: 'Curve 2, Target'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_kurva2_ar:
     name: 'Curve 2, Actual'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_status6:
     name: 'Outdoor stop temp. (20=-20C)'
-    initial: 11
-    min:  0
-    max:  100
+    initial: 0
+    min:  -32768
+    max:  32767
     step: 1
-    unit_of_measurement: 'C'
-    icon: 'mdi:temperature'
-    mode: slider
+    unit_of_measurement: ''
+    icon: 'mdi:speedometer'
+    mode: box
 
   thermiq_tryckr_limit:
     name: 'Pressurepipe, temp. limit'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_vv_start:
     name: 'Hotwater starttemp.'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_vv_tid:
     name: 'Hotwater operating time'
-    initial: 11
+    initial: 0
     min:  0
     max:  32767
     step: 1
@@ -200,7 +200,7 @@ input_number:
 
   thermiq_varme_tid:
     name: 'Heatpump operating time'
-    initial: 11
+    initial: 0
     min:  0
     max:  32767
     step: 1
@@ -210,7 +210,7 @@ input_number:
 
   thermiq_leg_interv:
     name: 'Legionella interval'
-    initial: 11
+    initial: 0
     min:  0
     max:  32767
     step: 1
@@ -220,17 +220,17 @@ input_number:
 
   thermiq_leg_stop_t:
     name: 'Legionella stop temp.'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_integr_a1:
     name: 'Integral limit A1'
-    initial: 11
+    initial: 0
     min:  -32768
     max:  32767
     step: 1
@@ -240,27 +240,27 @@ input_number:
 
   thermiq_hyst_vp:
     name: 'Hysteresis, heatpump'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_max_ret:
     name: 'Returnline temp., max limit'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_min_st_int:
     name: 'Minimum starting interval'
-    initial: 11
+    initial: 0
     min:  0
     max:  32767
     step: 1
@@ -270,27 +270,27 @@ input_number:
 
   thermiq_min_brine_t:
     name: 'Brinetemp., min limit (-15=OFFV)'
-    initial: 11
+    initial: 0
     min:  -25
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_kyla_bor:
     name: 'Cooling, target'
-    initial: 11
+    initial: 0
     min:  0
     max:  50
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_integr_a2:
     name: 'Integral limit A2'
-    initial: 11
+    initial: 0
     min:  0
     max:  200
     step: 1
@@ -300,17 +300,17 @@ input_number:
 
   thermiq_hyst_ts:
     name: 'Hysteresis limit, aux'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 
   thermiq_max_steg_ts:
     name: 'Max step, aux'
-    initial: 11
+    initial: 0
     min:  -32768
     max:  32767
     step: 1
@@ -320,7 +320,7 @@ input_number:
 
   thermiq_max_strom:
     name: 'Electrical current, max limit'
-    initial: 11
+    initial: 0
     min:  -32768
     max:  32767
     step: 1
@@ -330,7 +330,7 @@ input_number:
 
   thermiq_shunttid:
     name: 'Shunt time'
-    initial: 11
+    initial: 0
     min:  0
     max:  32767
     step: 1
@@ -340,11 +340,11 @@ input_number:
 
   thermiq_vv_stop:
     name: 'Hotwater stop temp.'
-    initial: 11
+    initial: 0
     min:  0
     max:  100
     step: 1
-    unit_of_measurement: 'C'
+    unit_of_measurement: 'ºC'
     icon: 'mdi:temperature'
     mode: slider
 

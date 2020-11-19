@@ -53,8 +53,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             else:
                 friendly_name = None
             vp_reg = reg_id[key][0]
+            vp_type = reg_id[key][1]
+            vp_unit = reg_id[key][2]
 
-            dev.append(ThermIQ_MQTT(hass, data, device_id, vp_reg, friendly_name,))
+            dev.append(ThermIQ_MQTT(hass, data, device_id, vp_reg, friendly_name,vp_type,vp_unit,))
     async_add_entities(dev)
 
 
@@ -62,7 +64,7 @@ class ThermIQ_MQTT(Entity):
     """Representation of a Sensor."""
 
     def __init__(
-        self, hass, data, device_id, vp_reg, friendly_name,
+        self, hass, data, device_id, vp_reg, friendly_name,vp_type,vp_unit,
     ):
         """Initialize the Template switch."""
         self.hass = hass
@@ -75,14 +77,27 @@ class ThermIQ_MQTT(Entity):
         self._name = friendly_name
         self._state = False
         self._icon = None
-        self._icon = "mdi:temperature"
+        if ((vp_type in [
+            "temperature",
+            "temperature_input",]) or 
+            (vp_unit in ["C",])) :
+            self._icon = "mdi:temperature"
+            self._unit = TEMP_CELSIUS
+        elif vp_type in [
+               "sensor_boolean",
+        ]:
+            self._unit = ""
+            self._icon = "mdi:alert"
+        else:          	
+            self._unit = vp_unit
+            self._icon = "mdi:gauge"
         # "mdi:thermometer" ,"mdi:oil-temperature", "mdi:gauge", "mdi:speedometer", "mdi:alert"
         self._entity_picture = None
         self._available = True
 
         self._idx = device_id
         self._vp_reg = vp_reg
-        self._unit = "C"
+
         # Listen for the ThermIQ rec event indicating new data
         hass.bus.async_listen("thermiq_mqtt_msg_rec_event", self._async_update_event)
 

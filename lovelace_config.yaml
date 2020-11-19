@@ -11,6 +11,7 @@
           - entity: sensor.thermiq_sensor_target          
           
           - entity: sensor.thermiq_t_ute
+            type: Sensor
           - entity: sensor.thermiq_t_rum_ar
           - entity: sensor.thermiq_t_rum_ar_dec
           - entity: sensor.thermiq_t_rum_bor
