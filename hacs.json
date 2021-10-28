@@ -7,6 +7,6 @@
         "switch"
     ],
     "iot_class": "Local Push",
-    "homeassistant": "0.100.0",
+    "homeassistant": "2021.12.0b0",
     "render_readme": true
 }

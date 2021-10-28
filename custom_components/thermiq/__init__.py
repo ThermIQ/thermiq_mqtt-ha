@@ -129,7 +129,7 @@ async def async_setup(hass, config):
     def write_msg_service(call):
         """Service to send a message."""
         _LOGGER.debug("message.entity_id:[%s]", call.data.get("entity_id"))
-        hass.components.mqtt.async_publish(conf.cmd_topic, call.data.get("msg"))
+        hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, call.data.get("msg")))
 
     # Service to write specific value_id with data, value_id will be translated to register number.
     @callback
@@ -146,7 +146,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.value:[%s]", call.data.get("value"))
         _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
         _LOGGER.debug("msg:[%s]", msg)
-        hass.components.mqtt.async_publish(conf.cmd_topic, msg)
+        hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
 
     # Service to write specific value_id with data, value_id will be translated to register number.
     @callback
@@ -175,7 +175,7 @@ async def async_setup(hass, config):
             _LOGGER.debug("msg:[%s]", msg)
 
             if value != hass.data[DOMAIN]._data[reg]:
-                hass.components.mqtt.async_publish(conf.cmd_topic, msg)
+                hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
             else:
                 _LOGGER.debug(
                     "No need to write"
@@ -201,7 +201,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.value:[%s]", value)
         _LOGGER.debug("msg:[%s]", msg)
         if value != hass.data[DOMAIN]._data[reg]:
-            hass.components.mqtt.async_publish(conf.cmd_topic, msg)
+            hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
         else:
             _LOGGER.debug("No need to write")
 
@@ -237,7 +237,7 @@ class ThermIQ_MQTT:
         """Send update command to ThermIQ."""
         _LOGGER.debug("update_state:" + command + " " + state_command)
         self._data[state_command] = self._client.command(command)
-        hass.components.mqtt.async_publish(conf.cmd_topic, self._data[state_command])
+        hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, self._data[state_command]))
 
     async def async_update(self):
         _LOGGER.debug("Fetching data from ThermIQ-MQTT")

@@ -15,7 +15,7 @@ input_number:
     max:  50
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_kurva:
@@ -85,7 +85,7 @@ input_number:
     max:  200
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_sankn_t:
@@ -95,7 +95,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_rumfakt:
@@ -145,7 +145,7 @@ input_number:
     max:  200
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_kurva2_ar:
@@ -155,7 +155,7 @@ input_number:
     max:  200
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_status6:
@@ -175,7 +175,7 @@ input_number:
     max:  200
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_vv_start:
@@ -185,7 +185,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_vv_tid:
@@ -225,7 +225,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_integr_a1:
@@ -245,7 +245,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_max_ret:
@@ -255,7 +255,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_min_st_int:
@@ -275,7 +275,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_kyla_bor:
@@ -285,7 +285,7 @@ input_number:
     max:  50
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_integr_a2:
@@ -305,7 +305,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
   thermiq_max_steg_ts:
@@ -345,7 +345,7 @@ input_number:
     max:  100
     step: 1
     unit_of_measurement: 'ºC'
-    icon: 'mdi:temperature'
+    icon: 'mdi:temperature-celsius'
     mode: slider
 
 # #####
