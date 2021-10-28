@@ -6,5 +6,6 @@
   "dependencies": ["mqtt"],
   "config_flow": false,
   "codeowners": ["@ThermIQ"],
+  "version": "0.99.3",
   "requirements":[]
 }
