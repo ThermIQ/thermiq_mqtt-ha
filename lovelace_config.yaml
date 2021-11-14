@@ -7,8 +7,7 @@
         show_header_toggle: false
         entities:
           - entity: input_select.thermiq_dl
-          - entity: sensor.thermiq_sensor_meassured
-          - entity: sensor.thermiq_sensor_target          
+          - entity: sensor.thermiq_sensor_meassured          
           
           - entity: sensor.thermiq_t_ute
           - entity: sensor.thermiq_t_rum_ar

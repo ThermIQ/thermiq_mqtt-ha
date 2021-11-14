@@ -81,7 +81,7 @@ class ThermIQ_MQTT(Entity):
             "temperature",
             "temperature_input",]) or 
             (vp_unit in ["C",])) :
-            self._icon = "mdi:temperature"
+            self._icon = "mdi:temperature-celsius"
             self._unit = TEMP_CELSIUS
         elif vp_type in [
                "sensor_boolean",

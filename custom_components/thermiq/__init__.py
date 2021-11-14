@@ -59,7 +59,7 @@ DEPENDENCIES = ["mqtt"]
 
 # Constants and Schema used to validate the configuration
 CONF_MQTT_NODE = "mqtt_node"
-CONF_MQTT_DBG = "mqtt_dbg"
+CONF_MQTT_DBG = False
 DEFAULT_NODE = "ThermIQ/ThermIQ-mqtt"
 CONF_DATA = "data_msg"
 DEFAULT_DATA = "/data"
@@ -109,6 +109,13 @@ async def async_setup(hass, config):
             json_dict = json.loads(message.payload)
             if json_dict["Client_Name"][:8] == "ThermIQ_":
                 for k in json_dict.keys():
+                    kstore=k
+                    # Make internal register hex if incoming register is decimal format
+                    if k[0]=="d":
+                        reg=int(k[1:])
+                        kstore="r"+format(reg,'02x')
+                        if len(kstore) != 3:
+                            kstore=k                
                     hass.data[DOMAIN]._data[k] = json_dict[k]
                     _LOGGER.debug("[%s] [%s]", k, json_dict[k])
                 hass.data[DOMAIN]._data["rf0"] = (
@@ -230,8 +237,9 @@ class ThermIQ_MQTT:
 
     def get_value(self, item):
         """Get value for sensor."""
-        _LOGGER.debug("get_value(" + item + ")")
-        return self._data.get(item)
+        res=self._data.get(item)
+        _LOGGER.debug("get_value(" + item + ")=%d",res)
+        return res
 
     def update_state(self, command, state_command):
         """Send update command to ThermIQ."""
