@@ -163,7 +163,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.value_id:[%s]", call.data.get("value_id"))
         _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
 
-        value_id = call.data.get("value_id").upper()
+        value_id = call.data.get("value_id").lower()
         idx = len(value_id) - (value_id.find(".thermiq") + 9)
         if idx > 0:
             value_id = value_id[-idx:]
