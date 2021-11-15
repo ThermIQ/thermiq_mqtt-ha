@@ -59,7 +59,7 @@ DEPENDENCIES = ["mqtt"]
 
 # Constants and Schema used to validate the configuration
 CONF_MQTT_NODE = "mqtt_node"
-CONF_MQTT_DBG = False
+CONF_MQTT_DBG = "thermiq_dbg"
 DEFAULT_NODE = "ThermIQ/ThermIQ-mqtt"
 CONF_DATA = "data_msg"
 DEFAULT_DATA = "/data"
@@ -86,8 +86,9 @@ async def async_setup(hass, config):
     conf = config[DOMAIN]
     conf.entity_id = "thermiq_mqtt.timestamp"
     conf.data_topic = conf[CONF_MQTT_NODE] + "/data"
-    if CONF_MQTT_DBG == True:
+    if conf[CONF_MQTT_DBG] == True:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
+        _LOGGER.debug("MQTT Debug write enabled");
     else:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
     _LOGGER.info("data:" + conf.data_topic)
@@ -111,13 +112,13 @@ async def async_setup(hass, config):
                 for k in json_dict.keys():
                     kstore=k
                     # Make internal register hex if incoming register is decimal format
-                    if k[0]=="d":
+                    if k[0]=='d':
                         reg=int(k[1:])
                         kstore="r"+format(reg,'02x')
                         if len(kstore) != 3:
                             kstore=k                
-                    hass.data[DOMAIN]._data[k] = json_dict[k]
-                    _LOGGER.debug("[%s] [%s]", k, json_dict[k])
+                    hass.data[DOMAIN]._data[kstore] = json_dict[k]
+                    _LOGGER.debug("[%s] [%s]", kstore, json_dict[k])
                 hass.data[DOMAIN]._data["rf0"] = (
                     hass.data[DOMAIN]._data["r01"] + hass.data[DOMAIN]._data["r02"] / 10
                 )
@@ -163,7 +164,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
 
         value_id = call.data.get("value_id").upper()
-        idx = len(value_id) - (value_id.find(".THERMIQ") + 9)
+        idx = len(value_id) - (value_id.find(".thermiq") + 9)
         if idx > 0:
             value_id = value_id[-idx:]
         _LOGGER.debug("message.value_id:[%s]", value_id)
