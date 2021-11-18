@@ -53,446 +53,446 @@
           bitmask: 0xffff
 
 # ############################################################################
-# ### ThermIQ, From Sensor to -> Input number        
+# ### ThermIQ, From State to -> Input number        
 # ###
-  - alias: ThermIQ, sensor.thermiq_rum_bor2 to Input number
+  - alias: ThermIQ, thermiq_mqtt.rum_bor2 to input_number.thermiq_rum_bor2
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_rum_bor2
+        - thermiq_mqtt.rum_bor2
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_rum_bor2 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva to input_number.thermiq_kurva
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva
+        - thermiq_mqtt.kurva
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva_min to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva_min to input_number.thermiq_kurva_min
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva_min
+        - thermiq_mqtt.kurva_min
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva_min 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva_max to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva_max to input_number.thermiq_kurva_max
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva_max
+        - thermiq_mqtt.kurva_max
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva_max 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva_p5 to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva_p5 to input_number.thermiq_kurva_p5
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva_p5
+        - thermiq_mqtt.kurva_p5
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva_p5 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva_0 to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva_0 to input_number.thermiq_kurva_0
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva_0
+        - thermiq_mqtt.kurva_0
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva_0 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva_n5 to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva_n5 to input_number.thermiq_kurva_n5
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva_n5
+        - thermiq_mqtt.kurva_n5
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva_n5 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_varme_stp to Input number
+  - alias: ThermIQ, thermiq_mqtt.varme_stp to input_number.thermiq_varme_stp
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_varme_stp
+        - thermiq_mqtt.varme_stp
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_varme_stp 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_sankn_t to Input number
+  - alias: ThermIQ, thermiq_mqtt.sankn_t to input_number.thermiq_sankn_t
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_sankn_t
+        - thermiq_mqtt.sankn_t
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_sankn_t 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_rumfakt to Input number
+  - alias: ThermIQ, thermiq_mqtt.rumfakt to input_number.thermiq_rumfakt
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_rumfakt
+        - thermiq_mqtt.rumfakt
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_rumfakt 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva2 to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva2 to input_number.thermiq_kurva2
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva2
+        - thermiq_mqtt.kurva2
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva2 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva2_min to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva2_min to input_number.thermiq_kurva2_min
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva2_min
+        - thermiq_mqtt.kurva2_min
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva2_min 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva2_max to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva2_max to input_number.thermiq_kurva2_max
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva2_max
+        - thermiq_mqtt.kurva2_max
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva2_max 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva2_bor to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva2_bor to input_number.thermiq_kurva2_bor
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva2_bor
+        - thermiq_mqtt.kurva2_bor
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva2_bor 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kurva2_ar to Input number
+  - alias: ThermIQ, thermiq_mqtt.kurva2_ar to input_number.thermiq_kurva2_ar
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kurva2_ar
+        - thermiq_mqtt.kurva2_ar
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kurva2_ar 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_status6 to Input number
+  - alias: ThermIQ, thermiq_mqtt.status6 to input_number.thermiq_status6
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_status6
+        - thermiq_mqtt.status6
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_status6 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_tryckr_limit to Input number
+  - alias: ThermIQ, thermiq_mqtt.tryckr_limit to input_number.thermiq_tryckr_limit
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_tryckr_limit
+        - thermiq_mqtt.tryckr_limit
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_tryckr_limit 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_vv_start to Input number
+  - alias: ThermIQ, thermiq_mqtt.vv_start to input_number.thermiq_vv_start
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_vv_start
+        - thermiq_mqtt.vv_start
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_vv_start 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_vv_tid to Input number
+  - alias: ThermIQ, thermiq_mqtt.vv_tid to input_number.thermiq_vv_tid
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_vv_tid
+        - thermiq_mqtt.vv_tid
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_vv_tid 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_varme_tid to Input number
+  - alias: ThermIQ, thermiq_mqtt.varme_tid to input_number.thermiq_varme_tid
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_varme_tid
+        - thermiq_mqtt.varme_tid
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_varme_tid 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_leg_interv to Input number
+  - alias: ThermIQ, thermiq_mqtt.leg_interv to input_number.thermiq_leg_interv
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_leg_interv
+        - thermiq_mqtt.leg_interv
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_leg_interv 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_leg_stop_t to Input number
+  - alias: ThermIQ, thermiq_mqtt.leg_stop_t to input_number.thermiq_leg_stop_t
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_leg_stop_t
+        - thermiq_mqtt.leg_stop_t
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_leg_stop_t 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_integr_a1 to Input number
+  - alias: ThermIQ, thermiq_mqtt.integr_a1 to input_number.thermiq_integr_a1
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_integr_a1
+        - thermiq_mqtt.integr_a1
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_integr_a1 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_hyst_vp to Input number
+  - alias: ThermIQ, thermiq_mqtt.hyst_vp to input_number.thermiq_hyst_vp
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_hyst_vp
+        - thermiq_mqtt.hyst_vp
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_hyst_vp 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_max_ret to Input number
+  - alias: ThermIQ, thermiq_mqtt.max_ret to input_number.thermiq_max_ret
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_max_ret
+        - thermiq_mqtt.max_ret
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_max_ret 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_min_st_int to Input number
+  - alias: ThermIQ, thermiq_mqtt.min_st_int to input_number.thermiq_min_st_int
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_min_st_int
+        - thermiq_mqtt.min_st_int
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_min_st_int 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_min_brine_t to Input number
+  - alias: ThermIQ, thermiq_mqtt.min_brine_t to input_number.thermiq_min_brine_t
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_min_brine_t
+        - thermiq_mqtt.min_brine_t
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_min_brine_t 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_kyla_bor to Input number
+  - alias: ThermIQ, thermiq_mqtt.kyla_bor to input_number.thermiq_kyla_bor
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_kyla_bor
+        - thermiq_mqtt.kyla_bor
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_kyla_bor 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_integr_a2 to Input number
+  - alias: ThermIQ, thermiq_mqtt.integr_a2 to input_number.thermiq_integr_a2
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_integr_a2
+        - thermiq_mqtt.integr_a2
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_integr_a2 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_hyst_ts to Input number
+  - alias: ThermIQ, thermiq_mqtt.hyst_ts to input_number.thermiq_hyst_ts
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_hyst_ts
+        - thermiq_mqtt.hyst_ts
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_hyst_ts 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_max_steg_ts to Input number
+  - alias: ThermIQ, thermiq_mqtt.max_steg_ts to input_number.thermiq_max_steg_ts
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_max_steg_ts
+        - thermiq_mqtt.max_steg_ts
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_max_steg_ts 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_max_strom to Input number
+  - alias: ThermIQ, thermiq_mqtt.max_strom to input_number.thermiq_max_strom
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_max_strom
+        - thermiq_mqtt.max_strom
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_max_strom 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_shunttid to Input number
+  - alias: ThermIQ, thermiq_mqtt.shunttid to input_number.thermiq_shunttid
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_shunttid
+        - thermiq_mqtt.shunttid
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_shunttid 
         value: "{{ trigger.to_state.state | int }}"
 
         
 # ###
-  - alias: ThermIQ, sensor.thermiq_vv_stop to Input number
+  - alias: ThermIQ, thermiq_mqtt.vv_stop to input_number.thermiq_vv_stop
     trigger:
       platform: state
       entity_id:
-        - sensor.thermiq_vv_stop
+        - thermiq_mqtt.vv_stop
     action:
     - service: input_number.set_value
       data_template:
-        entity_id: "input_number.{{ trigger.to_state.object_id }}" 
+        entity_id: input_number.thermiq_vv_stop 
         value: "{{ trigger.to_state.state | int }}"
 
 
@@ -524,7 +524,7 @@
     trigger:
       platform: state
       entity_id: 
-        - sensor.thermiq_dl
+        - thermiq_mqtt.dl
     condition:
       condition: template
       value_template: "{{ ( ((trigger.to_state.state | int )  >=0 ) and ((trigger.to_state.state | int )  <5 ) ) }}"

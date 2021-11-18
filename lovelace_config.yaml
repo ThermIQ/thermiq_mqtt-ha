@@ -6,14 +6,12 @@
         theme: default
         show_header_toggle: false
         entities:
+          - entity: thermiq_mqtt.last_msg_time
           - entity: input_select.thermiq_dl
-          - entity: sensor.thermiq_sensor_meassured          
           
           - entity: sensor.thermiq_t_ute
           - entity: sensor.thermiq_t_rum_ar
-          - entity: sensor.thermiq_t_rum_ar_dec
           - entity: sensor.thermiq_t_rum_bor
-          - entity: sensor.thermiq_t_rum_bor_dec
           - entity: sensor.thermiq_t_fram
           - entity: sensor.thermiq_t_retur
           - entity: sensor.thermiq_t_vatten
@@ -159,3 +157,6 @@
           - entity: sensor.thermiq_dr_tim_ts2
           - entity: sensor.thermiq_status15
           - entity: sensor.thermiq_status16
+          - type: 'custom:text-divider-row'
+            text: ThermIQ-ROOM
+          - entity: sensor.thermiq_indr_t   

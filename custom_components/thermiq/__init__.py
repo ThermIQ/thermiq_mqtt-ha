@@ -66,6 +66,7 @@ DEFAULT_DATA = "/data"
 CONF_CMD = "cmd_msg"
 DEFAULT_CMD = "/WRITE"
 DEFAULT_DBG = False
+MSG_RECEIVED_STATE = 'thermiq_mqtt.last_msg_time'
 
 
 CONFIG_SCHEMA = vol.Schema(
@@ -100,6 +101,12 @@ async def async_setup(hass, config):
     for platform in THERMIQ_PLATFORMS:
         _LOGGER.debug("platform:" + platform)
         discovery.load_platform(hass, platform, DOMAIN, {}, config)
+        
+# Create reverse lookup dictionary (id_reg->reg_number
+    id_reg= {}
+    for k,v in reg_id.items():
+       id_reg[v[0]]=k
+       _LOGGER.debug("id_reg[%s => %s]",v[0],k)
 
     # ###
     @callback
@@ -110,22 +117,41 @@ async def async_setup(hass, config):
             json_dict = json.loads(message.payload)
             if json_dict["Client_Name"][:8] == "ThermIQ_":
                 for k in json_dict.keys():
-                    kstore=k
+                    kstore=k.lower()
+                    dstore=k
                     # Make internal register hex if incoming register is decimal format
                     if k[0]=='d':
                         reg=int(k[1:])
                         kstore="r"+format(reg,'02x')
+                        dstore="d"+format(reg,'03d')
                         if len(kstore) != 3:
                             kstore=k                
+                    if k[0]=='r' and len(k)==3:
+                    	reg= int(k[1:],16)
+                    	dstore="d"+format(reg,'03d')               
                     hass.data[DOMAIN]._data[kstore] = json_dict[k]
-                    _LOGGER.debug("[%s] [%s]", kstore, json_dict[k])
-                hass.data[DOMAIN]._data["rf0"] = (
+                    if kstore in id_reg:
+                        if kstore!='r01' and kstore!='r03':
+                        	hass.states.async_set("thermiq_mqtt."+id_reg[kstore],json_dict[k])
+                    _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k],dstore)
+
+# Do some post processing of data eceived
+                hass.data[DOMAIN]._data['r01'] = (
                     hass.data[DOMAIN]._data["r01"] + hass.data[DOMAIN]._data["r02"] / 10
                 )
-                hass.data[DOMAIN]._data["rf1"] = (
+                hass.states.async_set("thermiq_mqtt.t_rum_ar",hass.data[DOMAIN]._data['r01'])
+                
+                hass.data[DOMAIN]._data["r03"] = (
                     hass.data[DOMAIN]._data["r03"] + hass.data[DOMAIN]._data["r04"] / 10
                 )
+                hass.states.async_set("thermiq_mqtt.t_rum_bor",hass.data[DOMAIN]._data["r03"])
+                hass.data[DOMAIN]._data['rf0']=hass.data[DOMAIN]._data['indr_t']
+                
+                
+                hass.states.async_set(MSG_RECEIVED_STATE,json_dict['timestamp'])
+                
                 hass.bus.fire("thermiq_mqtt_msg_rec_event", {})
+                
             else:
                 _LOGGER.error("JSON result was not from ThermIQ-mqtt")
         except ValueError:
@@ -139,7 +165,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.entity_id:[%s]", call.data.get("entity_id"))
         hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, call.data.get("msg")))
 
-    # Service to write specific value_id with data, value_id will be translated to register number.
+    # Service to write specific reg with data, value_id will be translated to register number.
     @callback
     def write_reg_service(call):
         reg = call.data.get("reg")
@@ -170,8 +196,10 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.value_id:[%s]", value_id)
         if value_id in reg_id:
             reg = reg_id[value_id][0]
+            kstore="r"+format(int(reg[1:],16),'02x')
+            dstore="d"+format(int(reg[1:],16),'03d')    
             value = call.data.get("value")
-            if value is None:
+            if not(isinstance(value, int)) or value is None:
                 return
             bitmask = call.data.get("bitmask")
             if bitmask is None:
@@ -183,7 +211,10 @@ async def async_setup(hass, config):
             _LOGGER.debug("msg:[%s]", msg)
 
             if value != hass.data[DOMAIN]._data[reg]:
-                hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
+                hass.data[DOMAIN]._data[reg]=value
+                hass.states.async_set("thermiq_mqtt."+id_reg[kstore],value)
+                _LOGGER.debug("set reg[%s]=%d",reg,hass.data[DOMAIN]._data[reg])
+                hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg,2,False))
             else:
                 _LOGGER.debug(
                     "No need to write"
@@ -194,7 +225,7 @@ async def async_setup(hass, config):
         """Service to send a message."""
 
         _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
-        reg = "r51"
+        reg = "r33"
         value = int(call.data.get("value"))
         if value is None:
             return
@@ -209,6 +240,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("message.value:[%s]", value)
         _LOGGER.debug("msg:[%s]", msg)
         if value != hass.data[DOMAIN]._data[reg]:
+            hass.states.async_set("thermiq_mqtt.d51")
             hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
         else:
             _LOGGER.debug("No need to write")

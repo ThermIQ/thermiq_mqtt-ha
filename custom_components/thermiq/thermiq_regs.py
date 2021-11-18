@@ -61,7 +61,7 @@ reg_id = {
   'hgw_vv'             : ['r18', 'temperature',            'ºC',                           ],
   'integr'             : ['r19', 'sensor',                 'Cmin',                          ],
   'intgr_steg'         : ['r1a', 'sensor',                 '',                              ],
-  'clk_vv'             : ['r1b', 'time',                   '10s',                           ],
+  'clk_vv'             : ['r1b', 'time',                   '*10s',                          ],
   'min_time_start'     : ['r1c', 'time',                   'min',                           ],
   'sw_ver'             : ['r1d', 'sensor',                 '',                              ],
   'cirk_speed'         : ['r1e', 'sensor',                 '%',                             ],
@@ -124,8 +124,8 @@ reg_id = {
   'till_opt'           : ['r62', 'binary_sensor',          'type',         0x0040           ],
   'till_fw'            : ['r62', 'binary_sensor',          'type',         0x0080           ],
   'log_tim'            : ['r63', 'time',                   'min',                           ],
-  'brine_tim_on'       : ['r64', 'time',                   '10s',                           ],
-  'brine_tim_off'      : ['r65', 'time',                   '10s',                           ],
+  'brine_tim_on'       : ['r64', 'time',                   '*10s',                          ],
+  'brine_tim_off'      : ['r65', 'time',                   '*10s',                          ],
   'leg_top_on'         : ['r66', 'sensor_boolean',         'Boolean',                       ],
   'leg_top_tim'        : ['r67', 'time',                   'h',                             ],
   'dr_tim_vp'          : ['r68', 'time',                   'h',                             ],
@@ -141,7 +141,7 @@ reg_id = {
   'dr_tim_ts2'         : ['r72', 'time',                   'h',                             ],
   'status15'           : ['r73', 'sensor',                 '',                              ],
   'status16'           : ['r74', 'sensor',                 '',                              ],
-  'sensor_meassured'   : ['rf0', 'temperature',            'ºC',               0,     50   ],
+  'indr_t'             : ['rf0', 'temperature',            'ºC',               0,     50   ],
 
 }
 
@@ -278,6 +278,7 @@ id_names = {
   'dr_tim_ts2'         : 'Runtime 6 kW',
   'status15'           : 'DTS2_MSD1',
   'status16'           : 'GrafCounterOffSet',
+  'indr_t'             : 'INDR_T',
 
 
 }
@@ -414,6 +415,6 @@ id_units = {
   'dr_tim_ts2'         : 'h',
   'status15'           : '  ',
   'status16'           : '  ',
-  'sensor_meassured'   : 'ºC',
+  'indr_t'             : 'ºC',
 
 }
