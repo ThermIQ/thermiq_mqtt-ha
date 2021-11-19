@@ -7,7 +7,7 @@ Some info background information on the ThermIQ-MQTT interface can be found here
 https://thermiq.net
 
 **This integration will evolve over time**
-Please not that in Release 1.0.0 the thermiq_automations.yaml have changed and you need to update your automation.yaml accordingly.
+Please not that in Release 1.0.0 the thermiq_automations.yaml and lovelace.yaml has changed and you need to update your automation.yaml and UI accordingly.
 
 ## Requirements
 
