@@ -149,7 +149,7 @@ async def async_setup(hass, config):
                     hass.data[DOMAIN]._data['rf0']=hass.data[DOMAIN]._data['indr_t']
                 except:
                     hass.data[DOMAIN]._data['rf0']=-1
-                	hass.data[DOMAIN]._data['indr_t']=-1
+                    hass.data[DOMAIN]._data['indr_t']=-1
                 
                 
                 hass.states.async_set(MSG_RECEIVED_STATE,json_dict['timestamp'])
