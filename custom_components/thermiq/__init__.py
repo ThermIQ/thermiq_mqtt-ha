@@ -145,7 +145,11 @@ async def async_setup(hass, config):
                     hass.data[DOMAIN]._data["r03"] + hass.data[DOMAIN]._data["r04"] / 10
                 )
                 hass.states.async_set("thermiq_mqtt.t_rum_bor",hass.data[DOMAIN]._data["r03"])
-                hass.data[DOMAIN]._data['rf0']=hass.data[DOMAIN]._data['indr_t']
+                try:
+                    hass.data[DOMAIN]._data['rf0']=hass.data[DOMAIN]._data['indr_t']
+                except:
+                    hass.data[DOMAIN]._data['rf0']=-1
+                	hass.data[DOMAIN]._data['indr_t']=-1
                 
                 
                 hass.states.async_set(MSG_RECEIVED_STATE,json_dict['timestamp'])
