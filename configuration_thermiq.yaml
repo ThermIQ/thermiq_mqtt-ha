@@ -3,7 +3,7 @@
 # Set the mqtt_node name here. Thats all!
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
-  #thermiq_dbg: True
+  thermiq_dbg: False
 
 
 #Input entities for ThermIQ -> configuration.yaml
