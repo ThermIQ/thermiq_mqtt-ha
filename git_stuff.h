@@ -1,0 +1,1 @@
+$Format: %H$, $Format: %h$, and $Format: %ci$
