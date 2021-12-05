@@ -9,7 +9,7 @@ Some info background information on the ThermIQ-MQTT interface can be found here
 https://thermiq.net
 
 **This integration will evolve over time**
-Please not that in Release 1.0.0 the thermiq_automations.yaml and lovelace.yaml has changed and you need to update your automation.yaml and UI accordingly.
+Please note that in Release 1.0.0 the thermiq_automations.yaml and lovelace.yaml has changed and you need to update your automation.yaml and UI accordingly.
 
 ## Requirements
 
@@ -67,7 +67,7 @@ A complete automation between frontend input entities to the backend control is 
 
 
 #### Lovelace Configuration:
-The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a complete setup of all available variables. A short example could look like:
+The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. A short example could look like:
 
 ```yaml
 # ################################################
@@ -86,10 +86,8 @@ The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/
               .hpwidget-name-span{}
               .hpwidget-unit-span{text-align:right;overflow:hidden;color:white;font-size:70%}
               @keyframes rotating {to { transform: rotate(1turn); }}
-              </style></head> <div
-              
-              <div style="height:330px;width:200px">
-              <div style="position:absolute;left:130px;">
+              </style></head> 
+ ...
  ...
  
 ```
@@ -98,10 +96,13 @@ The lovelace setup requires the following custom cards to be installed in HACS
 ```
 - html-template-card
 - fold-entity-row
-
-
 ```
-
+ It is also necessary to move the three picture files below,m   to the be in the lovelace path. They are currently coded to the following directory **local/community/lovelace-html-card/**
+ ```
+ vp_base.jpg
+ vp_base_hgw_on.jpg
+ vp_base_hw.jpg
+ ```
 #### Restart
 The Home Assistant server needs to be restarted once all configuration is done
 
@@ -111,7 +112,7 @@ The Home Assistant server needs to be restarted once all configuration is done
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
-Also, help making a nice lovelace card would be great!
+Also, help improving the lovelace card would be great!
 
 
 
