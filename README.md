@@ -1,6 +1,6 @@
 # Home Assistant ThermIQ-MQTT Integration
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
-
+![Screenshot](docs/Lovelace1.jpg)
 This integration allows you to use the ThermIQ-MQTT hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. It is available as a default component of HACS, the Home Assistant Community Store.
 
 Some info background information on the ThermIQ-MQTT interface can be found here:
@@ -75,33 +75,27 @@ The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/
         theme: default
         show_header_toggle: false
         entities:
-          - entity: thermiq_mqtt.last_msg_time
-          - entity: input_select.thermiq_dl
-          
-          - entity: sensor.thermiq_t_ute
-          - entity: sensor.thermiq_t_rum_ar
-          - entity: sensor.thermiq_t_rum_bor
-          - entity: sensor.thermiq_t_fram
-          - entity: sensor.thermiq_t_retur
-          - entity: sensor.thermiq_t_vatten
-          - entity: sensor.thermiq_t_brine_ut
-          - entity: sensor.thermiq_t_brine_in
-          - entity: sensor.thermiq_t_kylning
-          - entity: sensor.thermiq_t_fram_shunt
-          - entity: sensor.thermiq_stromforbr
-          - type: 'custom:text-divider-row'
-            text: ts_1
-          - entity: binary_sensor.thermiq_ts_1
-          - entity: binary_sensor.thermiq_ts_2
-          - type: 'custom:text-divider-row'
-            text: ^
-          - entity: sensor.thermiq_t_fram_bor
-          - entity: sensor.thermiq_t_fram_shunt_bor
+          - type: custom:html-template-card
+            title: null
+            ignore_line_breaks: true
+            content: >
+              <head><style> 
+              .hpwidget-val {width:35px;height:16px;background:#a0a0a0;text-align: center;color:white;border-radius: 0.25em;}
+              .hpwidget-name-span{}
+              .hpwidget-unit-span{text-align:right;overflow:hidden;color:white;font-size:70%}
+              @keyframes rotating {to { transform: rotate(1turn); }}
+              </style></head> <div
+              
+              <div style="height:330px;width:200px">
+              <div style="position:absolute;left:130px;">
+ ...
+ 
 ```
 
-The lovelace setup requires the following custom card to be installed in HACS
+The lovelace setup requires the following custom cards to be installed in HACS
 ```
-- text-divider-row
+- html-template-card
+- fold-entity-row
 
 
 ```
