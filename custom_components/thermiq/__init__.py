@@ -72,7 +72,7 @@ MSG_RECEIVED_STATE = 'thermiq_mqtt.last_msg_time'
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MQTT_NODE, default=DEFAULT_NODE): cv.string,
-        vol.Optional(CONF_MQTT_DBG, default=DEFAULT_DBG): cv.boolean,
+        vol.Optional(CONF_MQTT_DBG, default=False): cv.boolean,
         # vol.Optional(CONF_CMD,default=DEFAULT_CMD): cv.string,
     },
     extra=vol.ALLOW_EXTRA,
@@ -84,10 +84,11 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass, config):
     """Set up the ThermIQ_ MQTT component."""
-    conf = config[DOMAIN]
+    conf = config.get(DOMAIN,{})
     conf.entity_id = "thermiq_mqtt.timestamp"
-    conf.data_topic = conf[CONF_MQTT_NODE] + "/data"
-    if conf[CONF_MQTT_DBG] == True:
+    conf.data_topic = conf.get(CONF_MQTT_NODE) + "/data"
+    dbg=conf.get(CONF_MQTT_DBG)
+    if dbg == True:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
         _LOGGER.debug("MQTT Debug write enabled");
     else:
