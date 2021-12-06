@@ -98,16 +98,17 @@ async def async_setup(hass, config):
 
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
-    hass.states.async_set('thermiq_mqtt.time_str','waiting for %s'+conf.data_topic)
+    hass.states.async_set('thermiq_mqtt.time_str','Waiting on '+conf.data_topic)
                 
     for platform in THERMIQ_PLATFORMS:
         _LOGGER.debug("platform:" + platform)
         discovery.load_platform(hass, platform, DOMAIN, {}, config)
         
-# Create reverse lookup dictionary (id_reg->reg_number
+# Create reverse lookup dictionary (id_reg->reg_number)
     id_reg= {}
     for k,v in reg_id.items():
        id_reg[v[0]]=k
+       hass.states.async_set('thermiq_mqtt.'+v[0],-1)
        _LOGGER.debug("id_reg[%s => %s]",v[0],k)
 
     # ###
@@ -135,6 +136,11 @@ async def async_setup(hass, config):
                     if kstore in id_reg:
                         if kstore!='r01' and kstore!='r03':
                             hass.states.async_set("thermiq_mqtt."+id_reg[kstore],json_dict[k])
+                            a=reg_id[id_reg[kstore]]
+                            if (a[1]=='temperature_input') or (a[1]=='time_input') or (a[1]=='sensor_input') :
+                               hass.states.async_set("input_number.thermiq_"+id_reg[kstore],json_dict[k])
+                            #if (a[1]=='select_input') :
+                               #hass.states.async_set("input_select.thermiq_main_mode",'Auto');
                     _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k],dstore)
 
 # Do some post processing of data eceived

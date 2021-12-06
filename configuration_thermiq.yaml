@@ -356,7 +356,7 @@ input_select:
       - 'Off'
       - 'Auto'
       - 'Heatpump only'
-      - 'Elecric only'
+      - 'Electric only'
       - 'Hotwater only'
     icon: mdi:power
 
