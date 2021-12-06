@@ -142,6 +142,7 @@ reg_id = {
   'msd1_d'                       : ['r73', 'sensor',                 '',                              ],
   'graph_display_offset'         : ['r74', 'sensor',                 '',                              ],
   'room_sensor_set_t'            : ['rf0', 'temperature',            'ºC',               0,     50   ],
+  'time'                         : ['rf0', 'time',                   's',                 0,     50   ],
 
 }
 

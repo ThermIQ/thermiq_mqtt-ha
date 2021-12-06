@@ -98,7 +98,8 @@ async def async_setup(hass, config):
 
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
-
+    hass.states.async_set('thermiq_mqtt.time_str','waiting for %s'+conf.data_topic)
+                
     for platform in THERMIQ_PLATFORMS:
         _LOGGER.debug("platform:" + platform)
         discovery.load_platform(hass, platform, DOMAIN, {}, config)
@@ -128,12 +129,12 @@ async def async_setup(hass, config):
                         if len(kstore) != 3:
                             kstore=k                
                     if k[0]=='r' and len(k)==3:
-                    	reg= int(k[1:],16)
-                    	dstore="d"+format(reg,'03d')               
+                        reg= int(k[1:],16)
+                        dstore="d"+format(reg,'03d')               
                     hass.data[DOMAIN]._data[kstore] = json_dict[k]
                     if kstore in id_reg:
                         if kstore!='r01' and kstore!='r03':
-                        	hass.states.async_set("thermiq_mqtt."+id_reg[kstore],json_dict[k])
+                            hass.states.async_set("thermiq_mqtt."+id_reg[kstore],json_dict[k])
                     _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k],dstore)
 
 # Do some post processing of data eceived
@@ -154,7 +155,7 @@ async def async_setup(hass, config):
                 
                 
                 hass.states.async_set(MSG_RECEIVED_STATE,json_dict['timestamp'])
-                
+                hass.states.async_set('thermiq_mqtt.time_str',json_dict['time'])
                 hass.bus.fire("thermiq_mqtt_msg_rec_event", {})
                 
             else:
