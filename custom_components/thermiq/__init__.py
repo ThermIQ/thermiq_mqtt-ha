@@ -90,7 +90,7 @@ async def async_setup(hass, config):
     dbg=conf.get(CONF_MQTT_DBG)
     if dbg == True:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/mqtt_dbg"
-        _LOGGER.debug("MQTT Debug write enabled");
+        _LOGGER.debug("MQTT Debug write enabled")
     else:
         conf.cmd_topic = conf.get(CONF_MQTT_NODE) + "/write"
     _LOGGER.info("data:" + conf.data_topic)
@@ -99,6 +99,7 @@ async def async_setup(hass, config):
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
     hass.states.async_set('thermiq_mqtt.time_str','Waiting on '+conf.data_topic)
+    hass.data[DOMAIN]._data['mqtt_counter']=0
                 
     for platform in THERMIQ_PLATFORMS:
         _LOGGER.debug("platform:" + platform)
@@ -109,7 +110,7 @@ async def async_setup(hass, config):
     for k,v in reg_id.items():
        id_reg[v[0]]=k
        hass.states.async_set('thermiq_mqtt.'+v[0],-1)
-       _LOGGER.debug("id_reg[%s => %s]",v[0],k)
+       _LOGGER.debug("id_reg[%s] => %s",v[0],k)
 
     # ###
     @callback
@@ -159,7 +160,7 @@ async def async_setup(hass, config):
                     hass.data[DOMAIN]._data['rf0']=-1
                     hass.data[DOMAIN]._data['indr_t']=-1
                 
-                
+                hass.data[DOMAIN]._data['mqtt_counter']+=1 
                 hass.states.async_set(MSG_RECEIVED_STATE,json_dict['timestamp'])
                 hass.states.async_set('thermiq_mqtt.time_str',json_dict['time'])
                 hass.bus.fire("thermiq_mqtt_msg_rec_event", {})
@@ -222,11 +223,12 @@ async def async_setup(hass, config):
             _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
             _LOGGER.debug("msg:[%s]", msg)
 
-            if value != hass.data[DOMAIN]._data[reg]:
+            if (value != hass.data[DOMAIN]._data[reg]):
                 hass.data[DOMAIN]._data[reg]=value
                 hass.states.async_set("thermiq_mqtt."+id_reg[kstore],value)
                 _LOGGER.debug("set reg[%s]=%d",reg,hass.data[DOMAIN]._data[reg])
-                hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg,2,False))
+                if (hass.data[DOMAIN]._data['mqtt_counter']>3):
+                    hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg,2,False))
             else:
                 _LOGGER.debug(
                     "No need to write"

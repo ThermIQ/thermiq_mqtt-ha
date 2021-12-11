@@ -75,8 +75,8 @@
                   - entity: sensor.thermiq_returnline_t
                   - entity: sensor.thermiq_boiler_t
                   - entity: sensor.thermiq_integral1
-                  - entity: sensor.thermiq_brine_in_t
                   - entity: sensor.thermiq_brine_out_t
+                  - entity: sensor.thermiq_brine_in_t
                   - entity: sensor.thermiq_supply_shunt_t
                   - entity: sensor.thermiq_cooling_t
                   - entity: sensor.thermiq_supply_pump_speed
