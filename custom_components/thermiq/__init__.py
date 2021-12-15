@@ -49,6 +49,18 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import discovery
 from homeassistant.util import Throttle
 
+
+from .helper import create_automations, create_entities_and_automations, CONFIG_INPUT_BOOLEAN, COMPONENT_INPUT_BOOLEAN, \
+    CONFIG_INPUT_DATETIME, COMPONENT_INPUT_DATETIME, CONFIG_INPUT_NUMBER, COMPONENT_INPUT_NUMBER, CONFIG_INPUT_TEXT, \
+    COMPONENT_INPUT_TEXT, CONFIG_TIMER, COMPONENT_TIMER
+
+from .helper import create_input_datetime, create_input_number, create_automation
+
+from homeassistant.components.automation import EVENT_AUTOMATION_RELOADED
+from homeassistant.const import CONF_ENTITY_ID, CONF_STATE, EVENT_HOMEASSISTANT_STARTED
+from homeassistant.core import HomeAssistant, Event
+
+
 THERMIQ_PLATFORMS = ["binary_sensor", "sensor"]
 
 DOMAIN = "thermiq_mqtt"
@@ -111,6 +123,23 @@ async def async_setup(hass, config):
        id_reg[v[0]]=k
        hass.states.async_set('thermiq_mqtt.'+v[0],-1)
        _LOGGER.debug("id_reg[%s] => %s",v[0],k)
+
+
+    CONFIG_INPUT_BOOLEAN.update(config.get(COMPONENT_INPUT_BOOLEAN, {}))
+    CONFIG_INPUT_DATETIME.update(config.get(COMPONENT_INPUT_DATETIME, {}))
+    CONFIG_INPUT_NUMBER.update(config.get(COMPONENT_INPUT_NUMBER, {}))
+    CONFIG_INPUT_TEXT.update(config.get(COMPONENT_INPUT_TEXT, {}))
+    CONFIG_TIMER.update(config.get(COMPONENT_TIMER, {}))
+    await create_input_datetime('aaa_date', True, False, icon='mdi:modern-house')
+
+    async def handle_home_assistant_started_event(event: Event):
+        await create_entities_and_automations(hass)
+
+    async def handle_automation_reload_event(event: Event):
+        await create_automations(hass)
+
+    hass.bus.async_listen(EVENT_HOMEASSISTANT_STARTED, handle_home_assistant_started_event)
+    hass.bus.async_listen(EVENT_AUTOMATION_RELOADED, handle_automation_reload_event)
 
     # ###
     @callback
