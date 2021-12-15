@@ -11,7 +11,6 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
 from . import DOMAIN as THERMIQ_DOMAIN
-from . import id_names as id_names
 from . import (
     FIELD_BITMASK,
     FIELD_MAXVALUE,
@@ -22,6 +21,7 @@ from . import (
     id_names,
     id_units,
     reg_id,
+    id_names
 )
 
 _LOGGER = logging.getLogger(__name__)

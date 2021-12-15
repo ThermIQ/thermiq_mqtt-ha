@@ -29,9 +29,19 @@ from homeassistant.components.input_select import (
     SERVICE_SELECT_PREVIOUS,
     SERVICE_SET_OPTIONS,
 )
+from homeassistant.components.input_number import (
+    ATTR_VALUE as INP_ATTR_VALUE,
+    DOMAIN as INP_DOMAIN,
+    SERVICE_RELOAD,
+    SERVICE_SET_VALUE as INP_SERVICE_SET_VALUE,
+)
 from homeassistant.const import ATTR_ENTITY_ID  # UNIT_PERCENTAGE,
 from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
+    ATTR_EDITABLE,
+    ATTR_ENTITY_ID,
+    ATTR_FRIENDLY_NAME,
+    ATTR_NAME,
     CONF_HOST,
     DEVICE_CLASS_BATTERY,
     DEVICE_CLASS_HUMIDITY,
@@ -112,7 +122,26 @@ async def async_setup(hass, config):
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
     hass.states.async_set('thermiq_mqtt.time_str','Waiting on '+conf.data_topic)
     hass.data[DOMAIN]._data['mqtt_counter']=0
-                
+
+# ### Setup our input helpers
+    CONFIG_INPUT_BOOLEAN.update(config.get(COMPONENT_INPUT_BOOLEAN, {}))
+    CONFIG_INPUT_DATETIME.update(config.get(COMPONENT_INPUT_DATETIME, {}))
+    CONFIG_INPUT_NUMBER.update(config.get(COMPONENT_INPUT_NUMBER, {}))
+    CONFIG_INPUT_TEXT.update(config.get(COMPONENT_INPUT_TEXT, {}))
+    CONFIG_TIMER.update(config.get(COMPONENT_TIMER, {}))
+
+    async def handle_home_assistant_started_event(event: Event):
+        await create_entities_and_automations(hass)
+
+    async def handle_automation_reload_event(event: Event):
+        await create_automations(hass)
+
+    hass.bus.async_listen(EVENT_HOMEASSISTANT_STARTED, handle_home_assistant_started_event)
+    
+    hass.bus.async_listen(EVENT_AUTOMATION_RELOADED, handle_automation_reload_event)
+# ###                
+
+# ### Load our sensors
     for platform in THERMIQ_PLATFORMS:
         _LOGGER.debug("platform:" + platform)
         discovery.load_platform(hass, platform, DOMAIN, {}, config)
@@ -124,23 +153,29 @@ async def async_setup(hass, config):
        hass.states.async_set('thermiq_mqtt.'+v[0],-1)
        _LOGGER.debug("id_reg[%s] => %s",v[0],k)
 
+# ### Lets create the inputs
+    icon_list={'time_input':'mdi:timer','sensor_input':'mdi:speedometer','temperature_input':'mdi:temperature-celsius'}
+    mode_list={'time_input':'slider','sensor_input':'box','temperature_input':'box'}
+    for key in reg_id:
+        if reg_id[key][1] in [
+            "temperature_input",
+            "time_input",
+            "sensor_input",
 
-    CONFIG_INPUT_BOOLEAN.update(config.get(COMPONENT_INPUT_BOOLEAN, {}))
-    CONFIG_INPUT_DATETIME.update(config.get(COMPONENT_INPUT_DATETIME, {}))
-    CONFIG_INPUT_NUMBER.update(config.get(COMPONENT_INPUT_NUMBER, {}))
-    CONFIG_INPUT_TEXT.update(config.get(COMPONENT_INPUT_TEXT, {}))
-    CONFIG_TIMER.update(config.get(COMPONENT_TIMER, {}))
-    await create_input_datetime('aaa_date', True, False, icon='mdi:modern-house')
+        ]:
+            device_id = key
+            if key in id_names:
+                friendly_name = id_names[key]
+            else:
+                friendly_name = None
+            input_reg = reg_id[key][0]
+            input_type = reg_id[key][1]
+            input_unit = reg_id[key][2]
+            input_min = reg_id[key][3]
+            input_max = reg_id[key][4]
 
-    async def handle_home_assistant_started_event(event: Event):
-        await create_entities_and_automations(hass)
-
-    async def handle_automation_reload_event(event: Event):
-        await create_automations(hass)
-
-    hass.bus.async_listen(EVENT_HOMEASSISTANT_STARTED, handle_home_assistant_started_event)
-    hass.bus.async_listen(EVENT_AUTOMATION_RELOADED, handle_automation_reload_event)
-
+            await create_input_number('thermiq_'+key, friendly_name, input_min, input_max, 1, mode_list[input_type], input_unit, icon=icon_list[input_type])
+    
     # ###
     @callback
     def message_received(message):
@@ -168,7 +203,9 @@ async def async_setup(hass, config):
                             hass.states.async_set("thermiq_mqtt."+id_reg[kstore],json_dict[k])
                             a=reg_id[id_reg[kstore]]
                             if (a[1]=='temperature_input') or (a[1]=='time_input') or (a[1]=='sensor_input') :
-                               hass.states.async_set("input_number.thermiq_"+id_reg[kstore],json_dict[k])
+                               cntxt=  { INP_ATTR_VALUE: json_dict[k] ,  ATTR_ENTITY_ID: 'input_number.thermiq_'+id_reg[kstore]}
+                               #_LOGGER.debug(cntxt)
+                               hass.async_create_task(hass.services.async_call(INP_DOMAIN,INP_SERVICE_SET_VALUE, cntxt, blocking=False))
                             #if (a[1]=='select_input') :
                                #hass.states.async_set("input_select.thermiq_main_mode",'Auto');
                     _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k],dstore)
