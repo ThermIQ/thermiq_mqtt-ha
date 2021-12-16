@@ -199,40 +199,37 @@ async def async_setup(hass, config):
     @callback
     def write_id_service(call):
         """Service to send a message."""
-        _LOGGER.debug("message.value_id:[%s]", call.data.get("value_id"))
-        _LOGGER.debug("message.payload:[%s]", call.data.get("value"))
-
         value_id = call.data.get("value_id").lower()
-        idx = len(value_id) - (value_id.find(".thermiq") + 9)
-        if idx > 0:
-            value_id = value_id[-idx:]
-        _LOGGER.debug("message.value_id:[%s]", value_id)
+        value = call.data.get("value")
+        _LOGGER.debug("value_id:[%s]", value_id)
+        _LOGGER.debug("value:[%s]", value)
+        value_id = value_id[len('thermiq_'):]
+        _LOGGER.debug("stripped value_id:[%s]", value_id)
+
         if value_id in reg_id:
             reg = reg_id[value_id][0]
-            kstore="r"+format(int(reg[1:],16),'02x')
-            dstore="d"+format(int(reg[1:],16),'03d')    
-            value = call.data.get("value")
-            if not(isinstance(value, int)) or value is None:
-                return
-            bitmask = call.data.get("bitmask")
-            if bitmask is None:
-                bitmask = 0xFFFF
-            value = int(value) & int(bitmask)
-            msg = f'{{"{reg}": {value} }}'
-            _LOGGER.debug("message.value:[%s]", call.data.get("value"))
-            _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
-            _LOGGER.debug("msg:[%s]", msg)
+            _LOGGER.debug("reg:[%s]", reg)
 
-            if (value != hass.data[DOMAIN]._data[reg]):
-                hass.data[DOMAIN]._data[reg]=value
-                hass.states.async_set("thermiq_mqtt."+id_reg[kstore],value)
-                _LOGGER.debug("set reg[%s]=%d",reg,hass.data[DOMAIN]._data[reg])
-                if (hass.data[DOMAIN]._data['mqtt_counter']>3):
-                    hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg,2,False))
-            else:
-                _LOGGER.debug(
-                    "No need to write"
-                )  # Service to write specific value_id with data, value_id will be translated to register number.
+            if not(isinstance(value, int)) or value is None:
+                _LOGGER.error("no value message sendt due to missing value:[%s]", value)
+                return
+
+            bitmask = call.data.get("bitmask")
+
+            if bitmask is None:
+                bitmask = 0xffff
+            _LOGGER.debug("after bitmask:[%s]", bitmask)
+
+            value = int(value) & int(bitmask)
+            payload = json.dumps({reg : value})
+
+            _LOGGER.debug("message.value:[%s]", value)
+            _LOGGER.debug("payload:[%s]", payload)
+
+            _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+            hass.async_create_task(hass.components.mqtt.async_publish(hass, conf.cmd_topic, payload, 2, False))
+        else:
+            _LOGGER.error("value_id (topic) not i register dictionary:[%s]", value_id)
 
     @callback
     def write_mode_service(call):
