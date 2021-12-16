@@ -182,28 +182,39 @@ async def async_setup(hass, config):
     @callback
     def write_reg_service(call):
         reg = call.data.get("reg")
+        _LOGGER.debug("reg:[%s]", call.data.get("reg"))
         value = call.data.get("value")
+        _LOGGER.debug("value:[%s]", call.data.get("value"))
         bitmask = call.data.get("bitmask")
-        if bitmask is None:
-            bitmask = 0xFFFF
-        val = value | bitmask
-        msg = f'{{"r{reg:x}": {value} }}'
+        _LOGGER.debug("bitmask:[%s]", call.data.get("bitmask"))
 
-        _LOGGER.debug("message.reg:[%s]", call.data.get("reg"))
-        _LOGGER.debug("message.value:[%s]", call.data.get("value"))
-        _LOGGER.debug("message.bitmask:[%s]", call.data.get("bitmask"))
-        _LOGGER.debug("msg:[%s]", msg)
-        hass.async_create_task(hass.components.mqtt.async_publish(conf.cmd_topic, msg))
+        if not(isinstance(value, int)) or value is None:
+            _LOGGER.error("no value message sendt due to missing value:[%s]", value)
+            return
+        
+        if bitmask is None:
+            bitmask = 0xffff
+
+        ## check the bitmask
+        #value = value | bitmask
+        value = int(value) & int(bitmask)        
+        payload = json.dumps({reg : value})        
+        
+        _LOGGER.debug("payload:[%s]", payload)
+        _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+        hass.async_create_task(hass.components.mqtt.async_publish(hass, conf.cmd_topic, payload))
 
     # Service to write specific value_id with data, value_id will be translated to register number.
     @callback
     def write_id_service(call):
         """Service to send a message."""
         value_id = call.data.get("value_id").lower()
-        value = call.data.get("value")
         _LOGGER.debug("value_id:[%s]", value_id)
+        value = call.data.get("value")        
         _LOGGER.debug("value:[%s]", value)
-        value_id = value_id[len('thermiq_'):]
+        idx = len(value_id) - (value_id.find(".thermiq") + 9)
+        if idx > 0:
+            value_id = value_id[-idx:]
         _LOGGER.debug("stripped value_id:[%s]", value_id)
 
         if value_id in reg_id:
@@ -217,15 +228,12 @@ async def async_setup(hass, config):
             bitmask = call.data.get("bitmask")
 
             if bitmask is None:
-                bitmask = 0xffff
-            _LOGGER.debug("after bitmask:[%s]", bitmask)
+                bitmask = 0xffff            
 
             value = int(value) & int(bitmask)
             payload = json.dumps({reg : value})
 
-            _LOGGER.debug("message.value:[%s]", value)
             _LOGGER.debug("payload:[%s]", payload)
-
             _LOGGER.debug("topic:[%s]", conf.cmd_topic)
             hass.async_create_task(hass.components.mqtt.async_publish(hass, conf.cmd_topic, payload, 2, False))
         else:
