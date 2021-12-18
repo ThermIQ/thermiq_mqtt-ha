@@ -21,7 +21,7 @@ from . import (
     id_names,
     id_units,
     reg_id,
-    id_names
+    id_names,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,7 +56,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             vp_type = reg_id[key][1]
             vp_unit = reg_id[key][2]
 
-            dev.append(ThermIQ_MQTT(hass, data, device_id, vp_reg, friendly_name,vp_type,vp_unit,))
+            dev.append(
+                ThermIQ_MQTT(
+                    hass, data, device_id, vp_reg, friendly_name, vp_type, vp_unit,
+                )
+            )
     async_add_entities(dev)
 
 
@@ -64,7 +68,7 @@ class ThermIQ_MQTT(Entity):
     """Representation of a Sensor."""
 
     def __init__(
-        self, hass, data, device_id, vp_reg, friendly_name,vp_type,vp_unit,
+        self, hass, data, device_id, vp_reg, friendly_name, vp_type, vp_unit,
     ):
         """Initialize the Template switch."""
         self.hass = hass
@@ -75,20 +79,17 @@ class ThermIQ_MQTT(Entity):
         _LOGGER.debug("entity_id:" + self.entity_id)
         _LOGGER.debug("idx:" + device_id)
         self._name = friendly_name
-        self._state = False
+        self._state = None
         self._icon = None
-        if ((vp_type in [
-            "temperature",
-            "temperature_input",]) or 
-            (vp_unit in ["C",])) :
+        if (vp_type in ["temperature", "temperature_input",]) or (vp_unit in ["C",]):
             self._icon = "mdi:temperature-celsius"
             self._unit = TEMP_CELSIUS
         elif vp_type in [
-               "sensor_boolean",
+            "sensor_boolean",
         ]:
             self._unit = ""
             self._icon = "mdi:alert"
-        else:          	
+        else:
             self._unit = vp_unit
             self._icon = "mdi:gauge"
         # "mdi:thermometer" ,"mdi:oil-temperature", "mdi:gauge", "mdi:speedometer", "mdi:alert"

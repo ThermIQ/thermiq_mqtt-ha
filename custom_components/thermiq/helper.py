@@ -2,12 +2,16 @@ from collections import OrderedDict
 from datetime import timedelta
 from logging import getLogger
 
-from homeassistant.components.automation import async_setup as setup_automation, \
-    _async_process_config as add_automation, AutomationConfig
+from homeassistant.components.automation import (
+    async_setup as setup_automation,
+    _async_process_config as add_automation,
+    AutomationConfig,
+)
 from homeassistant.components.input_boolean import async_setup as setup_input_boolean
 from homeassistant.components.input_datetime import async_setup as setup_input_datetime
 from homeassistant.components.input_number import async_setup as setup_input_number
 from homeassistant.components.input_text import async_setup as setup_input_text
+from homeassistant.components.input_select import async_setup as setup_input_select
 from homeassistant.components.timer import async_setup as setup_timer
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
@@ -17,18 +21,17 @@ from homeassistant.util import slugify
 
 _LOGGER = getLogger(__name__)
 
-COMPONENT_AUTOMATION = 'automation'
-COMPONENT_INPUT_BOOLEAN = 'input_boolean'
-COMPONENT_INPUT_DATETIME = 'input_datetime'
-COMPONENT_INPUT_NUMBER = 'input_number'
-COMPONENT_INPUT_TEXT = 'input_text'
-COMPONENT_TIMER = 'timer'
+COMPONENT_AUTOMATION = "automation"
+COMPONENT_INPUT_BOOLEAN = "input_boolean"
+COMPONENT_INPUT_DATETIME = "input_datetime"
+COMPONENT_INPUT_NUMBER = "input_number"
+COMPONENT_INPUT_TEXT = "input_text"
+COMPONENT_INPUT_SELECT = "input_select"
+COMPONENT_TIMER = "timer"
 
 CUSTOM_ENTITY_COMPONENTS = {}
 
-SETUP_FUNCTION = {
-    COMPONENT_AUTOMATION: setup_automation
-}
+SETUP_FUNCTION = {COMPONENT_AUTOMATION: setup_automation}
 
 AUTOMATIONS = []
 
@@ -37,6 +40,7 @@ CONFIG_INPUT_BOOLEAN = {}
 CONFIG_INPUT_DATETIME = {}
 CONFIG_INPUT_NUMBER = {}
 CONFIG_INPUT_TEXT = {}
+CONFIG_INPUT_SELECT = {}
 CONFIG_TIMER = {}
 
 # save whether custom inputs were declared, so they can be added to HA
@@ -44,6 +48,7 @@ CUSTOM_INPUT_BOOLEAN = False
 CUSTOM_INPUT_DATETIME = False
 CUSTOM_INPUT_NUMBER = False
 CUSTOM_INPUT_TEXT = False
+CUSTOM_INPUT_SELECT = False
 CUSTOM_TIMER = False
 
 
@@ -72,13 +77,11 @@ async def _get_platform(hass: HomeAssistant, domain: str):
     return CUSTOM_ENTITY_COMPONENTS[domain]
 
 
-async def create_input_boolean(name: str, icon=None) -> str:
-    data = {
-        'name': name
-    }
+async def create_input_boolean(name: str, friendly_name: str, icon=None) -> str:
+    data = {"name": friendly_name}
 
     if icon:
-        data['icon'] = icon
+        data["icon"] = icon
 
     internal_name = slugify(name)
 
@@ -87,22 +90,24 @@ async def create_input_boolean(name: str, icon=None) -> str:
     global CUSTOM_INPUT_BOOLEAN
     CUSTOM_INPUT_BOOLEAN = True
 
-    return 'input_boolean.{}'.format(internal_name)
+    return "input_boolean.{}".format(internal_name)
 
 
-async def create_input_datetime(name: str, has_date: bool, has_time: bool, initial=None,
-                                icon=None) -> str:
-    data = {
-        'name': name,
-        'has_date': has_date,
-        'has_time': has_time
-    }
+async def create_input_datetime(
+    name: str,
+    friendly_name: str,
+    has_date: bool,
+    has_time: bool,
+    initial=None,
+    icon=None,
+) -> str:
+    data = {"name": friendly_name, "has_date": has_date, "has_time": has_time}
 
     if initial:
-        data['initial'] = initial
+        data["initial"] = initial
 
     if icon:
-        data['icon'] = icon
+        data["icon"] = icon
 
     internal_name = slugify(name)
 
@@ -111,23 +116,32 @@ async def create_input_datetime(name: str, has_date: bool, has_time: bool, initi
     global CUSTOM_INPUT_DATETIME
     CUSTOM_INPUT_DATETIME = True
 
-    return 'input_datetime.{}'.format(internal_name)
+    return "input_datetime.{}".format(internal_name)
 
 
-async def create_input_number(name: str, friendly_name:str, _min: int, _max: int, step: int, mode: str,
-                              unit_of_measurement: str, icon=None) -> str:
+async def create_input_number(
+    name: str,
+    friendly_name: str,
+    _min: int,
+    _max: int,
+    step: int,
+    initial: int,
+    mode: str,
+    unit_of_measurement: str,
+    icon=None,
+) -> str:
     data = {
-        'name': friendly_name,
-        'min': _min,
-        'max': _max,
-        'step': step,
-        'mode': mode,
-        'friendly_name': friendly_name,
-        'unit_of_measurement': unit_of_measurement
+        "name": friendly_name,
+        "min": _min,
+        "max": _max,
+        "step": step,
+        "initial": initial,
+        "mode": mode,
+        "unit_of_measurement": unit_of_measurement,
     }
 
     if icon:
-        data['icon'] = icon
+        data["icon"] = icon
 
     internal_name = slugify(name)
 
@@ -136,22 +150,30 @@ async def create_input_number(name: str, friendly_name:str, _min: int, _max: int
     global CUSTOM_INPUT_NUMBER
     CUSTOM_INPUT_NUMBER = True
 
-    return 'input_number.{}'.format(internal_name)
+    return "input_number.{}".format(internal_name)
 
 
-async def create_input_text(name: str, _min=0, _max=100, initial=None,
-                            pattern='', mode='text', icon=None) -> str:
+async def create_input_text(
+    name: str,
+    friendly_name: str,
+    _min=0,
+    _max=100,
+    initial=None,
+    pattern="",
+    mode="text",
+    icon=None,
+) -> str:
     data = {
-        'name': name,
-        'min': _min,
-        'max': _max,
-        'initial': initial,
-        'pattern': pattern,
-        'mode': mode
+        "name": friendly_name,
+        "min": _min,
+        "max": _max,
+        "initial": initial,
+        "pattern": pattern,
+        "mode": mode,
     }
 
     if icon:
-        data['icon'] = icon
+        data["icon"] = icon
 
     internal_name = slugify(name)
 
@@ -160,14 +182,33 @@ async def create_input_text(name: str, _min=0, _max=100, initial=None,
     global CUSTOM_INPUT_TEXT
     CUSTOM_INPUT_TEXT = True
 
-    return 'input_text.{}'.format(internal_name)
+    return "input_text.{}".format(internal_name)
 
 
-async def create_timer(name: str, duration='00:00:00') -> str:
+async def create_input_select(
+    name: str, friendly_name: str, options: list, initial=None, icon=None
+) -> str:
     data = {
-        'name': name,
-        'duration': duration
+        "name": friendly_name,
+        "options": options,
+        "initial": initial,
     }
+
+    if icon:
+        data["icon"] = icon
+
+    internal_name = slugify(name)
+
+    CONFIG_INPUT_SELECT[internal_name] = data
+
+    global CUSTOM_INPUT_SELECT
+    CUSTOM_INPUT_SELECT = True
+
+    return "input_select.{}".format(internal_name)
+
+
+async def create_timer(name: str, friendly_name: str, duration="00:00:00") -> str:
+    data = {"name": friendly_name, "duration": duration}
 
     internal_name = slugify(name)
 
@@ -176,41 +217,73 @@ async def create_timer(name: str, duration='00:00:00') -> str:
     global CUSTOM_TIMER
     CUSTOM_TIMER = True
 
-    return 'timer.{}'.format(internal_name)
+    return "timer.{}".format(internal_name)
 
 
 async def create_entities_and_automations(hass: HomeAssistant):
     if CUSTOM_INPUT_BOOLEAN:
         for entity_id in list(
-                filter(lambda eid: COMPONENT_INPUT_BOOLEAN == eid.split('.')[0], hass.states.async_entity_ids())):
+            filter(
+                lambda eid: COMPONENT_INPUT_BOOLEAN == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
             hass.states.async_remove(entity_id)
 
         await setup_input_boolean(hass, {COMPONENT_INPUT_BOOLEAN: CONFIG_INPUT_BOOLEAN})
 
     if CUSTOM_INPUT_DATETIME:
         for entity_id in list(
-                filter(lambda eid: COMPONENT_INPUT_DATETIME == eid.split('.')[0], hass.states.async_entity_ids())):
+            filter(
+                lambda eid: COMPONENT_INPUT_DATETIME == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
             hass.states.async_remove(entity_id)
 
-        await setup_input_datetime(hass, {COMPONENT_INPUT_DATETIME: CONFIG_INPUT_DATETIME})
+        await setup_input_datetime(
+            hass, {COMPONENT_INPUT_DATETIME: CONFIG_INPUT_DATETIME}
+        )
 
     if CUSTOM_INPUT_NUMBER:
         for entity_id in list(
-                filter(lambda eid: COMPONENT_INPUT_NUMBER == eid.split('.')[0], hass.states.async_entity_ids())):
+            filter(
+                lambda eid: COMPONENT_INPUT_NUMBER == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
             hass.states.async_remove(entity_id)
 
         await setup_input_number(hass, {COMPONENT_INPUT_NUMBER: CONFIG_INPUT_NUMBER})
 
     if CUSTOM_INPUT_TEXT:
         for entity_id in list(
-                filter(lambda eid: COMPONENT_INPUT_TEXT == eid.split('.')[0], hass.states.async_entity_ids())):
+            filter(
+                lambda eid: COMPONENT_INPUT_TEXT == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
             hass.states.async_remove(entity_id)
 
         await setup_input_text(hass, {COMPONENT_INPUT_TEXT: CONFIG_INPUT_TEXT})
+    if CUSTOM_INPUT_SELECT:
+        for entity_id in list(
+            filter(
+                lambda eid: COMPONENT_INPUT_SELECT == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
+            hass.states.async_remove(entity_id)
+
+        await setup_input_select(hass, {COMPONENT_INPUT_SELECT: CONFIG_INPUT_SELECT})
 
     if CUSTOM_TIMER:
         for entity_id in list(
-                filter(lambda eid: COMPONENT_TIMER == eid.split('.')[0], hass.states.async_entity_ids())):
+            filter(
+                lambda eid: COMPONENT_TIMER == eid.split(".")[0],
+                hass.states.async_entity_ids(),
+            )
+        ):
             hass.states.async_remove(entity_id)
 
         await setup_timer(hass, {COMPONENT_TIMER: CONFIG_TIMER})
@@ -228,8 +301,6 @@ async def create_automation(data: dict):
 async def create_automations(hass: HomeAssistant):
     platform = await _get_platform(hass, "automation")
 
-    data = {
-        'automation': AUTOMATIONS
-    }
+    data = {"automation": AUTOMATIONS}
 
     await add_automation(hass, OrderedDict(data), platform)

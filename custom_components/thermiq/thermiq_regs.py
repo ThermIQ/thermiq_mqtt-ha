@@ -141,7 +141,7 @@ reg_id = {
   'boiler_6kw_on_runtime_h'      : ['r72', 'time',                   'h',                             ],
   'msd1_d'                       : ['r73', 'sensor',                 '',                              ],
   'graph_display_offset'         : ['r74', 'sensor',                 '',                              ],
-  'room_sensor_set_t'            : ['rf0', 'temperature',            'ºC',               0,     50   ],
+  'room_sensor_set_t'            : ['rf0', 'temperature_input',      'ºC',               0,     50   ],
   'time'                         : ['rf1', 'time',                   's',                 0,     50   ],
 
 }
@@ -279,7 +279,7 @@ id_names = {
   'boiler_6kw_on_runtime_h'      : 'Runtime 6 kW',
   'msd1_d'                       : 'DTS2_MSD1',
   'graph_display_offset'         : 'GrafCounterOffSet   ',
-  'room_sensor_set_t'            : 'Room sensor, Set',
+  'room_sensor_set_t'            : 'Room sensor, Set target',
 
 
 }

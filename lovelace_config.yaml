@@ -59,6 +59,7 @@
               
               
           - entity: input_select.thermiq_main_mode
+          - entity: input_number.thermiq_room_sensor_set_t
           - type: custom:fold-entity-row
             head:
               type: section
@@ -167,4 +168,3 @@
                   - entity: sensor.thermiq_internal_logging_t
                   - entity: input_number.thermiq_elect_boiler_steps_max
                   - entity: input_number.thermiq_current_consumption_max_a
-                  - entity: sensor.thermiq_room_sensor_set_t

@@ -103,7 +103,7 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
 
     @property
     def is_on(self):
-    	return self._state
+        return self._state
 
     @property
     def state(self):

@@ -9,26 +9,6 @@ write_msg:
       description: Text to send
       example: 'A text that will be sent'
      
-      
-write_id:
-  # Write value to thermiq_mqtt id
-  description: Write value to thermiq_mqtt entity_id
-  # Different fields that your service accepts
-  fields:
-    # Key of the field
-    value_id:
-      # Description of the field
-      description: Name(s) of the entities to set
-      # Example value that can be passed for this field
-      example: "sensor.thermiq_rum_bor2"
-    value:
-      description: Value to write (Accepts json formatted numbers)
-      example: '0x14'
-    bitmask:
-      description: Optional bitmask (defaults to 0xffff)
-      example: '0x02'
-      
-      
 write_reg:
   #  Write value to thermiq_mqtt register
   description: Write value to thermiq_mqtt register
@@ -45,3 +25,42 @@ write_reg:
     bitmask:
       description: Optional bitmask (defaults to 0xffff)
       example: '0x02'
+      
+write_id:
+  # Write value to thermiq_mqtt id
+  description: Write value to thermiq_mqtt register_id, will be translated to register number
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    register_id:
+      # Description of the field
+      description: Name of the HP register to set
+      # Example value that can be passed for this field
+      example: "sensor.thermiq_rum_bor2"
+    value:
+      description: Value to write (Accepts all json formatted numbers)
+      example: '0x14'
+    bitmask:
+      description: Optional bitmask (defaults to 0xffff)
+      example: '0x02'
+      
+      
+
+write_mode:
+  # Set Mode to input_select thermiq_mqtt 
+  description: set value 0-5 of mode
+
+  fields:
+    value:
+      description: Select hetpump Mode
+      example: '2'
+
+
+set_indr_t:
+  # Set value INDR_T to thermiq_mqtt 
+  description: set value to thermiq_mqtt register_id, will be translated to register number
+  # Different fields that your service accepts
+  fields:
+    value:
+      description: Value to write (Accepts one decimal)
+      example: '22.3'
