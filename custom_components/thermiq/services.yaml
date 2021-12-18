@@ -58,7 +58,16 @@ write_mode:
 
 set_indr_t:
   # Set value INDR_T to thermiq_mqtt 
-  description: set value to thermiq_mqtt register_id, will be translated to register number
+  description: set value of thermiq_room_sensor_set_t, will generate an MQTT message
+  # Different fields that your service accepts
+  fields:
+    value:
+      description: Value to write (Accepts one decimal)
+      example: '22.3'
+
+thermiq_room_sensor_set_t:
+  # Set value INDR_T to thermiq_mqtt 
+  description: set value of thermiq_room_sensor_set_t, will generate an MQTT message
   # Different fields that your service accepts
   fields:
     value:

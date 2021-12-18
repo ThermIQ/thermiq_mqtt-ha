@@ -539,6 +539,7 @@ async def async_setup(hass, config):
     hass.services.async_register(DOMAIN, "write_reg", write_reg_service)
     hass.services.async_register(DOMAIN, "write_mode", write_mode_service)
     hass.services.async_register(DOMAIN, "set_indr_t", set_indr_t_service)
+
     _LOGGER.info("Subscribe:" + conf.data_topic)
     await hass.components.mqtt.async_subscribe(conf.data_topic, message_received)
     # Return boolean to indicate that initialization was successfully.
