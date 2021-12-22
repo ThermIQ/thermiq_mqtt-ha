@@ -235,7 +235,7 @@ async def async_setup(hass, config):
                 "Off",
                 "Auto",
                 "Heatpump only",
-                "Elecric only",
+                "Electric only",
                 "Hotwater only",
             ]
             input_initial = None
