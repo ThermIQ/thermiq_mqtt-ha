@@ -1,7 +1,7 @@
 # ##################
 # Begin ThermIQ #####
 # ThermIQ-MQTT configuration.yaml entry
-# Set the mqtt_node name here. Thats all!
+# Set your mqtt_node name here (from ThermIQ-MQTT WiFi config). Thats all!
 
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt

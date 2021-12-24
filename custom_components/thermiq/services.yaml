@@ -17,8 +17,8 @@ write_reg:
     # Key of the field
 
     reg:
-      description: Register number (in decimal) to write to
-      example: '40'
+      description: Register number, either in hex as rXX or in decimal dNN to write to
+      example: 'r32 or  d50'
     value:
       description: Value to write (Accepts json formatted numbers)
       example: '0x14'

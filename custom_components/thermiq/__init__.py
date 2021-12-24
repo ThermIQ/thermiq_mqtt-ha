@@ -235,7 +235,7 @@ async def async_setup(hass, config):
                 "Off",
                 "Auto",
                 "Heatpump only",
-                "Elecric only",
+                "Electric only",
                 "Hotwater only",
             ]
             input_initial = None
@@ -602,7 +602,7 @@ async def create_automation_for_room_sensor():
 
     # ### Select -> MQTT
     data = {
-        "alias": "ThermIQ, Inputs select MOde to MQTT",
+        "alias": "ThermIQ, Inputs select Mode to MQTT",
         "trigger": [
             {"platform": "state", "entity_id": ["input_select.thermiq_main_mode"],}
         ],

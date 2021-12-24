@@ -70,7 +70,8 @@ The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/
 
 The lovelace setup requires the following custom cards to be installed in HACS
 ```
-- html-template-card
+- html-template-card from HTML Jinja2 Template card
+- numberbox-card from Number Box
 - fold-entity-row
 ```
  It is also necessary to move the three picture files below to the be in the lovelace path. They are currently coded to the following directory **local/community/lovelace-html-card/**
