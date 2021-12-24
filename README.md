@@ -32,11 +32,16 @@ The complete configuration entry needed is:
 ```yaml
 # Begin ThermIQ #####
 # ThermIQ-MQTT configuration.yaml entry
-# Set the mqtt_node name here. Thats all!
+# Set your mqtt_node name here (from ThermIQ-MQTT WiFi config). Thats all!
+# The mqtt_node name can also be seen in MQTT-Eplorer or similar
+
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
-  #thermiq_dbg: True
-   
+  thermiq_dbg: False
+
+# End ThermIQ ######
+# ##################
+
 ```
 
 #### Automations configuration

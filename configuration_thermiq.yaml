@@ -3,6 +3,7 @@
 # ThermIQ-MQTT configuration.yaml entry
 # Set your mqtt_node name here (from ThermIQ-MQTT WiFi config). Thats all!
 
+# The mqtt_node name can also be seen in MQTT-Eplorer or similar
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
   thermiq_dbg: False
