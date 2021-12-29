@@ -106,7 +106,6 @@ DEFAULT_DATA = "/data"
 CONF_CMD = "cmd_msg"
 DEFAULT_CMD = "/WRITE"
 DEFAULT_DBG = False
-MSG_RECEIVED_STATE = "thermiq_mqtt.last_msg_time"
 
 
 CONFIG_SCHEMA = vol.Schema(
@@ -124,24 +123,25 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass, config):
 
     conf = config.get(DOMAIN, {})
-    mqtt_base = conf.get(CONF_MQTT_NODE)
+    mqtt_base = conf.get(CONF_MQTT_NODE)+"/"
     dbg = conf.get(CONF_MQTT_DBG)
 
-    conf.entity_id = "thermiq_mqtt"
+    conf.entity_id = DOMAIN
 
-    _LOGGER.debug("mqtt base: " + mqtt_base)
-    conf.data_topic = mqtt_base + "/data"
-    conf.cmd_topic = mqtt_base + "/write"
-    conf.set_topic = mqtt_base + "/set"
+    _LOGGER.debug(DOMAIN+" mqtt base: " + mqtt_base)
+    conf.data_topic = mqtt_base + "data"
 
     if dbg == True:
-        conf.cmd_topic += "_dbg"
-        conf.set_topic += "_dbg"
+        mqtt_base += "dbg_"
         _LOGGER.debug("MQTT Debug write enabled")
+    conf.cmd_topic = mqtt_base + "write"
+    conf.set_topic = mqtt_base + "set"
+
+ 
 
     hass.data[DOMAIN] = {}
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
-    hass.states.async_set("thermiq_mqtt.time_str", "Waiting on " + conf.data_topic)
+    hass.states.async_set(DOMAIN+".time_str", "Waiting on " + conf.data_topic)
     hass.data[DOMAIN]._data["mqtt_counter"] = 0
 
     # ### Setup the input helper #############################
@@ -172,7 +172,8 @@ async def async_setup(hass, config):
     id_reg = {}
     for k, v in reg_id.items():
         id_reg[v[0]] = k
-        hass.states.async_set("thermiq_mqtt." + v[0], -1)
+        #hass.states.async_set(DOMAIN+"." + v[0], -1)
+        hass.data[DOMAIN]._data[v[0]] =-1
         # _LOGGER.debug("id_reg[%s] => %s", v[0], k)
 
     # ### Create the inputs and automations  #############################
@@ -210,7 +211,7 @@ async def async_setup(hass, config):
                 input_step = 0.1
 
             await create_input_number(
-                "thermiq_" + key,
+                DOMAIN+"_" + key,
                 friendly_name,
                 input_min,
                 input_max,
@@ -220,7 +221,7 @@ async def async_setup(hass, config):
                 input_unit,
                 icon=icon_list[input_type],
             )
-            entity_list.append("input_number.thermiq_" + key)
+            entity_list.append("input_number."+DOMAIN+"_" + key)
 
         if reg_id[key][1] in [
             "select_input",
@@ -241,14 +242,14 @@ async def async_setup(hass, config):
             input_initial = None
 
             await create_input_select(
-                "thermiq_" + key,
+                DOMAIN+"_" + key,
                 friendly_name,
                 input_options,
                 input_initial,
                 icon="mdi:power",
             )
 
-    entity_list.remove("input_number.thermiq_room_sensor_set_t")
+    entity_list.remove("input_number."+DOMAIN+"_room_sensor_set_t")
     await create_automation_for_input_numbers(entity_list)
     await create_automation_for_room_sensor()
     # ### ##################################################################
@@ -281,16 +282,17 @@ async def async_setup(hass, config):
                         reg = int(k[1:], 16)
                         dstore = "d" + format(reg, "03d")
 
+                    _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k], dstore)
+
                     # Internal mapping of ThermIQ_MQTT regs, used to create update events
                     hass.data[DOMAIN]._data[kstore] = json_dict[k]
 
-                    _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k], dstore)
                     # Map incomming registers to named settings based on id_reg (thermiq_regs)
                     if kstore in id_reg:
                         # r01 and r03 should be combined with respective decimal part r02 and r04
                         if kstore != "r01" and kstore != "r03":
                             hass.states.async_set(
-                                "thermiq_mqtt." + id_reg[kstore], json_dict[k]
+                                DOMAIN+"." + id_reg[kstore], json_dict[k]
                             )
                             ## Set the corresponding input_number if applicable, incomming message always rules over UI settings
                             if reg_id[id_reg[kstore]][1] in [
@@ -300,7 +302,7 @@ async def async_setup(hass, config):
                             ]:
                                 context = {
                                     INP_ATTR_VALUE: json_dict[k],
-                                    ATTR_ENTITY_ID: "input_number.thermiq_"
+                                    ATTR_ENTITY_ID: "input_number."+DOMAIN+"_"
                                     + id_reg[kstore],
                                 }
                                 hass.async_create_task(
@@ -315,7 +317,7 @@ async def async_setup(hass, config):
 
                                 context = {
                                     INP_ATTR_VALUE: json_dict[k],
-                                    ATTR_ENTITY_ID: "input_select.thermiq_"
+                                    ATTR_ENTITY_ID: "input_select."+DOMAIN+"_"
                                     + id_reg[kstore],
                                 }
                                 hass.async_create_task(
@@ -332,27 +334,27 @@ async def async_setup(hass, config):
                     hass.data[DOMAIN]._data["r01"] + hass.data[DOMAIN]._data["r02"] / 10
                 )
                 hass.states.async_set(
-                    "thermiq_mqtt." + id_reg["r01"], hass.data[DOMAIN]._data["r01"]
+                    DOMAIN+"." + id_reg["r01"], hass.data[DOMAIN]._data["r01"]
                 )
 
                 hass.data[DOMAIN]._data["r03"] = (
                     hass.data[DOMAIN]._data["r03"] + hass.data[DOMAIN]._data["r04"] / 10
                 )
                 hass.states.async_set(
-                    "thermiq_mqtt." + id_reg["r03"], hass.data[DOMAIN]._data["r03"]
+                    DOMAIN+"." + id_reg["r03"], hass.data[DOMAIN]._data["r03"]
                 )
 
                 hass.data[DOMAIN]._data["mqtt_counter"] += 1
 
-                hass.states.async_set("thermiq_mqtt.time_str", json_dict["time"])
+                hass.states.async_set(DOMAIN+".time_str", json_dict["time"])
 
-                hass.bus.fire("thermiq_mqtt_msg_rec_event", {})
+                hass.bus.fire(DOMAIN+"_msg_rec_event", {})
 
             else:
                 _LOGGER.error("JSON result was not from ThermIQ-mqtt")
         except ValueError:
             _LOGGER.error("MQTT payload could not be parsed as JSON")
-            _LOGGER.debug("Erroneous JSON: %s", payload)
+            _LOGGER.debug("Erroneous JSON: %s", message.payload)
 
     # Service to publish a message on MQTT.
     @callback
@@ -365,7 +367,9 @@ async def async_setup(hass, config):
             )
         )
 
-    # Service to write specific reg with data, value_id will be translated to register number.
+    # Service to write specific reg ( of format rxx, hex or dnnn decimal with possible leading zeroes) with data,
+    # reg d240 is maped to INDR_T
+    # Only used for bit-banging registers directly by user
     @callback
     def write_reg_service(call):
         reg = call.data.get("reg")
@@ -373,8 +377,8 @@ async def async_setup(hass, config):
         value = call.data.get("value")
         bitmask = call.data.get("bitmask")
 
-        # We should check that reg is of format rxx (hex) or dnnn (decimal with possible leading zeroes) and is btwn 0-127, regardless case of x and d
-        # and give error here. ThermIQ-mqtt will throw away the message anyway
+        # We could check that reg is of format rxx (hex) or dnnn (decimal with possible leading zeroes) and is 
+        # btwn 0-127, but ThermIQ-mqtt will throw away the message anyway
         ##
 
         if not (isinstance(value, int)) or value is None:
@@ -391,19 +395,23 @@ async def async_setup(hass, config):
         # Lets use the decimal register notation in the MQTT message towards ThermIQ-MQTT to improve human readability
         if reg[0] == "d":
             dreg = reg
-        if reg[0] == "r" and len(reg) == 3:
-            reg = int(k[1:], 16)
+        elif reg[0] == "r" and len(reg) == 3:
+            reg = int(reg[1:], 16)
             dreg = "d" + format(reg, "03d")
+        else:
+            _LOGGER.error("Register format should be rXX (hex) or dNN (decimal) [%s]", reg)
+            return
 
         if dreg == "d240":
             topic = conf.set_topic
+            payload = json.dumps({"INDR_T": value})
         else:
-            conf.cmd_topic
+            topic = conf.cmd_topic
+            payload = json.dumps({dreg: value})
 
         # Make up the JSON payload
-        payload = json.dumps({dreg: value})
 
-        _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+        _LOGGER.debug("topic:[%s]", topic)
         _LOGGER.debug("payload:[%s]", payload)
         hass.async_create_task(
             hass.components.mqtt.async_publish(
@@ -412,6 +420,7 @@ async def async_setup(hass, config):
         )
 
     # Service to write specific value_id with data, value_id will be translated to register number.
+    # Default service used by input_number automations
     @callback
     def write_id_service(call):
         """Service to send a message."""
@@ -419,9 +428,10 @@ async def async_setup(hass, config):
         register_id = register_id.lower()
         value = call.data.get("value")
         bitmask = call.data.get("bitmask")
+        _LOGGER.debug("register_id:[%s]", register_id)
 
         if not (isinstance(value, int) or isinstance(value, float)) or value is None:
-            _LOGGER.error("no value message sent due to missing value:[%s]", value)
+            _LOGGER.error("No MQTT message sent due to missing value:[%s]", value)
             return
 
         if bitmask is None:
@@ -431,17 +441,19 @@ async def async_setup(hass, config):
         # value = value | bitmask
         value = int(value) & int(bitmask)
 
-        # Strip any leading instance names, then strip thermiq_
-        idx = register_id.find(".") + 1
-        idx = len(register_id) - (register_id.find("thermiq_", idx) + 8)
-        if idx > 0:
-            register_id = register_id[-idx:]
+        # Strip any leading instance names, then strip DOMAIN and then strip thermiq_
+        register_id = register_id[(register_id.find(".") + 1):]      
+        if (register_id.find(DOMAIN+"_") >-1):
+            register_id = register_id[(register_id.find(DOMAIN+"_")+len(DOMAIN+"_")):]          
+        if (register_id.find("thermiq_") >-1):
+            register_id = register_id[(register_id.find("thermiq_")+len("thermiq_")):]   
+
 
         _LOGGER.debug("register_id:[%s]", register_id)
         _LOGGER.debug("value:[%s]", value)
 
         if not (register_id in reg_id):
-            _LOGGER.error("no value message sent due to faulty reg:[%s]", register_id)
+            _LOGGER.error("No MQTT message sent due to unknown register_id:[%s]", register_id)
             return
 
         reg = reg_id[register_id][0]
@@ -451,28 +463,29 @@ async def async_setup(hass, config):
         dreg = "d" + format(int(reg[1:], 16), "03d")
         if dreg == "d240":
             topic = conf.set_topic
+            payload = json.dumps({"INDR_T": value})
         else:
-            conf.cmd_topic
+            topic = conf.cmd_topic
+            payload = json.dumps({dreg: value})
+    
 
-        # Make up the JSON payload
-        payload = json.dumps({dreg: value})
-
-        _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+        _LOGGER.debug("topic:[%s]", topic)
         _LOGGER.debug("payload:[%s]", payload)
         if value != hass.data[DOMAIN]._data[reg]:
             # Lets update the internal state,
             hass.data[DOMAIN]._data[reg] = value
-            hass.states.async_set("thermiq_mqtt." + id_reg[reg], value)
+            hass.states.async_set(DOMAIN+"." + id_reg[reg], value)
             _LOGGER.debug("set _data[%s]=%d", reg, hass.data[DOMAIN]._data[reg])
             if hass.data[DOMAIN]._data["mqtt_counter"] > 3:
                 hass.async_create_task(
                     hass.components.mqtt.async_publish(
-                        hass, conf.cmd_topic, payload, qos=2, retain=False
+                        hass, topic, payload, qos=2, retain=False
                     )
                 )
         else:
             _LOGGER.debug("No need to write")
 
+    # Service call for Mode select -> MQTT
     @callback
     def write_mode_service(call):
         """Service to send a message."""
@@ -481,10 +494,11 @@ async def async_setup(hass, config):
             _LOGGER.error("no value message sent due to missing value:[%s]", value)
             return
 
-        reg = "d51"
+        reg = "r33"
+        dreg= "d51"
         bitmask = 0x01F
 
-        if (value < 0) or (value > 5):
+        if (value < 0) or (value > 4):
             _LOGGER.error("Mode value is out of range:[%s]", value)
             return
 
@@ -492,19 +506,19 @@ async def async_setup(hass, config):
 
         # Make up the JSON payload
         payload = json.dumps({dreg: value})
-        _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+        topic = conf.cmd_topic
+        _LOGGER.debug("topic:[%s]", topic)
         _LOGGER.debug("payload:[%s]", payload)
-
         if value != hass.data[DOMAIN]._data[reg]:
-            hass.states.async_set("thermiq_mqtt.r33", value)
+            hass.states.async_set(DOMAIN+".r33", value)
             hass.async_create_task(
                 hass.components.mqtt.async_publish(
-                    hass, conf.cmd_topic, payload, qos=2, retain=False
+                    hass, topic, payload, qos=2, retain=False
                 )
             )
         else:
             _LOGGER.debug("No need to write")
-
+    # Service call for INDR_T
     @callback
     def set_indr_t_service(call):
         """Service to send a message."""
@@ -524,7 +538,7 @@ async def async_setup(hass, config):
         _LOGGER.debug("payload:[%s]", payload)
 
         if value != hass.data[DOMAIN]._data[reg]:
-            hass.states.async_set("thermiq_mqtt.rf0", value)
+            hass.states.async_set(DOMAIN+".rf0", value)
             hass.async_create_task(
                 hass.components.mqtt.async_publish(
                     hass, conf.set_topic, payload, qos=2, retain=False
@@ -533,6 +547,7 @@ async def async_setup(hass, config):
         else:
             _LOGGER.debug("No need to write")
 
+############################################################################################
     # Register our service with Home Assistant.
     hass.services.async_register(DOMAIN, "write_msg", write_msg_service)
     hass.services.async_register(DOMAIN, "write_id", write_id_service)
@@ -545,11 +560,14 @@ async def async_setup(hass, config):
     # Return boolean to indicate that initialization was successfully.
     return True
 
+############################################################################################
+############################################################################################
+############################################################################################
 
 # #### automate it
 async def create_automation_for_input_numbers(entities: list):
     data = {
-        "alias": "ThermIQ Input numbers to MQTT",
+        "alias": "ThermIQ Input numbers to MQTT ["+DOMAIN+"]",
         "trigger": [{"platform": "state", "entity_id": entities}],
         #        'condition': [
         #          {
@@ -557,7 +575,7 @@ async def create_automation_for_input_numbers(entities: list):
         #        ],
         "action": [
             {
-                "service": "thermiq_mqtt.write_id",
+                "service": DOMAIN+".write_id",
                 "data_template": {
                     "register_id": Template("{{ trigger.entity_id  }}"),
                     "value": Template("{{ trigger.to_state.state | int }}"),
@@ -576,9 +594,9 @@ async def create_automation_for_input_numbers(entities: list):
 
 async def create_automation_for_room_sensor():
     data = {
-        "alias": "ThermIQ Room sensor to MQTT",
+        "alias": "ThermIQ Room sensor to MQTT ["+DOMAIN+"]",
         "trigger": [
-            {"platform": "state", "entity_id": "input_number.thermiq_room_sensor_set_t"}
+            {"platform": "state", "entity_id": "input_number."+DOMAIN+"_room_sensor_set_t"}
         ],
         #        'condition': [
         #          {
@@ -586,7 +604,7 @@ async def create_automation_for_room_sensor():
         #        ],
         "action": [
             {
-                "service": "thermiq_mqtt.set_indr_t",
+                "service": DOMAIN+".set_indr_t",
                 "data_template": {
                     "value": Template("{{ trigger.to_state.state | float }}"),
                 },
@@ -602,13 +620,13 @@ async def create_automation_for_room_sensor():
 
     # ### Select -> MQTT
     data = {
-        "alias": "ThermIQ, Inputs select Mode to MQTT",
+        "alias": "ThermIQ, Inputs select Mode to MQTT ["+DOMAIN+"]",
         "trigger": [
-            {"platform": "state", "entity_id": ["input_select.thermiq_main_mode"],}
+            {"platform": "state", "entity_id": ["input_select."+DOMAIN+"_main_mode"],}
         ],
         "action": [
             {
-                "service": "thermiq_mqtt.write_id",
+                "service": DOMAIN+".write_id",
                 "data_template": {
                     "register_id": Template("{{ trigger.entity_id  }}"),
                     "value": Template(
@@ -626,8 +644,8 @@ async def create_automation_for_room_sensor():
     await create_automation(OrderedDict(data))
 
     data = {
-        "alias": "ThermIQ, Mode to Inputs Select",
-        "trigger": [{"platform": "state", "entity_id": ["thermiq_mqtt.main_mode"],}],
+        "alias": "ThermIQ, Mode to Inputs Select ["+DOMAIN+"]",
+        "trigger": [{"platform": "state", "entity_id": [DOMAIN+".main_mode"],}],
         #      'condition': {
         #          'condition': 'template',
         #          'value_template': Template("{{ ( ((trigger.to_state.state | int )  >=0 ) and ((trigger.to_state.state | int )  <5 ) ) }}"),
@@ -636,9 +654,9 @@ async def create_automation_for_room_sensor():
             {
                 "service": "input_select.select_option",
                 "data_template": {
-                    "entity_id": ["input_select.thermiq_main_mode"],
+                    "entity_id": ["input_select."+DOMAIN+"_main_mode"],
                     "option": Template(
-                        "{{ state_attr('input_select.thermiq_main_mode','options')[(trigger.to_state.state | int )] }}"
+                        "{{ state_attr('input_select."+DOMAIN+"_main_mode','options')[(trigger.to_state.state | int )] }}"
                     ),
                 },
             },
@@ -649,6 +667,10 @@ async def create_automation_for_room_sensor():
         "trace": {"stored_traces": 5},
     }
     await create_automation(OrderedDict(data))
+
+############################################################################################
+############################################################################################
+############################################################################################
 
 
 class ThermIQ_MQTT:

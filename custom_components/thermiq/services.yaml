@@ -36,7 +36,7 @@ write_id:
       # Description of the field
       description: Name of the HP register to set
       # Example value that can be passed for this field
-      example: "sensor.thermiq_rum_bor2"
+      example: "sensor.thermiq_mqtt_indoor_requested_t"
     value:
       description: Value to write (Accepts all json formatted numbers)
       example: '0x14'
@@ -48,11 +48,11 @@ write_id:
 
 write_mode:
   # Set Mode to input_select thermiq_mqtt 
-  description: set value 0-5 of mode
+  description: set value 0-4 of mode
 
   fields:
     value:
-      description: Select hetpump Mode
+      description: Select heatpump Mode
       example: '2'
 
 

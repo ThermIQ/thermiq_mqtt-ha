@@ -29,38 +29,41 @@
               @keyframes rotating {to { transform: rotate(1turn); }}
               </style>
               
-              <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_alarm_indication_on')=='on') %}background-color:red;{% endif %}">
+              <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_mqtt_alarm_indication_on')=='on') %}background-color:red;{% endif %}">
               <div style="position:absolute;left:130px;">
-              {% if states('binary_sensor.thermiq_hotwaterproduction_on')=='on' %}
+              {% if states('binary_sensor.thermiq_mqtt_hotwaterproduction_on')=='on' %}
               <div><img class="hp_basepict hw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base_hw.jpg" title=""></div>     
               {% else %}
-              {% if (states('binary_sensor.thermiq_opt_hgw_installed')=='on') and (states('binary_sensor.thermiq_compressor_on')=='on')  %}
+              {% if (states('binary_sensor.thermiq_mqtt_opt_hgw_installed')=='on') and (states('binary_sensor.thermiq_mqtt_compressor_on')=='on')  %}
               <div><img class="hp_basepict hgw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base_hgwon.jpg" title=""></div> 
               {% else %}
               <div><img class="hp_basepict base active" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base.jpg" title="ThermIQ"></div> 
               {% endif %}    
               {% endif %}    
               <div class="hpwidget-val" title="Time" style="position:absolute;top:303px;left:20px;width:150px;z-index:3;>   <span class="hpwidget-name-span" id="hpwidget-timestamp_d">{{ states('thermiq_mqtt.time_str') }}</span><span class="hpwidget-unit-span"></span></span></div>
-              <div class="hpwidget-val" title="Brine in" style="position:absolute;top:100px;left:8px;</div>z-index:3;">           <span class="hpwidget-name-span" id="hpwidget-T_BRINE_IN">{{ states('sensor.thermiq_brine_in_t') }}</span><span class="hpwidget-unit-span"> C</span></div>
-              <div class="hpwidget-val" title="Brine out" style="position:absolute;top:193px;left:8px;z-index:3;">          <span class="hpwidget-name-span" id="hpwidget-T_BRINE_UT">{{ states('sensor.thermiq_brine_out_t') }}</span><span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <div class="hpwidget-val" title="Boiler Temperature" style="position:absolute;top:89px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_VATTEN"></span>{{ states('sensor.thermiq_boiler_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <div class="hpwidget-val" title="HGW Temperature" style="position:absolute;top:87px;left:76px;z-index:3;     <span class="hpwidget-name-span" id="hpwidget-HGW_VV"></span>{{ states('sensor.thermiq_hgw_water_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <div class="hpwidget-val" title="Supply-line Temperature" style="position:absolute;top:131px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_FRAM"></span>{{ states('sensor.thermiq_supplyline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <div class="hpwidget-val" title="Supply pump" style="position:absolute;top:257px;left:146px;z-index:3;{% if (states('binary_sensor.thermiq_opt_optimum_installed')=='off') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-CIRK_SPEED"></span>{{ states('sensor.thermiq_supply_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
-              <div class="hpwidget-val" title="Brine pump" style="position:absolute;top:156px;left:8px;z-index:3;{% if (states('binary_sensor.thermiq_opt_optimum_installed')=='off') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-BRINE_SPEED"></span>{{ states('sensor.thermiq_brine_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
-              <div class="hpwidget-val" title="Return line Temperature" style="position:absolute;top:200px;left:146px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_RETUR"></span>{{ states('sensor.thermiq_returnline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <div class="hpwidget-val" title="Pressure pipe Temperature" style="position:absolute;top:125px;left:76px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-TRYCKR_T"></span>{{ states('sensor.thermiq_pressurepipe_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-              <ha-icon icon="mdi:flash" id="hpwidget-ELEFF" style="color:yellow;position:absolute;top:42px;left:82px;z-index:2;{% if ((states('binary_sensor.thermiq_boiler_3kw_on')=='off') and (states('binary_sensor.thermiq_boiler_6kw_on')=='off') ) %}display:none{% endif %}"></ha-icon>
-              <ha-icon icon="mdi:cog" id="hpwidget-KOMPR" style="position:absolute;top:155px;left:70px;--mdc-icon-size:45px;z-index:2;{% if (states('binary_sensor.thermiq_compressor_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
-              <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('binary_sensor.thermiq_brine_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
-              <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('binary_sensor.thermiq_supply_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+              <div class="hpwidget-val" title="Brine in" style="position:absolute;top:100px;left:8px;</div>z-index:3;">           <span class="hpwidget-name-span" id="hpwidget-T_BRINE_IN">{{ states('sensor.thermiq_mqtt_brine_in_t') }}</span><span class="hpwidget-unit-span"> C</span></div>
+              <div class="hpwidget-val" title="Brine out" style="position:absolute;top:193px;left:8px;z-index:3;">          <span class="hpwidget-name-span" id="hpwidget-T_BRINE_UT">{{ states('sensor.thermiq_mqtt_brine_out_t') }}</span><span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <div class="hpwidget-val" title="Boiler Temperature" style="position:absolute;top:89px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_VATTEN"></span>{{ states('sensor.thermiq_mqtt_boiler_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <div class="hpwidget-val" title="HGW Temperature" style="position:absolute;top:87px;left:76px;z-index:3;     <span class="hpwidget-name-span" id="hpwidget-HGW_VV"></span>{{ states('sensor.thermiq_mqtt_hgw_water_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <div class="hpwidget-val" title="Supply-line Temperature" style="position:absolute;top:131px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_FRAM"></span>{{ states('sensor.thermiq_mqtt_supplyline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <div class="hpwidget-val" title="Supply pump" style="position:absolute;top:257px;left:146px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_opt_optimum_installed')=='off') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-CIRK_SPEED"></span>{{ states('sensor.thermiq_mqtt_supply_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
+              <div class="hpwidget-val" title="Brine pump" style="position:absolute;top:156px;left:8px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_opt_optimum_installed')=='off') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-BRINE_SPEED"></span>{{ states('sensor.thermiq_mqtt_brine_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
+              <div class="hpwidget-val" title="Return line Temperature" style="position:absolute;top:200px;left:146px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_RETUR"></span>{{ states('sensor.thermiq_mqtt_returnline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <div class="hpwidget-val" title="Pressure pipe Temperature" style="position:absolute;top:125px;left:76px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-TRYCKR_T"></span>{{ states('sensor.thermiq_mqtt_pressurepipe_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
+              <ha-icon icon="mdi:flash" id="hpwidget-ELEFF" style="color:yellow;position:absolute;top:42px;left:82px;z-index:2;{% if ((states('binary_sensor.thermiq_mqtt_boiler_3kw_on')=='off') and (states('binary_sensor.thermiq_mqtt_boiler_6kw_on')=='off') ) %}display:none{% endif %}"></ha-icon>
+              <ha-icon icon="mdi:cog" id="hpwidget-KOMPR" style="position:absolute;top:155px;left:70px;--mdc-icon-size:45px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_compressor_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+              <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_brine_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+              <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_supply_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
               </div>
               </div>
               
               
-          - entity: input_select.thermiq_main_mode
+          - entity: input_select.thermiq_mqtt_main_mode
           - type: custom:numberbox-card
-            entity: input_number.thermiq_room_sensor_set_t
+            entity: input_number.thermiq_mqtt_indoor_requested_t
+# Room sensor only works together with Thermiq-Room ##################################################################
+          - type: custom:numberbox-card
+            entity: input_number.thermiq_mqtt_room_sensor_set_t
           - type: custom:fold-entity-row
             head:
               type: section
@@ -71,101 +74,135 @@
                   type: section
                   label: Main Status
                 entities:
-                  - entity: sensor.thermiq_outdoor_t
-                  - entity: sensor.thermiq_indoor_t
-                  - entity: sensor.thermiq_supplyline_t
-                  - entity: sensor.thermiq_returnline_t
-                  - entity: sensor.thermiq_boiler_t
-                  - entity: sensor.thermiq_integral1
-                  - entity: sensor.thermiq_brine_out_t
-                  - entity: sensor.thermiq_brine_in_t
-                  - entity: sensor.thermiq_supply_shunt_t
-                  - entity: sensor.thermiq_cooling_t
-                  - entity: sensor.thermiq_supply_pump_speed
-                  - entity: sensor.thermiq_brine_pump_speed
+                  - entity: sensor.thermiq_mqtt_outdoor_t
+                  - entity: sensor.thermiq_mqtt_indoor_t
+                  - entity: sensor.thermiq_mqtt_supplyline_t
+                  - entity: sensor.thermiq_mqtt_returnline_t
+                  - entity: sensor.thermiq_mqtt_boiler_t
+                  - entity: sensor.thermiq_mqtt_integral1
+                  - entity: sensor.thermiq_mqtt_brine_out_t
+                  - entity: sensor.thermiq_mqtt_brine_in_t
+                  - entity: sensor.thermiq_mqtt_supply_shunt_t
+                  - entity: sensor.thermiq_mqtt_cooling_t
+                  - entity: sensor.thermiq_mqtt_supply_pump_speed
+                  - entity: sensor.thermiq_mqtt_brine_pump_speed
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Runtimes
                 entities:
-                  - entity: sensor.thermiq_compressor_runtime_h
-                  - entity: sensor.thermiq_boiler_3kw_runtime_h
-                  - entity: sensor.thermiq_boiler_6kw_on_runtime_h
-                  - entity: sensor.thermiq_hotwater_runtime_h
-                  - entity: sensor.thermiq_passive_cooling_runtime_h
-                  - entity: sensor.thermiq_active_cooling_runtime_h
+                  - entity: sensor.thermiq_mqtt_compressor_runtime_h
+                  - entity: sensor.thermiq_mqtt_boiler_3kw_runtime_h
+                  - entity: sensor.thermiq_mqtt_boiler_6kw_on_runtime_h
+                  - entity: sensor.thermiq_mqtt_hotwater_runtime_h
+                  - entity: sensor.thermiq_mqtt_passive_cooling_runtime_h
+                  - entity: sensor.thermiq_mqtt_active_cooling_runtime_h
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Heater settings (A1)
                 entities:
-                  - entity: input_number.thermiq_indoor_requested_t
-                  - entity: input_number.thermiq_integral1_curve_slope
-                  - entity: input_number.thermiq_integral1_curve_min
-                  - entity: input_number.thermiq_integral1_curve_max
-                  - entity: input_number.thermiq_integral1_curve_p5
-                  - entity: input_number.thermiq_integral1_curve_0
-                  - entity: input_number.thermiq_integral1_a_limit
-                  - entity: input_number.thermiq_integral1_hysteresis_t
-                  - entity: input_number.thermiq_integral1_curve_n5
-                  - entity: input_number.thermiq_heating_stop_t
-                  - entity: input_number.thermiq_reduction_t
-                  - entity: input_number.thermiq_heatpump_runtime_m
-                  - entity: input_number.thermiq_room_factor
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_indoor_requested_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_slope
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_min
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_max
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_p5
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_0
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_a_limit
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_hysteresis_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_curve_n5
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_heating_stop_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_reduction_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_heatpump_runtime_m
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_room_factor
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Hot-water settings
                 entities:
-                  - entity: input_number.thermiq_hotwater_start_t
-                  - entity: input_number.thermiq_hotwater_stop_t
-                  - entity: input_number.thermiq_hotwater_runtime_m
-                  - entity: input_number.thermiq_legionella_runtime_m
-                  - entity: input_number.thermiq_legionella_stop_t
-                  - entity: sensor.thermiq_legionella_run_on
-                  - entity: sensor.thermiq_legionell_run_length_h
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_hotwater_start_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_hotwater_stop_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_hotwater_runtime_m
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_legionella_runtime_m
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_legionella_stop_t
+                  - entity: sensor.thermiq_mqtt_legionella_run_on
+                  - entity: sensor.thermiq_mqtt_legionell_run_length_h
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Curve 2 (A2)
                 entities:
-                  - entity: input_number.thermiq_integral2_curve_slope
-                  - entity: input_number.thermiq_integral2_curve_min
-                  - entity: input_number.thermiq_integral2_curve_max
-                  - entity: input_number.thermiq_integral2_curve_target
-                  - entity: input_number.thermiq_integral2_curve_actual
-                  - entity: input_number.thermiq_integral2_a_limit
-                  - entity: input_number.thermiq_integral2_hysteresis_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_curve_slope
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_curve_min
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_curve_max
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_curve_target
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_curve_actual
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_a_limit
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_hysteresis_t
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Heater limits 
                 entities:
-                  - entity: input_number.thermiq_returnline_max_t
-                  - entity: input_number.thermiq_brine_min_t
-                  - entity: sensor.thermiq_brine_runout_t
-                  - entity: sensor.thermiq_brine_run_in
-                  - entity: input_number.thermiq_preassure_pipe_limit_t
-                  - entity: input_number.thermiq_start_interval_min_m
-                  - entity: input_number.thermiq_outdoor_stop_t
-                  - entity: input_number.thermiq_cooling_target_t
-                  - entity: input_number.thermiq_shunt_time_s
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_returnline_max_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_brine_min_t
+                  - entity: sensor.thermiq_mqtt_brine_runout_t
+                  - entity: sensor.thermiq_mqtt_brine_run_in
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_preassure_pipe_limit_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_start_interval_min_m
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_outdoor_stop_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_cooling_target_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_shunt_time_s
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Misc control
                 entities:
-                  - entity: sensor.thermiq_language
-                  - entity: sensor.thermiq_manual_test_mode_on
-                  - entity: sensor.thermiq_factory_reset_req
-                  - entity: sensor.thermiq_runtime_counters_reset_req
-                  - entity: sensor.thermiq_outdoor_sensor_offset_t
-                  - entity: sensor.thermiq_supplyline_sensor_offset_t
-                  - entity: sensor.thermiq_returnline_sensor_offset_t
-                  - entity: sensor.thermiq_boiler_sensor_offset_t
-                  - entity: sensor.thermiq_brine_in_sensor_offset_t
-                  - entity: sensor.thermiq_brine_out_sensor_offset_t
-                  - entity: sensor.thermiq_heatingsystem_type
-                  - entity: sensor.thermiq_internal_logging_t
-                  - entity: input_number.thermiq_elect_boiler_steps_max
-                  - entity: input_number.thermiq_current_consumption_max_a
+                  - entity: sensor.thermiq_mqtt_language
+                  - entity: sensor.thermiq_mqtt_manual_test_mode_on
+                  - entity: sensor.thermiq_mqtt_factory_reset_req
+                  - entity: sensor.thermiq_mqtt_runtime_counters_reset_req
+                  - entity: sensor.thermiq_mqtt_outdoor_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_supplyline_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_returnline_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_boiler_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_brine_in_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_brine_out_sensor_offset_t
+                  - entity: sensor.thermiq_mqtt_heatingsystem_type
+                  - entity: sensor.thermiq_mqtt_internal_logging_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_elect_boiler_steps_max
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_current_consumption_max_a

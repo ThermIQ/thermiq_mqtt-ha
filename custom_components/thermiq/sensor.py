@@ -25,6 +25,7 @@ from . import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+ENTITY_ID_FORMAT = "sensor" + "."+THERMIQ_DOMAIN+"_{}"
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
@@ -74,7 +75,7 @@ class ThermIQ_MQTT(Entity):
         self.hass = hass
         self._data = data
         self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, "thermiq_" + device_id, hass=hass
+            ENTITY_ID_FORMAT, device_id, hass=hass
         )
         _LOGGER.debug("entity_id:" + self.entity_id)
         _LOGGER.debug("idx:" + device_id)
@@ -100,7 +101,7 @@ class ThermIQ_MQTT(Entity):
         self._vp_reg = vp_reg
 
         # Listen for the ThermIQ rec event indicating new data
-        hass.bus.async_listen("thermiq_mqtt_msg_rec_event", self._async_update_event)
+        hass.bus.async_listen(THERMIQ_DOMAIN+ "_msg_rec_event", self._async_update_event)
 
     @property
     def name(self):
@@ -135,7 +136,7 @@ class ThermIQ_MQTT(Entity):
     async def async_update(self):
         """Update the new state of the sensor."""
 
-        _LOGGER.debug("update: thermiq_" + self._idx)
+        _LOGGER.debug("update: "+THERMIQ_DOMAIN+"_" + self._idx)
         self._state = self._data.get_value(self._vp_reg)
         if self._state is None:
             _LOGGER.warning("Could not get data for %s", self._idx)
@@ -143,7 +144,7 @@ class ThermIQ_MQTT(Entity):
     async def _async_update_event(self, event):
         """Update the new state of the sensor."""
 
-        _LOGGER.debug("event: thermiq_" + self._idx)
+        _LOGGER.debug("event: "+THERMIQ_DOMAIN+"_"+self._idx)
         state = self._data.get_value(self._vp_reg)
         if state is None:
             _LOGGER.debug("Could not get data for %s", self._idx)
