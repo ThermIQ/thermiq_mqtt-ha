@@ -37,6 +37,7 @@ The complete configuration entry needed is:
 
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
+  language:'en'   # Change friendly names of values. Implemented languages: en,se,fi,no,de
   thermiq_dbg: False
 
 # End ThermIQ ######
@@ -79,7 +80,7 @@ The lovelace setup requires the following custom cards to be installed in HACS
 - numberbox-card from Number Box
 - fold-entity-row
 ```
- It is also necessary to move the three picture files below to the be in the lovelace path. They are currently coded to the following directory **local/community/lovelace-html-card/**
+ It is also necessary to move the three picture files below to the be in the lovelace path. They are currently coded to the **www/community/** directory (**local/community/**)
  ```
  vp_base.jpg
  vp_base_hgw_on.jpg

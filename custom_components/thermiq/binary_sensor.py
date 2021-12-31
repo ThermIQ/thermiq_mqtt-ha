@@ -5,7 +5,6 @@ from homeassistant.helpers.entity import Entity, async_generate_entity_id
 from homeassistant.const import STATE_OFF, STATE_ON
 
 from . import DOMAIN as THERMIQ_DOMAIN
-from . import id_names as id_names
 from . import (
     FIELD_BITMASK,
     FIELD_MAXVALUE,
@@ -43,7 +42,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         if reg_id[key][1] in ["binary_sensor"]:
             device_id = key
             if key in id_names:
-                friendly_name = id_names[key]
+                friendly_name = id_names[key][ hass.data[THERMIQ_DOMAIN]._data['language'] ]
             else:
                 friendly_name = None
             vp_reg = reg_id[key][0]

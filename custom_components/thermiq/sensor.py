@@ -18,7 +18,6 @@ from . import (
     FIELD_REGNUM,
     FIELD_REGTYPE,
     FIELD_UNIT,
-    id_names,
     id_units,
     reg_id,
     id_names,
@@ -50,7 +49,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         ]:
             device_id = key
             if key in id_names:
-                friendly_name = id_names[key]
+                friendly_name = id_names[key][hass.data[THERMIQ_DOMAIN]._data['language'] ]
             else:
                 friendly_name = None
             vp_reg = reg_id[key][0]

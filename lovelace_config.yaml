@@ -32,12 +32,12 @@
               <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_mqtt_alarm_indication_on')=='on') %}background-color:red;{% endif %}">
               <div style="position:absolute;left:130px;">
               {% if states('binary_sensor.thermiq_mqtt_hotwaterproduction_on')=='on' %}
-              <div><img class="hp_basepict hw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base_hw.jpg" title=""></div>     
+              <div><img class="hp_basepict hw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base_hw.jpg" title=""></div>     
               {% else %}
               {% if (states('binary_sensor.thermiq_mqtt_opt_hgw_installed')=='on') and (states('binary_sensor.thermiq_mqtt_compressor_on')=='on')  %}
-              <div><img class="hp_basepict hgw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base_hgwon.jpg" title=""></div> 
+              <div><img class="hp_basepict hgw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base_hgwon.jpg" title=""></div> 
               {% else %}
-              <div><img class="hp_basepict base active" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/lovelace-html-card/vp_base.jpg" title="ThermIQ"></div> 
+              <div><img class="hp_basepict base active" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base.jpg" title="ThermIQ"></div> 
               {% endif %}    
               {% endif %}    
               <div class="hpwidget-val" title="Time" style="position:absolute;top:303px;left:20px;width:150px;z-index:3;>   <span class="hpwidget-name-span" id="hpwidget-timestamp_d">{{ states('thermiq_mqtt.time_str') }}</span><span class="hpwidget-unit-span"></span></span></div>
@@ -176,7 +176,7 @@
                   - entity: sensor.thermiq_mqtt_brine_runout_t
                   - entity: sensor.thermiq_mqtt_brine_run_in
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_preassure_pipe_limit_t
+                    entity: input_number.thermiq_mqtt_pressure_pipe_limit_t
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_start_interval_min_m
                   - type: custom:numberbox-card

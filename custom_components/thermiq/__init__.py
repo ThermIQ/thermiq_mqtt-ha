@@ -90,6 +90,7 @@ from homeassistant.core import HomeAssistant, Event
 
 
 THERMIQ_PLATFORMS = ["binary_sensor", "sensor"]
+AVAILABLE_LANGUAGES = ['en','sw','fi','no','en','de','se']
 
 DOMAIN = "thermiq_mqtt"
 
@@ -100,6 +101,7 @@ DEPENDENCIES = ["mqtt"]
 # Constants and Schema used to validate the configuration
 CONF_MQTT_NODE = "mqtt_node"
 CONF_MQTT_DBG = "thermiq_dbg"
+CONF_MQTT_LANGUAGE = "language"
 DEFAULT_NODE = "ThermIQ/ThermIQ-mqtt"
 CONF_DATA = "data_msg"
 DEFAULT_DATA = "/data"
@@ -111,6 +113,7 @@ DEFAULT_DBG = False
 CONFIG_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_MQTT_NODE, default=DEFAULT_NODE): cv.string,
+        vol.Optional(CONF_MQTT_LANGUAGE, default='en'): cv.string,
         vol.Optional(CONF_MQTT_DBG, default=False): cv.boolean,
     },
     extra=vol.ALLOW_EXTRA,
@@ -125,6 +128,16 @@ async def async_setup(hass, config):
     conf = config.get(DOMAIN, {})
     mqtt_base = conf.get(CONF_MQTT_NODE)+"/"
     dbg = conf.get(CONF_MQTT_DBG)
+    lang=conf.get(CONF_MQTT_LANGUAGE)
+    lang=lang.lower()
+    if lang in AVAILABLE_LANGUAGES:
+    	if lang == 'se':
+    		lang='sw'
+    else:
+    	lang = 'en' 
+    LANGUAGE=AVAILABLE_LANGUAGES.index(lang)
+    _LOGGER.debug("Language[" + str(LANGUAGE)+"]")
+
 
     conf.entity_id = DOMAIN
 
@@ -132,7 +145,7 @@ async def async_setup(hass, config):
     conf.data_topic = mqtt_base + "data"
 
     if dbg == True:
-        mqtt_base += "dbg_"
+        mqtt_base + "dbg_"
         _LOGGER.debug("MQTT Debug write enabled")
     conf.cmd_topic = mqtt_base + "write"
     conf.set_topic = mqtt_base + "set"
@@ -143,6 +156,7 @@ async def async_setup(hass, config):
     hass.data[DOMAIN] = ThermIQ_MQTT(config[DOMAIN])
     hass.states.async_set(DOMAIN+".time_str", "Waiting on " + conf.data_topic)
     hass.data[DOMAIN]._data["mqtt_counter"] = 0
+    hass.data[DOMAIN]._data['language'] = LANGUAGE 
 
     # ### Setup the input helper #############################
     CONFIG_INPUT_BOOLEAN.update(config.get(COMPONENT_INPUT_BOOLEAN, {}))
@@ -196,7 +210,7 @@ async def async_setup(hass, config):
         ]:
             device_id = key
             if key in id_names:
-                friendly_name = id_names[key]
+                friendly_name = id_names[key][LANGUAGE]
             else:
                 friendly_name = None
             input_reg = reg_id[key][0]
@@ -228,7 +242,7 @@ async def async_setup(hass, config):
         ]:
             device_id = key
             if key in id_names:
-                friendly_name = id_names[key]
+                friendly_name = id_names[key][LANGUAGE]
             else:
                 friendly_name = None
             input_reg = reg_id[key][0]
@@ -286,6 +300,7 @@ async def async_setup(hass, config):
 
                     # Internal mapping of ThermIQ_MQTT regs, used to create update events
                     hass.data[DOMAIN]._data[kstore] = json_dict[k]
+                    #hass.states.async_set(DOMAIN+"." +kstore, json_dict[k])
 
                     # Map incomming registers to named settings based on id_reg (thermiq_regs)
                     if kstore in id_reg:
