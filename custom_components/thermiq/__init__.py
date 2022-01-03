@@ -129,12 +129,14 @@ async def async_setup(hass, config):
     mqtt_base = conf.get(CONF_MQTT_NODE)+"/"
     dbg = conf.get(CONF_MQTT_DBG)
     lang=conf.get(CONF_MQTT_LANGUAGE)
-    lang=lang.lower()
+    try: lang = lang.lower()
+    except: lang = 'en'
+
     if lang in AVAILABLE_LANGUAGES:
-    	if lang == 'se':
-    		lang='sw'
+        if lang == 'se':
+            lang='sw'
     else:
-    	lang = 'en' 
+        lang = 'en' 
     LANGUAGE=AVAILABLE_LANGUAGES.index(lang)
     _LOGGER.debug("Language[" + str(LANGUAGE)+"]")
 
