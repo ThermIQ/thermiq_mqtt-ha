@@ -37,7 +37,7 @@ The complete configuration entry needed is:
 
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
-  language:'en'   # Change friendly names of values. Implemented languages: en,se,fi,no,de
+  language: 'en'   # Change friendly names of values. Implemented languages: en,se,fi,no,de
   thermiq_dbg: False
 
 # End ThermIQ ######
