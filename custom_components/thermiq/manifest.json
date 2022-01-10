@@ -1,5 +1,5 @@
 {
-  "domain": "thermiq_mqtt",
+  "domain": "thermiq",
   "name": "ThermIQ MQTT",
   "documentation": "https://github.com/ThermIQ/thermiq_mqtt-ha",
   "issue_tracker": "https://github.com/ThermIQ/thermiq_mqtt-ha/issues",
