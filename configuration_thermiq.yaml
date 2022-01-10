@@ -6,6 +6,7 @@
 # The mqtt_node name can also be seen in MQTT-Eplorer or similar
 thermiq_mqtt:
   mqtt_node: ThermIQ/ThermIQ-mqtt
+  language: 'en'
   thermiq_dbg: False
 
 # End ThermIQ ######
