@@ -115,17 +115,11 @@
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_integral1_curve_0
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_integral1_a_limit
-                  - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_integral1_hysteresis_t
-                  - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_integral1_curve_n5
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_heating_stop_t
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_reduction_t
-                  - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_heatpump_runtime_m
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_room_factor
               - type: custom:fold-entity-row
@@ -136,15 +130,13 @@
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_hotwater_start_t
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_hotwater_stop_t
-                  - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_hotwater_runtime_m
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_legionella_runtime_m
+                    entity: input_number.thermiq_mqtt_heatpump_runtime_m
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_legionella_interval_d
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_legionella_stop_t
-                  - entity: sensor.thermiq_mqtt_legionella_run_on
-                  - entity: sensor.thermiq_mqtt_legionell_run_length_h
               - type: custom:fold-entity-row
                 head:
                   type: section
@@ -160,31 +152,44 @@
                     entity: input_number.thermiq_mqtt_integral2_curve_target
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_integral2_curve_actual
-                  - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_integral2_a_limit
-                  - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_integral2_hysteresis_t
               - type: custom:fold-entity-row
                 head:
                   type: section
                   label: Heater limits 
                 entities:
                   - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_a_limit
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral1_hysteresis_t
+                  - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_returnline_max_t
                   - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_start_interval_min_m
+                  - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_brine_min_t
-                  - entity: sensor.thermiq_mqtt_brine_runout_t
-                  - entity: sensor.thermiq_mqtt_brine_run_in
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_pressure_pipe_limit_t
-                  - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_start_interval_min_m
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_outdoor_stop_t
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_cooling_target_t
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Curve 2 limits
+                entities:
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_a_limit
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_integral2_hysteresis_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_elect_boiler_steps_max
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_current_consumption_max_a
                   - type: custom:numberbox-card
                     entity: input_number.thermiq_mqtt_shunt_time_s
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_hotwater_stop_t
               - type: custom:fold-entity-row
                 head:
                   type: section
@@ -194,15 +199,27 @@
                   - entity: sensor.thermiq_mqtt_manual_test_mode_on
                   - entity: sensor.thermiq_mqtt_factory_reset_req
                   - entity: sensor.thermiq_mqtt_runtime_counters_reset_req
-                  - entity: sensor.thermiq_mqtt_outdoor_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_supplyline_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_returnline_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_boiler_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_brine_in_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_brine_out_sensor_offset_t
-                  - entity: sensor.thermiq_mqtt_heatingsystem_type
-                  - entity: sensor.thermiq_mqtt_internal_logging_t
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_elect_boiler_steps_max
+                    entity: input_number.thermiq_mqtt_outdoor_sensor_offset_t
                   - type: custom:numberbox-card
-                    entity: input_number.thermiq_mqtt_current_consumption_max_a
+                    entity: input_number.thermiq_mqtt_supplyline_sensor_offset_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_returnline_sensor_offset_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_boiler_sensor_offset_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_brine_in_sensor_offset_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_brine_out_sensor_offset_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_heatingsystem_type
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_internal_logging_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_brine_runout_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_brine_run_in_t
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_legionella_run_on
+                  - type: custom:numberbox-card
+                    entity: input_number.thermiq_mqtt_legionella_run_length_h

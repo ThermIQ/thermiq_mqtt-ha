@@ -14,7 +14,6 @@ from custom_components.thermiq_mqtt.thermiq_regs import (
     FIELD_REGTYPE,
     FIELD_UNIT,
     id_names,
-    id_units,
     reg_id,
 )
 

@@ -18,7 +18,6 @@ from . import (
     FIELD_REGNUM,
     FIELD_REGTYPE,
     FIELD_UNIT,
-    id_units,
     reg_id,
     id_names,
 )
