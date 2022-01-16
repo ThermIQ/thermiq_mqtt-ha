@@ -126,8 +126,8 @@ async def create_input_number(
     _max: int,
     step: int,
     initial: int,
-    mode: str,
     unit_of_measurement: str,
+    mode=None,
     icon=None,
 ) -> str:
     data = {
@@ -140,6 +140,8 @@ async def create_input_number(
         "unit_of_measurement": unit_of_measurement,
     }
 
+    if mode:
+        data["mode"] = mode
     if icon:
         data["icon"] = icon
 

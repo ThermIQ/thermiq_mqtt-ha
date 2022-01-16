@@ -197,11 +197,7 @@ async def async_setup(hass, config):
         "sensor_input": "mdi:speedometer",
         "temperature_input": "mdi:temperature-celsius",
     }
-    mode_list = {
-        "time_input": "slider",
-        "sensor_input": "box",
-        "temperature_input": "box",
-    }
+
     entity_list = []
     for key in reg_id:
         if reg_id[key][1] in [
@@ -232,8 +228,8 @@ async def async_setup(hass, config):
                 input_max,
                 input_step,
                 input_initial,
-                mode_list[input_type],
                 input_unit,
+                mode="box",
                 icon=icon_list[input_type],
             )
             entity_list.append("input_number."+DOMAIN+"_" + key)
