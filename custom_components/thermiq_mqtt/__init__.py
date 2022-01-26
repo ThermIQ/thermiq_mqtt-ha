@@ -269,7 +269,7 @@ async def async_setup(hass, config):
     @callback
     def message_received(message):
         """Handle new MQTT messages."""
-        _LOGGER.debug("message.payload:[%s]", message.payload)
+        _LOGGER.debug("%s: message.payload:[%s]",DOMAIN, message.payload)
         try:
             json_dict = json.loads(message.payload)
             if json_dict["Client_Name"][:8] == "ThermIQ_":
@@ -293,7 +293,7 @@ async def async_setup(hass, config):
                         reg = int(k[1:], 16)
                         dstore = "d" + format(reg, "03d")
 
-                    _LOGGER.debug("[%s] [%s] [%s]", kstore, json_dict[k], dstore)
+                    _LOGGER.debug("[%s] [%s] [%s] [%s]", DOMAIN, kstore, json_dict[k], dstore)
 
                     # Internal mapping of ThermIQ_MQTT regs, used to create update events
                     hass.data[DOMAIN]._data[kstore] = json_dict[k]
@@ -314,8 +314,7 @@ async def async_setup(hass, config):
                             ]:
                                 context = {
                                     INP_ATTR_VALUE: json_dict[k],
-                                    ATTR_ENTITY_ID: "input_number."+DOMAIN+"_"
-                                    + id_reg[kstore],
+                                    ATTR_ENTITY_ID: "input_number." + DOMAIN + "_" + id_reg[kstore],
                                 }
                                 hass.async_create_task(
                                     hass.services.async_call(
@@ -329,8 +328,7 @@ async def async_setup(hass, config):
 
                                 context = {
                                     INP_ATTR_VALUE: json_dict[k],
-                                    ATTR_ENTITY_ID: "input_select."+DOMAIN+"_"
-                                    + id_reg[kstore],
+                                    ATTR_ENTITY_ID: "input_select." + DOMAIN + "_" + id_reg[kstore],
                                 }
                                 hass.async_create_task(
                                     hass.services.async_call(
