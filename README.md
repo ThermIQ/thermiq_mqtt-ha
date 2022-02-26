@@ -95,19 +95,138 @@ The Home Assistant server needs to be restarted once all configuration is done
 
 ## Glossary
 
-- Curve – the relationship between the heating system supply temperature and the outside air temperature ([TECH Sterowniki](http://tech-controllers.com/blog/heating-curve---what-is-it-and-how-to-set-it)). 
--- Curve min – Lowest setpoint for supply temperature ([Thermia manual, page 14](http://www.tcmadmin.thermia.se/docroot/dokumentbank/Th_Total_UG_VUGFD302_EN_X013761.pdf))
--- Curve max – Highest setpoint for supply temperature
--- Curve +5 – Used to adjust the heat curve at an outdoor temperature of +5°C
--- Curve 0 – Used to adjust the heat curve at an outdoor temperature of 0°C
--- Curve -5 – Used to adjust the heat curve at an outdoor temperature of -5°C
-- Heatpump operating time – ...
-- Heatstop – This function stops all production of heat when the outdoor temperature is equal to, or higher than, the heat stop value currently set.
-- Indoor target temp – If the ROOM value is used to affect the system’s heat curve, the heat curve does not become steeper or flatter, as it does when the CURVE value changes. Instead the entire heat curve is moved by 3°C for every degree change of the ROOM value.
-- Integral – value of how much heat is needed in a home at a given time ([ThermiaTube](https://www.youtube.com/watch?v=POrEukfPgXk))
-- Room factor – ...
-- Temp. reduction – ...
-- 
+- Active cooling (active_cooling_on) – 
+- Add-on flow guard (opt_flowguard_installed) – 
+- Add-on HGW (opt_hgw_installed) – 
+- Add-on Optimum (opt_optimum_installed) – 
+- Add-on phase order measurement (opt_phasemeassure_installed) – 
+- Alarm (alarm_indication_on) – 
+- Alarm highpr.pressostate (highpressure_alm) – 
+- Alarm hotw. t-sensor (boiler_sensor_alm) – 
+- Alarm incorrect 3-phase order (phase_order_alm) – 
+- Alarm indoor t-sensor (indoor_sensor_alm) – 
+- Alarm low flow brine (brine_flow_alm) – 
+- Alarm low temp. brine (brine_temperature_alm) – 
+- Alarm lowpr.pressostate (lowpressure_alm) – 
+- Alarm motorcircuit breaker (motorbreaker_alm) – 
+- Alarm outdoor t-sensor (outdoor_sensor_alm) – 
+- Alarm overheating (overheating_alm) – 
+- Alarm returnline t-sensor (returnline_sensor_alm) – 
+- Alarm supplyline t-sensor (supplyline_sensor_alm) – 
+- Aux. heater 3 kW (boiler_3kw_on) – 
+- Aux. heater 6 kW (boiler_6kw_on) – 
+- Auxilliary 1 (aux1_heating_on) – 
+- Auxilliary 2 (aux2_heating_on) – 
+- Brine in temp. (brine_in_t) – 
+- Brine out temp. (brine_out_t) – 
+- Brine run-in duration (brine_run_in_t) – 
+- Brine run-out duration (brine_runout_t) – 
+- Brinepump (brine_pump_on) – 
+- Brinepump speed (brine_pump_speed) – 
+- Brinetemp., min limit (-15=OFFV) (brine_min_t) – 
+- Calibration brine in sensor (brine_out_sensor_offset_t) – 
+- Calibration brine out sensor (brine_in_sensor_offset_t) – 
+- Calibration hotwater sensor (boiler_sensor_offset_t) – 
+- Calibration outdoor sensor (outdoor_sensor_offset_t) – 
+- Calibration returnline sensor (returnline_sensor_offset_t) – 
+- Calibration supplyline sensor (supplyline_sensor_offset_t) – 
+- Compressor (compressor_on) – 
+- Cooling temp. (cooling_t) – 
+- Cooling, target (cooling_target_t) – 
+- Curve (integral1_curve_slope) – the relationship between the heating system supply temperature and the outside air temperature ([TECH Sterowniki](http://tech-controllers.com/blog/heating-curve---what-is-it-and-how-to-set-it))
+- Curve +5 (integral1_curve_p5) – Used to adjust the heat curve at an outdoor temperature of +5°C
+- Curve -5 (integral1_curve_n5) – Used to adjust the heat curve at an outdoor temperature of -5°C
+- Curve 0 (integral1_curve_0) – Used to adjust the heat curve at an outdoor temperature of 0°C
+- Curve 2 (integral2_curve_slope) – 
+- Curve 2 max (integral2_curve_max) – 
+- Curve 2 min (integral2_curve_min) – 
+- Curve 2, Actual (integral2_curve_actual) – 
+- Curve 2, Target (integral2_curve_target) – 
+- Curve max (integral1_curve_max) – Highest setpoint for supply temperature
+- Curve min (integral1_curve_min) – Lowest setpoint for supply temperature ([Thermia manual, page 14](http://www.tcmadmin.thermia.se/docroot/dokumentbank/Th_Total_UG_VUGFD302_EN_X013761.pdf))
+- DACT_MSD1 (msd1_d) – 
+- Defrost (defrost_time_m) – 
+- DEMAND1 (demand1) – 
+- DEMAND2 (demand2) – 
+- DPAS_MSD1 (msd1_d) – 
+- DT_LARMOFF (status7) – 
+- DTS2_MSD1 (msd1_d) – 
+- DTS_MSD1 (msd1_dtp) – 
+- DVP_MSD1 (msd1_dvp) – 
+- DVV_MSD1 (msd1_dvv) – 
+- Electrical Current (current_consumed_a) – 
+- Electrical current, max limit (current_consumption_max_a) – 
+- Flowlinepump (supply_pump_on) – 
+- Flowlinepump speed (supply_pump_speed) – 
+- GrafCounterOffSet    (graph_display_offset) – 
+- Heating system type 0=VL 4=D (heatingsystem_type) – 
+- Heatpump operating time (heatpump_runtime_m) – 
+- Heatstop (heating_stop_t) – This function stops all production of heat when the outdoor temperature is equal to, or higher than, the heat stop value currently set.
+- Hotw. supplyline temp. (hgw_water_t) – 
+- Hotwater operating time (hotwater_runtime_m) – 
+- Hotwater production. (hotwaterproduction_on) – 
+- Hotwater starttemp. (hotwater_start_t) – 
+- Hotwater stop temp. (hotwater_stop_t) – 
+- Hotwater temp. (boiler_t) – 
+- Hysteresis A1 (integral1_hysteresis_t) – 
+- Hysteresis limit A2 (integral2_hysteresis_t) – 
+- Indoor target temp. (indoor_requested_t) – If the ROOM value is used to affect the system’s heat curve, the heat curve does not become steeper or flatter, as it does when the CURVE value changes. Instead the entire heat curve is moved by 3°C for every degree change of the ROOM value.
+- Indoor target temp. (indoor_target_t) – 
+- Indoor target temp., decimal (indoor_target_dec_t) – 
+- Indoor temp. (indoor_t) – 
+- Indoor temp., decimal (indoor_dec_t) – 
+- Integral (A1) (integral1) – value of how much heat is needed in a home at a given time ([ThermiaTube](https://www.youtube.com/watch?v=POrEukfPgXk))
+- Integral limit A1 (integral1_a_limit) – 
+- Integral limit A2 (integral2_a_limit) – 
+- Integral, reached A-limit (integral1_a_limit) – 
+- Language (language) – 
+- Legionella interval (legionella_interval_d) – 
+- Legionella peak heating duration (legionella_run_length_h) – 
+- Legionella peak heating enable (legionella_run_on) – 
+- Legionella stop temp. (legionella_stop_t) – 
+- Logging time (internal_logging_t) – 
+- Manual test mode (manual_test_mode_on) – 
+- Max Electric steps (elect_boiler_steps_max) – 
+- Minimum start interval (start_interval_min_m) – 
+- Minimum time to start (time_to_start_min_m) – 
+- Mode (main_mode) – 
+- Outdoor stop temp. (20=-20C) (outdoor_stop_t) – 
+- Outdoor temp. (outdoor_t) – 
+- Passive cooling (passive_cooling_on) – 
+- Pressurepipe temp. (pressurepipe_t) – 
+- Pressurepipe, temp. limit (pressure_pipe_limit_t) – 
+- Program version (sw_version) – 
+- PWM Out (pwm_out_period) – 
+- Reset runtime counters (runtime_counters_reset_req) – 
+- Reset to Factory settings (factory_reset_req) – 
+- Returnline temp. (returnline_t) – 
+- Returnline temp., max limit (returnline_max_t) – 
+- Room factor (room_factor) – 
+- Room sensor, Set target','Rums sensor, Styrvärde', 'Room sensor, Set target', 'Room sensor, Set target', 'Room sensor, Set target'], (room_sensor_set_t) – 
+- Runtime 3 kW (boiler_3kw_runtime_h) – 
+- Runtime 6 kW (boiler_6kw_on_runtime_h) – 
+- Runtime active cooling (active_cooling_runtime_h) – 
+- Runtime compressor (compressor_runtime_h) – 
+- Runtime hotwater production (hotwater_runtime_h) – 
+- Runtime passive cooling (passive_cooling_runtime_h) – 
+- SERVFAS (status8) – 
+- Shunt + (shunt1_p) – 
+- Shunt - (shunt1_n) – 
+- Shunt cooling + (shunt_cooling_p) – 
+- Shunt cooling - (shunt_cooling_n) – 
+- Shunt time (shunt_time_s) – 
+- Shuntgroup + (shunt2_p) – 
+- Shuntgroup - (shunt2_n) – 
+- STATUS3 (status3_m) – 
+- Supplyline target temp. (supplyline_target_t) – 
+- Supplyline target temp., shunt (supplyline_shunt_target_t) – 
+- Supplyline temp. (supplyline_t) – 
+- Supplyline temp., shunt (supply_shunt_t) – 
+- Temp. reduction (reduction_t) – 
+- TILL2 (opt_2_installed) – 
+- TILL4 (opt_4_installed) – 
+- TILL5 (opt_5_installed) – 
+- TILL6 (opt_6_installed) – 
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
