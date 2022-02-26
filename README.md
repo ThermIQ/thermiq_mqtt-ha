@@ -1,5 +1,6 @@
 # Home Assistant ThermIQ-MQTT Integration
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
 ![Screenshot](docs/Lovelace1.jpg)
 
 This integration allows you to use the ThermIQ-MQTT hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. It is available as a default component of HACS, the Home Assistant Community Store.
@@ -91,6 +92,22 @@ The Home Assistant server needs to be restarted once all configuration is done
 ## Features and Limitations
 - Currently provides all data from the heatpump in the form of sensors and binary sensors
 - Allows control over the heatpump 
+
+## Glossary
+
+- Curve – the relationship between the heating system supply temperature and the outside air temperature ([TECH Sterowniki](http://tech-controllers.com/blog/heating-curve---what-is-it-and-how-to-set-it)). 
+-- Curve min – Lowest setpoint for supply temperature ([Thermia manual, page 14](http://www.tcmadmin.thermia.se/docroot/dokumentbank/Th_Total_UG_VUGFD302_EN_X013761.pdf))
+-- Curve max – Highest setpoint for supply temperature
+-- Curve +5 – Used to adjust the heat curve at an outdoor temperature of +5°C
+-- Curve 0 – Used to adjust the heat curve at an outdoor temperature of 0°C
+-- Curve -5 – Used to adjust the heat curve at an outdoor temperature of -5°C
+- Heatpump operating time – ...
+- Heatstop – This function stops all production of heat when the outdoor temperature is equal to, or higher than, the heat stop value currently set.
+- Indoor target temp – If the ROOM value is used to affect the system’s heat curve, the heat curve does not become steeper or flatter, as it does when the CURVE value changes. Instead the entire heat curve is moved by 3°C for every degree change of the ROOM value.
+- Integral – value of how much heat is needed in a home at a given time ([ThermiaTube](https://www.youtube.com/watch?v=POrEukfPgXk))
+- Room factor – ...
+- Temp. reduction – ...
+- 
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
