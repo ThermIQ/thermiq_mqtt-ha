@@ -100,6 +100,7 @@ DEPENDENCIES = ["mqtt"]
 # Constants and Schema used to validate the configuration
 CONF_MQTT_NODE = "mqtt_node"
 CONF_MQTT_DBG = "thermiq_dbg"
+CONF_MQTT_HEX = "hexformat"
 CONF_MQTT_LANGUAGE = "language"
 DEFAULT_NODE = "ThermIQ/ThermIQ-mqtt"
 CONF_DATA = "data_msg"
@@ -114,6 +115,7 @@ CONFIG_SCHEMA = vol.Schema(
         vol.Required(CONF_MQTT_NODE, default=DEFAULT_NODE): cv.string,
         vol.Optional(CONF_MQTT_LANGUAGE, default='en'): cv.string,
         vol.Optional(CONF_MQTT_DBG, default=False): cv.boolean,
+        vol.Optional(CONF_MQTT_HEX, default=False): cv.boolean,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -127,6 +129,7 @@ async def async_setup(hass, config):
     conf = config.get(DOMAIN, {})
     mqtt_base = conf.get(CONF_MQTT_NODE)+"/"
     dbg = conf.get(CONF_MQTT_DBG)
+    hexFormat = conf.get(CONF_MQTT_HEX)
     lang=conf.get(CONF_MQTT_LANGUAGE)
     try: lang = lang.lower()
     except: lang = 'en'
@@ -150,6 +153,10 @@ async def async_setup(hass, config):
         _LOGGER.debug("MQTT Debug write enabled")
     conf.cmd_topic = mqtt_base + "write"
     conf.set_topic = mqtt_base + "set"
+
+    if hexFormat == True:
+        _LOGGER.debug("Using HEX format")
+    conf.hexFormat = hexFormat
 
  
 
@@ -405,9 +412,11 @@ async def async_setup(hass, config):
         # Lets use the decimal register notation in the MQTT message towards ThermIQ-MQTT to improve human readability
         if reg[0] == "d":
             dreg = reg
+            hreg = "r" + format( int(reg[1:],10) , "02x")
         elif reg[0] == "r" and len(reg) == 3:
             reg = int(reg[1:], 16)
             dreg = "d" + format(reg, "03d")
+            hreg = reg
         else:
             _LOGGER.error("Register format should be rXX (hex) or dNN (decimal) [%s]", reg)
             return
@@ -415,6 +424,10 @@ async def async_setup(hass, config):
         if dreg == "d240":
             topic = conf.set_topic
             payload = json.dumps({"INDR_T": value})
+        elif conf.hexFormat:
+            topic = conf.cmd_topic
+            payload = json.dumps({hreg: value})
+            
         else:
             topic = conf.cmd_topic
             payload = json.dumps({dreg: value})
@@ -474,6 +487,9 @@ async def async_setup(hass, config):
         if dreg == "d240":
             topic = conf.set_topic
             payload = json.dumps({"INDR_T": value})
+        elif conf.hexFormat:
+            topic = conf.cmd_topic
+            payload = json.dumps({reg: value})
         else:
             topic = conf.cmd_topic
             payload = json.dumps({dreg: value})
