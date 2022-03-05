@@ -12,7 +12,7 @@ Please note that since Release 1.2.0 the setup has changed significantly and you
 
 ## Requirements
 
-- MQTT server and the MQTT integration set up in Home Assistant
+- Mosquitto MQTT server and the MQTT integration set up in Home Assistant
 - ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT
 
 - A couple of Lovelace plugins
@@ -91,6 +91,11 @@ The Home Assistant server needs to be restarted once all configuration is done
 ## Features and Limitations
 - Currently provides all data from the heatpump in the form of sensors and binary sensors
 - Allows control over the heatpump 
+
+
+## ThermIQ-USB Support
+Tom R has created a Node-RED flow converting the previous version, ThermIQ-USB, to use the same MQTT messages making it compatible with this integration.
+https://github.com/tomrosenback/thermiq-node-red-homeassistant-config
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
