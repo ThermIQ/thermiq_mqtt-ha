@@ -88,6 +88,10 @@ The lovelace setup requires the following custom cards to be installed in HACS
 #### Restart
 The Home Assistant server needs to be restarted once all configuration is done
 
+## Register description
+A first attempt to create a description of the function behind each register can be found here
+[REGISTERS.md](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/REGISTERS.md)
+
 ## Features and Limitations
 - Currently provides all data from the heatpump in the form of sensors and binary sensors
 - Allows control over the heatpump 
