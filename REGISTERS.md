@@ -118,7 +118,7 @@
 | shunt_cooling_p | Shunt cooling + | R| |
 | shunt_time_s | Shunt time | R/W| |
 | start_interval_min_m | Minimum start interval | R/W| |
-| status3_m | STATUS3 | R/W| |
+| status3_m | STATUS3 | R| |
 | status7 | DT_LARMOFF | R/W| |
 | status8 | SERVFAS | R/W| |
 | supply_pump_on | Flowlinepump | R| |
