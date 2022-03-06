@@ -98,7 +98,7 @@ reg_id = {
   'cooling_target_t'             : ['r4e', 'temperature_input',      'ºC',               0,     50   ],
   'integral2_a_limit'            : ['r4f', 'sensor_input',           '10 Cmin',           0,    200   ],
   'integral2_hysteresis_t'       : ['r50', 'temperature_input',      'ºC',               0,    100   ],
-  'elect_boiler_steps_max'       : ['r51', 'sensor_input',           'steps',             0,      2   ],
+  'elect_boiler_steps_max'       : ['r51', 'sensor_input',           'steps',             0,      3   ],
   'current_consumption_max_a'    : ['r52', 'sensor_input',           'A',                 0,    100   ],
   'shunt_time_s'                 : ['r53', 'time_input',             's',                 0,  32767   ],
   'hotwater_stop_t'              : ['r54', 'temperature_input',      'ºC',               0,    100   ],

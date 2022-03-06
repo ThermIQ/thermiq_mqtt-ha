@@ -363,7 +363,10 @@ async def async_setup(hass, config):
 
                 hass.data[DOMAIN]._data["mqtt_counter"] += 1
 
-                hass.states.async_set(DOMAIN+".time_str", json_dict["time"])
+                if 'time' in json_dict:
+                    hass.states.async_set(DOMAIN+".time_str", json_dict["time"])
+                elif 'Time' in json_dict:
+                    hass.states.async_set(DOMAIN+".time_str", json_dict["Time"])
 
                 hass.bus.fire(DOMAIN+"_msg_rec_event", {})
 
