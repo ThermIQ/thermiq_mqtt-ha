@@ -12,8 +12,11 @@ Please note that updating from Release 1.2.0 requires some significant changes i
 
 ## Requirements
 
-- Mosquitto MQTT server and the MQTT integration set up in Home Assistant
-- ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT
+- A running Mosquitto MQTT broker (server). If you have one already you can use it otherwise install Mosquitto broker from HA Add-On Store
+- The HA MQTT Integration added in "Devices/Services" and properly configured for the above broker.
+- ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT to the above broker
+
+I recommend using MQTT Explorer for analysis of the MQTT setup.
 
 - A couple of Lovelace plugins
 
