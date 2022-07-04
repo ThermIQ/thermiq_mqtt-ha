@@ -15,9 +15,6 @@ Please note that updating from Release 1.2.0 requires some significant changes i
 - A running Mosquitto MQTT broker (server). If you have one already you can use it otherwise install Mosquitto broker from HA Add-On Store
 - The HA MQTT Integration added in "Devices/Services" and properly configured for the above broker.
 - ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT to the above broker
-
-I recommend using MQTT Explorer for analysis of the MQTT setup.
-
 - A couple of Lovelace plugins
 
 ## Quick start
@@ -90,6 +87,8 @@ The lovelace setup requires the following custom cards to be installed in HACS
  ```
 #### Restart
 The Home Assistant server needs to be restarted once all configuration is done
+
+I recommend using [MQTT Explorer](https://mqtt-explorer.com/) for analysis of the MQTT setup.
 
 ## Register description
 A first attempt to create a description of the function behind each register can be found here
