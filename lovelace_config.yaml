@@ -64,7 +64,7 @@
 # Room sensor only works together with Thermiq-Room ##################################################################
           - type: custom:numberbox-card
             entity: input_number.thermiq_mqtt_room_sensor_set_t
-          - entity: input_boolean.thermiq_mqtt_heatpump_evu_block
+          - entity: input_number.thermiq_mqtt_heatpump_evu_block
           - type: custom:fold-entity-row
             head:
               type: section

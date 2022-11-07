@@ -77,7 +77,7 @@ reg_id = {
   'integral1_curve_n5'           : ['r39', 'temperature_input',      'ºC',               0,    200,  4,  6  ],
   'heating_stop_t'               : ['r3a', 'temperature_input',      'ºC',               0,    200,  4,  7  ],
   'reduction_t'                  : ['r3b', 'temperature_input',      'ºC',               0,    100,  4,  8  ],
-  'room_factor'                  : ['r3c', 'temperature_input',      'ºC',               0,      2,  4,  9  ],
+  'room_factor'                  : ['r3c', 'temperature_input',      'ºC',               0,      4,  4,  9  ],
   'integral2_curve_slope'        : ['r3d', 'temperature_input',      'ºC',               0,    200,  6,  0  ],
   'integral2_curve_min'          : ['r3e', 'temperature_input',      'ºC',               0,    200,  6,  1  ],
   'integral2_curve_max'          : ['r3f', 'temperature_input',      'ºC',               0,    200,  6,  2  ],
@@ -141,9 +141,9 @@ reg_id = {
   'boiler_6kw_on_runtime_h'      : ['r72', 'time',                   'h',                 '',      '',  3,  2  ],
   'msd1_d'                       : ['r73', 'sensor',                 '',                  '',      '',  0,  0  ],
   'graph_display_offset'         : ['r74', 'sensor',                 '',                  '',      '',  0,  0  ],
-  'room_sensor_set_t'            : ['rf0', 'temperature_input',      'ºC',                0,     50   ],
-  'heatpump_evu_block'           : ['rf0', 'sensor_input',           '',                   0,      1   ],
-  'time'                         : ['rf1', 'time',                   's',                 0,     50   ],
+  'room_sensor_set_t'            : ['rf0', 'temperature_input',      'ºC',                0,     50 , 0, 0  ],
+  'time'                         : ['rf1', 'time',                   's',                 0,     50 , 0, 0  ],
+  'heatpump_evu_block'           : ['rf2', 'sensor_input',           '',                   0,      1 , 0, 0  ],
 
 }
 
