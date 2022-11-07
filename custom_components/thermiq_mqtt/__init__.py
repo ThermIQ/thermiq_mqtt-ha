@@ -271,6 +271,7 @@ async def async_setup(hass, config):
     entity_list.remove("input_number."+DOMAIN+"_heatpump_evu_block")
     await create_automation_for_input_numbers(entity_list)
     await create_automation_for_room_sensor()
+    hass.states.async_set(DOMAIN+".heatpump_communication_status", "unknown")
     # ### ##################################################################
 
     # ###
@@ -370,8 +371,13 @@ async def async_setup(hass, config):
                     hass.states.async_set(DOMAIN+".time_str", json_dict["time"])
                 elif 'Time' in json_dict:
                     hass.states.async_set(DOMAIN+".time_str", json_dict["Time"])
+                    
+               if 'vp_read' in json_dict:
+                    hass.states.async_set(DOMAIN+".heatpump_communication_status", json_dict["vp_read"])
+               else:
+                    hass.states.async_set(DOMAIN+".heatpump_communication_status", "ok")
 
-                hass.bus.fire(DOMAIN+"_msg_rec_event", {})
+               hass.bus.fire(DOMAIN+"_msg_rec_event", {})
 
             else:
                 _LOGGER.error("JSON result was not from ThermIQ-mqtt")
