@@ -1,12 +1,6 @@
 {
     "name": "ThermIQ MQTT",
     "hacs": "0.24.0",
-    "domains": [
-        "binary_sensor",
-        "sensor",
-        "switch"
-    ],
-    "iot_class": "Local Push",
-    "homeassistant": "2021.12",
+    "homeassistant": "2022.01",
     "render_readme": true
 }
