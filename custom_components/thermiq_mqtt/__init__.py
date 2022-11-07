@@ -364,7 +364,7 @@ async def async_setup(hass, config):
                 hass.states.async_set(
                     DOMAIN+"." + id_reg["r03"], hass.data[DOMAIN]._data["r03"]
                 )
-
+ 
                 hass.data[DOMAIN]._data["mqtt_counter"] += 1
 
                 if 'time' in json_dict:
@@ -376,7 +376,7 @@ async def async_setup(hass, config):
                     hass.states.async_set(DOMAIN+".heatpump_communication_status", json_dict["vp_read"])
                 else:
                     hass.states.async_set(DOMAIN+".heatpump_communication_status", "ok")
-
+                    
                 hass.bus.fire(DOMAIN+"_msg_rec_event", {})
 
             else:
