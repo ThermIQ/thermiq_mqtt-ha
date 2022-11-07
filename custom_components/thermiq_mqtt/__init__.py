@@ -89,7 +89,7 @@ from homeassistant.core import HomeAssistant, Event
 
 
 THERMIQ_PLATFORMS = ["binary_sensor", "sensor"]
-AVAILABLE_LANGUAGES = ['en','sw','fi','no','en','de','se']
+AVAILABLE_LANGUAGES = ['en','se','fi','no','de']
 
 DOMAIN = "thermiq_mqtt"
 
@@ -268,6 +268,7 @@ async def async_setup(hass, config):
             )
 
     entity_list.remove("input_number."+DOMAIN+"_room_sensor_set_t")
+    entity_list.remove("input_number."+DOMAIN+"_heatpump_evu_block")
     await create_automation_for_input_numbers(entity_list)
     await create_automation_for_room_sensor()
     # ### ##################################################################
@@ -283,11 +284,13 @@ async def async_setup(hass, config):
                 for k in json_dict.keys():
                     kstore = k.lower()
                     dstore = k
-                    # Make INDR_T and timestamp appear as normal register
+                    # Make INDR_T, EVU and timestamp appear as normal register
                     if kstore == "indr_t":
                         kstore = "rf0"
                     if kstore == "timestamp":
                         kstore = "rf1"
+                    if kstore == "evu":
+                        kstore = "rf2"
                     # Create hex notation if incoming register is decimal format
                     if k[0] == "d":
                         reg = int(k[1:])
@@ -389,6 +392,7 @@ async def async_setup(hass, config):
 
     # Service to write specific reg ( of format rxx, hex or dnnn decimal with possible leading zeroes) with data,
     # reg d240 is maped to INDR_T
+    # reg d242 is maped to EVU
     # Only used for bit-banging registers directly by user
     @callback
     def write_reg_service(call):
@@ -427,6 +431,9 @@ async def async_setup(hass, config):
         if dreg == "d240":
             topic = conf.set_topic
             payload = json.dumps({"INDR_T": value})
+        elif dreg == "d242":
+            topic = conf.set_topic
+            payload = json.dumps({"EVU": value})
         elif conf.hexFormat:
             topic = conf.cmd_topic
             payload = json.dumps({hreg: value})
@@ -490,6 +497,9 @@ async def async_setup(hass, config):
         if dreg == "d240":
             topic = conf.set_topic
             payload = json.dumps({"INDR_T": value})
+        elif dreg == "d242":
+            topic = conf.set_topic
+            payload = json.dumps({"EVU": value})
         elif conf.hexFormat:
             topic = conf.cmd_topic
             payload = json.dumps({reg: value})
@@ -575,6 +585,36 @@ async def async_setup(hass, config):
             )
         else:
             _LOGGER.debug("No need to write")
+            
+            
+    # Service call for EVU
+    @callback
+    def set_evu_service(call):
+        """Service to send a message."""
+        value = float(call.data.get("value"))
+        if not (isinstance(value, float)) or value is None:
+            _LOGGER.error("no value message sent due to missing value:[%s]", value)
+            return
+
+        reg = "rf2"
+        if (value < 0) or (value > 1):
+            _LOGGER.error("EVU value is out of range:[%s]", value)
+            return
+
+        # Make up the JSON payload
+        payload = json.dumps({"EVU": value})
+        _LOGGER.debug("topic:[%s]", conf.cmd_topic)
+        _LOGGER.debug("payload:[%s]", payload)
+
+        if value != hass.data[DOMAIN]._data[reg]:
+            hass.states.async_set(DOMAIN+".rf2", value)
+            hass.async_create_task(
+                hass.components.mqtt.async_publish(
+                    hass, conf.set_topic, payload, qos=2, retain=False
+                )
+            )
+        else:
+            _LOGGER.debug("No need to write")
 
 ############################################################################################
     # Register our service with Home Assistant.
@@ -583,6 +623,7 @@ async def async_setup(hass, config):
     hass.services.async_register(DOMAIN, "write_reg", write_reg_service)
     hass.services.async_register(DOMAIN, "write_mode", write_mode_service)
     hass.services.async_register(DOMAIN, "set_indr_t", set_indr_t_service)
+    hass.services.async_register(DOMAIN, "set_evu", set_evu_service)
 
     _LOGGER.info("Subscribe:" + conf.data_topic)
     await hass.components.mqtt.async_subscribe(conf.data_topic, message_received)
@@ -646,6 +687,32 @@ async def create_automation_for_room_sensor():
     }
     # _LOGGER.debug(data)
     await create_automation(OrderedDict(data))
+
+    data = {
+        "alias": "ThermIQ EVU to MQTT ["+DOMAIN+"]",
+        "trigger": [
+            {"platform": "state", "entity_id": "input_number."+DOMAIN+"_heatpump_evu_block"}
+        ],
+        #        'condition': [
+        #          {
+        #          }
+        #        ],
+        "action": [
+            {
+                "service": DOMAIN+".set_evu",
+                "data_template": {
+                    "value": Template("{{ trigger.to_state.state | float }}"),
+                },
+            }
+        ],
+        "mode": "single",
+        "max_exceeded": "WARNING",
+        "max": 1,
+        "trace": {"stored_traces": 5},
+    }
+    # _LOGGER.debug(data)
+    await create_automation(OrderedDict(data))
+
 
     # ### Select -> MQTT
     data = {

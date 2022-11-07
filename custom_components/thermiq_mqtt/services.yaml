@@ -73,3 +73,12 @@ thermiq_room_sensor_set_t:
     value:
       description: Value to write (Accepts one decimal)
       example: '22.3'
+
+thermiq_heatpump_evu_block:
+  # Set value EVU to thermiq_mqtt 
+  description: set value 0-1 of thermiq_heatpump_evu_block, will generate an MQTT message
+  # Different fields that your service accepts
+  fields:
+    value:
+      description: Value to write (0 or 1)
+      example: '0'
