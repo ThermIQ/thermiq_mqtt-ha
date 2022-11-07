@@ -141,9 +141,9 @@ reg_id = {
   'boiler_6kw_on_runtime_h'      : ['r72', 'time',                   'h',                 '',      '',  3,  2  ],
   'msd1_d'                       : ['r73', 'sensor',                 '',                  '',      '',  0,  0  ],
   'graph_display_offset'         : ['r74', 'sensor',                 '',                  '',      '',  0,  0  ],
-  'room_sensor_set_t'            : ['rf0', 'temperature_input',      'ºC',                0,     50 , 0, 0  ],
-  'time'                         : ['rf1', 'time',                   's',                 0,     50 , 0, 0  ],
-  'heatpump_evu_block'           : ['rf2', 'sensor_input',           '',                   0,      1 , 0, 0  ],
+  'room_sensor_set_t'            : ['rf0', 'temperature_input',      'ºC',                0,     50, 0, 0 ],
+  'time'                         : ['rf1', 'time',                   's',                 0,     50, 0, 0   ],
+  'heatpump_evu_block'           : ['rf2', 'sensor_input',           '',                   0,      1, 0, 0   ],
 
 }
 
@@ -280,6 +280,6 @@ id_names = {
   'boiler_6kw_on_runtime_h'      : ['Runtime 6 kW', 'Drifttid 6 kW', 'Käyttöaika 6 kW', 'Drifttid 6 kW', 'Betriebszeit 6 kW'],
   'msd1_d'                       : ['DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1'],
   'graph_display_offset'         : ['GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   '],
-  'room_sensor_set_t'            : ['Room sensor, Set target','Rums sensor, Styrvärde', 'Room sensor, Set target', 'Room sensor, Set target', 'Room sensor, Set target'],  
-  'heatpump_evu_block'           : ['EVU Function, Set state','EVU funktion, Läge','EVU Function, Set state','EVU Function, Set state','EVU Function, Set state', ],
+  'room_sensor_set_t'            : ['Room sensor, Set target','Rums sensor, Styrvärde', 'Room sensor, Set target', 'Room sensor, Set target', 'Room sensor, Set target'],
+  'heatpump_evu_block'           : ['EVU Function, Set state','EVU funktion, Läge','EVU Function, Set state','EVU Function, Set state','EVU Function, Set state' ]
 }
