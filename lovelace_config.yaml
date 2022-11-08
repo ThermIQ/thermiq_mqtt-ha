@@ -27,6 +27,7 @@
               .hpwidget-name-span{}
               .hpwidget-unit-span{text-align:right;overflow:hidden;color:white;font-size:70%}
               @keyframes rotating {to { transform: rotate(1turn); }}
+              @keyframes blink { to {visibility: hidden;}}
               </style>
               
               <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_mqtt_alarm_indication_on')=='on') %}background-color:red;{% endif %}">
@@ -54,7 +55,8 @@
               <ha-icon icon="mdi:cog" id="hpwidget-KOMPR" style="position:absolute;top:155px;left:70px;--mdc-icon-size:45px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_compressor_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
               <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_brine_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
               <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_supply_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
-              <ha-icon icon="mdi:alert-circle" id="hpwidget-ALERT" style="color:red;position:absolute;top:42px;left:82px;z-index:120;animation: blink 2s ease infinite;{% if (states('thermiq_mqtt.heatpump_communication_status')=='ok') %}display:none{% endif %}"></ha-icon>
+              <ha-icon icon="mdi:alert-circle" id="hpwidget-ALERT" style="color:red;position:absolute;top:42px;left:82px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('thermiq_mqtt.heatpump_communication_status')=='ok') %}display:none{% endif %}"></ha-icon>
+              <ha-icon icon="mdi:stop" id="hpwidget-EVU" style="color:red;position:absolute;top:82px;left:62px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('thermiq_mqtt.heatpump_evu_block')=='0') %}display:none{% endif %}">EVU</ha-icon>
               </div>
               </div>
               

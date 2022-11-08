@@ -136,7 +136,7 @@ async def async_setup(hass, config):
 
     if lang in AVAILABLE_LANGUAGES:
         if lang == 'sw':
-            lang='se'
+            lang='se                                                   '
     else:
         lang = 'en' 
     LANGUAGE=AVAILABLE_LANGUAGES.index(lang)
