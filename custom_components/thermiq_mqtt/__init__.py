@@ -49,7 +49,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up component from a config entry, config_entry contains data from config entry database."""
-    _LOGGER.error("Set up HA integration entry " + entry.data[CONF_ID])
+    _LOGGER.error("Set up ThermIQ-MQTT integration entry " + entry.data[CONF_ID])
 
     # One common ThermIQWorker serves all HeatPump objects
     if DOMAIN in hass.data:

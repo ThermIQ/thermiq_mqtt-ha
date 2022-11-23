@@ -216,19 +216,21 @@ class HeatPump:
         self._langid = AVAILABLE_LANGUAGES.index(lang)
         self._id_reg = {}
 
-        _LOGGER.debug("Language[%s]", self._langid)
+        _LOGGER.error("Language[%s]", self._langid)
 
-        _LOGGER.debug(DOMAIN + " mqtt base: " + self._mqtt_base)
+        _LOGGER.error(
+            f"{self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
+        )
         self._data_topic = self._mqtt_base + "data"
 
         if self._dbg is True:
             self._mqtt_base = self._mqtt_base + "dbg_"
-            _LOGGER.debug("MQTT Debug write enabled")
+            _LOGGER.error("MQTT Debug write enabled")
         self._cmd_topic = self._mqtt_base + "write"
         self._set_topic = self._mqtt_base + "set"
 
         if self._hexFormat == True:
-            _LOGGER.debug("Using HEX format")
+            _LOGGER.error("Using HEX format")
 
         self._hpstate["mqtt_counter"] = 0
 
