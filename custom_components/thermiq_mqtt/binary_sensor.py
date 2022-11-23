@@ -1,11 +1,28 @@
-"""Support for ThermIQ binary sensors."""
 import logging
+from homeassistant.core import HomeAssistant, callback
 
-from homeassistant.helpers.entity import Entity, async_generate_entity_id
 from homeassistant.const import STATE_OFF, STATE_ON
 
-from . import DOMAIN as THERMIQ_DOMAIN
-from . import (
+from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.const import (
+    ATTR_IDENTIFIERS,
+    ATTR_MANUFACTURER,
+    ATTR_MODEL,
+    ATTR_NAME,
+)
+from homeassistant.helpers.device_registry import DeviceEntryType
+
+from homeassistant.const import (
+    DEVICE_CLASS_HUMIDITY,
+    DEVICE_CLASS_TEMPERATURE,
+    TEMP_CELSIUS,
+)
+from .const import (
+    DOMAIN,
+    CONF_ID,
+)
+
+from .heatpump.thermiq_regs import (
     FIELD_BITMASK,
     FIELD_MAXVALUE,
     FIELD_MINVALUE,
@@ -16,73 +33,94 @@ from . import (
     reg_id,
 )
 
-try:
-    from homeassistant.components.binary_sensor import BinarySensorEntity
-except ImportError:
-    from homeassistant.components.binary_sensor import (
-        BinarySensorDevice as BinarySensorEntity,
-    )
-
-
 _LOGGER = logging.getLogger(__name__)
-# From where should this be imported?
-ENTITY_ID_FORMAT = "binary_sensor" + "."+THERMIQ_DOMAIN+"_{}"
 
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the available ThermIQ sensors etc."""
-    if discovery_info is None:
-        return
-    data = hass.data[THERMIQ_DOMAIN]
+async def async_setup_entry(
+    hass, config_entry, async_add_entities, discovery_info=None
+):
+    """Set up platform for a new integration.
+    Called by the HA framework after async_setup_platforms has been called
+    during initialization of a new integration.
+    """
 
-    dev = []
+    @callback
+    def async_add_sensor(sensor):
+        """Add a ThermIQ sensor property"""
+        async_add_entities([sensor], True)
+        # _LOGGER.debug('Added new sensor %s / %s', sensor.entity_id, sensor.unique_id)
+
+    worker = hass.data[DOMAIN].worker
+    heatpump = hass.data[DOMAIN]._heatpumps[config_entry.data[CONF_ID]]
+    entities = []
 
     for key in reg_id:
-        if reg_id[key][1] in ["binary_sensor"]:
+        if reg_id[key][1] in [
+            "binary_sensor",
+        ]:
             device_id = key
             if key in id_names:
-                friendly_name = id_names[key][ hass.data[THERMIQ_DOMAIN]._data['language'] ]
+                friendly_name = id_names[key][heatpump._langid]
             else:
                 friendly_name = None
-            vp_reg = reg_id[key][0]
-            ANDbits = reg_id[key][3]
+            vp_reg = reg_id[key][FIELD_REGNUM]
+            vp_type = reg_id[key][FIELD_REGTYPE]
+            bitmask = reg_id[key][FIELD_BITMASK]
 
-            dev.append(
-                ThermIQ_MQTT_BinarySensor(
-                    hass, data, device_id, vp_reg, friendly_name, ANDbits,
+            entities.append(
+                HeatPumpBinarySensor(
+                    hass,
+                    heatpump,
+                    device_id,
+                    vp_reg,
+                    friendly_name,
+                    bitmask,
                 )
             )
-    async_add_entities(dev)
+    async_add_entities(entities)
 
 
-class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
-    """Representation of a Binary Sensor."""
+class HeatPumpBinarySensor(BinarySensorEntity):
+    """Common functionality for all entities."""
 
-    def __init__(
-        self, hass, data, device_id, vp_reg, friendly_name, ANDbits,
-    ):
-        """Initialize the Template switch."""
+    def __init__(self, hass, heatpump, device_id, vp_reg, friendly_name, bitmask):
         self.hass = hass
-        self._data = data
-        self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, device_id, hass=hass
-        )
+        self._heatpump = heatpump
+        self._hpstate = heatpump._hpstate
+
+        # set HA instance attributes directly (mostly don't use property)
+        # self._attr_unique_id
+        self.entity_id = f"sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
+
         _LOGGER.debug("entity_id:" + self.entity_id)
         _LOGGER.debug("idx:" + device_id)
         self._name = friendly_name
-        self._state = False
-        self._icon = None
+        self._state = None
         self._icon = "mdi:flash-outline"
+
         self._entity_picture = None
         self._available = True
 
         self._idx = device_id
         self._vp_reg = vp_reg
-        self._sorter = int("0x" + vp_reg[1:], 0) * 65536 + int(ANDbits)
-        self._ANDbits = ANDbits
+        self._bitmask = bitmask
+        # ???
+        self._sorter = int("0x" + vp_reg[1:], 0) * 65536 + int(bitmask)
 
         # Listen for the ThermIQ rec event indicating new data
-        hass.bus.async_listen(THERMIQ_DOMAIN+"_msg_rec_event", self._async_update_event)
+        hass.bus.async_listen(
+            heatpump._domain + "_" + heatpump._id + "_msg_rec_event",
+            self._async_update_event,
+        )
+
+        # Is this needed
+        self._attr_device_info = {
+            ATTR_IDENTIFIERS: {(heatpump._id, "ThermIQ-MQTT")},
+            ATTR_NAME: friendly_name,
+            ATTR_MANUFACTURER: "ThermIQ",
+            ATTR_MODEL: "v1.0",
+            "entry_type": DeviceEntryType.SERVICE,
+        }
 
     @property
     def name(self):
@@ -95,18 +133,18 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
         return False
 
     @property
+    def state(self):
+        """Return the state of the sensor."""
+        return STATE_ON if self._state else STATE_OFF
+
+    @property
     def vp_reg(self):
         """Return the device class of the sensor."""
         return self._vp_reg
 
     @property
     def is_on(self):
-        return self._state
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return STATE_ON if self.is_on else STATE_OFF
+        return self._state is True
 
     @property
     def sorter(self):
@@ -115,34 +153,38 @@ class ThermIQ_MQTT_BinarySensor(BinarySensorEntity):
 
     @property
     def icon(self):
-        """ Return the icon of the sensor. """
+        """Return the icon of the sensor."""
         return self._icon
 
     async def async_update(self):
+        """Update the value of the entity."""
         """Update the new state of the sensor."""
 
-        _LOGGER.debug("update: "+THERMIQ_DOMAIN +"_" + self._idx)
-        state = self._data.get_value(self._vp_reg)
-        # self._data.async_update()
-        if (state) is None:
-            self._state = None
-            _LOGGER.error("Could not get data for %s", self._idx)
+        _LOGGER.debug("update: " + self._idx)
+        reg_state = self._hpstate.get_value(self._vp_reg)
+        if self._state is None:
+            _LOGGER.warning("Could not get data for %s", self._idx)
         else:
-            self._state = (int(state) & self._ANDbits) > 0
+            self._state = (int(reg_state) & self._bitmask) > 0
 
     async def _async_update_event(self, event):
         """Update the new state of the sensor."""
 
-        _LOGGER.debug("event: "+ THERMIQ_DOMAIN +"_" + self._idx)
-        state = self._data.get_value(self._vp_reg)
-        # self._data.async_update()
-        if (state) is None:
+        _LOGGER.debug("event: " + self._idx)
+        reg_state = self._hpstate[self._vp_reg]
+        if reg_state is None:
+            _LOGGER.debug("Could not get data for %s", self._idx)
             self._state = None
             bool_state = None
-            _LOGGER.error("Could not get data for %s", self._idx)
         else:
-            bool_state = (int(state) & self._ANDbits) > 0
-        if True:  # bool_state != self._state ):
+            bool_state = (int(reg_state) & self._bitmask) > 0
+
+        if self._state != bool_state:
             self._state = bool_state
             self.async_schedule_update_ha_state()
             _LOGGER.debug("async_update_ha: %s", str(bool_state))
+
+    @property
+    def device_class(self):
+        """Return the class of this device."""
+        return f"{DOMAIN}_HeatPumpSensor"

@@ -1,0 +1,42 @@
+{
+    "title": "ThermIQ Config",
+    "config": {
+      "abort": {
+        "already_configured": "The entered id name is already in use."
+      },
+      "error": {
+        "invalid_nodename": "The entered nodename is not valid",
+        "creation_error": "An error occured while creating configuration object",
+        "creation_error": "An error occured while updating configuration object",
+        "invalid_language": "An error occured while creating configuration object"
+      },
+      "step": {
+        "user": {
+          "data": {
+            "id_name": "Unique ID",
+            "nodename": "MQTT Nodename",
+            "language": "Language",
+            "hexformat": "Use hexformat for registers i MQTT",
+            "thermiq_dbg": "Enable debug"
+          },
+          "title": "Heatpump config"
+        }
+      }
+    },
+    "options": {
+      "abort": {
+        "already_configured": "The entered id name is already in use."
+      },
+      "step": {
+        "user": {
+          "data": {
+            "nodename": "MQTT Nodename",
+            "language": "Language",
+            "hexformat": "Use hexformat for registers i MQTT",
+            "thermiq_dbg": "Enable debug"
+          },
+          "title": "Options"
+        }
+      }
+    }
+  }
