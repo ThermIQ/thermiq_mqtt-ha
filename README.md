@@ -25,7 +25,11 @@ Please note that updating from Release 1.2.0 requires some significant changes i
 5. Go to the HACS integrations page, add ThermIQ integration.
 
 ## Configuration
-#### Component Configuration:
+#### Component Configuration in v2.x.x:
+Component configuration is now done in the graphical interface
+- Note the current 'feature' where an existing entry cannot be edited but must be removed and added 
+
+#### Component Configuration in v1.x.x:
 The complete configuration entry needed is:
 
 ```yaml
