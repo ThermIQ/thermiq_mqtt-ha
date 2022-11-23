@@ -1,0 +1,12 @@
+{
+  "domain": "thermiq_mqtt",
+  "name": "ThermIQ MQTT Integration",
+  "config_flow": true,
+  "dependencies": ["mqtt"],
+  "documentation": "https://github.com/thermiq/thermiq_mqtt-ha",
+  "issue_tracker": "https://github.com/thermiq/thermiq_mqtt-ha/issues",
+  "codeowners": ["@thermiq"],
+  "iot_class": "local_push",
+  "version": "2.0.0",
+  "quality_scale": ""
+}
