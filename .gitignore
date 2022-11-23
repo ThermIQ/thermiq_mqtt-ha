@@ -2,3 +2,6 @@ __pycache__
 *.bak
 /.vscode
 .devcontainer
+/tests
+/.pytest_cache
+/venv
