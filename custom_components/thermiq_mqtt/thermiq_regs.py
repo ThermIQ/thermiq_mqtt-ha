@@ -282,4 +282,10 @@ id_names = {
   'graph_display_offset'         : ['GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   ', 'GrafCounterOffSet   '],
   'room_sensor_set_t'            : ['Room sensor, Set target','Rums sensor, Styrvärde', 'Room sensor, Set target', 'Room sensor, Set target', 'Room sensor, Set target'],
   'heatpump_evu_block'           : ['EVU Function, Set state','EVU funktion, Läge','EVU Function, Set state','EVU Function, Set state','EVU Function, Set state' ]
+  'mode0'           : ['Off','Av','Av','Off','Off' ],
+  'mode1'           : ['Auto','Av','Av','Off','Off' ],
+  'mode2'           : ['Heatpump only','Av','Av','Off','Off' ],
+  'mode4'           : ['Heater only h','Av','Av','Off','Off' ],
+  'mode8'           : ['Hot water only','Av','Av','Off','Off' ],
+  	
 }
