@@ -67,10 +67,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Event handler for when HA has started."""
         await hass.async_create_task(setup_input_numbers(heatpump))
         await hass.async_create_task(setup_input_select(heatpump))
-        # await hass.async_create_task(setup_services(heatpump))
+        await hass.async_create_task(heatpump.setup_mqtt())
 
-    # Do this here for now since async...
-    await heatpump.async_setup()
 
     # Load the platforms for heatpump
     hass.async_create_task(

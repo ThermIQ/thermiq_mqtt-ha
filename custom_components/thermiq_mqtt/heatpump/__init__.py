@@ -238,7 +238,7 @@ class HeatPump:
             self._id_reg[v[0]] = k
             self._hpstate[v[0]] = -1
 
-    async def async_setup(self):
+    async def setup_mqtt(self):
         await self._hass.components.mqtt.async_subscribe(
             self._data_topic,
             self.message_received,
