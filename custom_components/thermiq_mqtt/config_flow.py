@@ -44,8 +44,8 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_ID, default="vp1"): cv.string,
                 vol.Required(CONF_MQTT_NODE, default="ThermIQ/ThermIQ-mqtt"): cv.string,
                 vol.Optional(CONF_MQTT_LANGUAGE, default="en"): cv.string,
-                vol.Optional(CONF_MQTT_HEX, default=False): cv.boolean,
-                vol.Optional(CONF_MQTT_DBG, default=False): cv.boolean,
+                vol.Required(CONF_MQTT_HEX, default=False): cv.boolean,
+                vol.Required(CONF_MQTT_DBG, default=False): cv.boolean,
             }
         )
 
@@ -62,10 +62,10 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_MQTT_LANGUAGE, default=user_input[CONF_MQTT_LANGUAGE]
                     ): cv.string,
-                    vol.Optional(
+                    vol.Required(
                         CONF_MQTT_HEX, default=user_input[CONF_MQTT_HEX]
                     ): cv.boolean,
-                    vol.Optional(
+                    vol.Required(
                         CONF_MQTT_DBG, default=user_input[CONF_MQTT_DBG]
                     ): cv.boolean,
                 }
@@ -96,6 +96,22 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await self.async_set_unique_id(unique_id)
                 self._abort_if_unique_id_configured()
 
+                _LOGGER.error(f"[cfg_flow async_step_user] Title[{unique_id}]")
+                _LOGGER.error(f"ID[{id_name}]")
+
+                _LOGGER.error(f"mqtt_node: [{user_input[CONF_MQTT_NODE]}]")
+
+                _LOGGER.error(f"Language[{user_input[CONF_MQTT_LANGUAGE]}]")
+                if user_input[CONF_MQTT_DBG] is True:
+                    _LOGGER.error("MQTT Debug write enabled")
+                else:
+                    _LOGGER.error("MQTT Debug write disabled")
+
+                if user_input[CONF_MQTT_HEX] == True:
+                    _LOGGER.error("Using HEX format")
+                else:
+                    _LOGGER.error("Using Dec format")
+
                 return self.async_create_entry(
                     title=unique_id,
                     data={
@@ -105,6 +121,7 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
                         CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
                     },
+                    options={},
                 )
             except:
                 return self.async_show_form(
@@ -146,10 +163,10 @@ class OptionsFlow(config_entries.OptionsFlow):
                     CONF_MQTT_LANGUAGE,
                     default=self.config_entry.data.get(CONF_MQTT_LANGUAGE),
                 ): cv.string,
-                vol.Optional(
+                vol.Required(
                     CONF_MQTT_HEX, default=self.config_entry.data.get(CONF_MQTT_HEX)
                 ): cv.boolean,
-                vol.Optional(
+                vol.Required(
                     CONF_MQTT_DBG, default=self.config_entry.data.get(CONF_MQTT_DBG)
                 ): cv.boolean,
             }
@@ -166,10 +183,10 @@ class OptionsFlow(config_entries.OptionsFlow):
                     vol.Optional(
                         CONF_MQTT_LANGUAGE, default=user_input[CONF_MQTT_LANGUAGE]
                     ): cv.string,
-                    vol.Optional(
+                    vol.Required(
                         CONF_MQTT_HEX, default=user_input[CONF_MQTT_HEX]
                     ): cv.boolean,
-                    vol.Optional(
+                    vol.Required(
                         CONF_MQTT_DBG, default=user_input[CONF_MQTT_DBG]
                     ): cv.boolean,
                 }
@@ -178,17 +195,42 @@ class OptionsFlow(config_entries.OptionsFlow):
             try:
                 entryTitle = self.config_entry.title
                 id_name = self.config_entry.data[CONF_ID]
-
-                return self.async_create_entry(
-                    title=entryTitle,
-                    data={
-                        CONF_ID: id_name,
-                        CONF_MQTT_NODE: user_input[CONF_MQTT_NODE],
-                        CONF_MQTT_LANGUAGE: user_input[CONF_MQTT_LANGUAGE],
-                        CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
-                        CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
-                    },
+                lang = AVAILABLE_LANGUAGES.index(user_input[CONF_MQTT_LANGUAGE])
+                _LOGGER.error(
+                    f"[opt_flow async_step_user] unique[{self.config_entry.unique_id}]"
                 )
+                _LOGGER.error(f"Title[{entryTitle}]")
+                _LOGGER.error(f"ID[{id_name}]")
+
+                _LOGGER.error(f"mqtt_node: [{user_input[CONF_MQTT_NODE]}]")
+
+                _LOGGER.error(f"Language[{user_input[CONF_MQTT_LANGUAGE]}]")
+                if user_input[CONF_MQTT_DBG] is True:
+                    _LOGGER.error("MQTT Debug write enabled")
+                else:
+                    _LOGGER.error("MQTT Debug write disabled")
+
+                if user_input[CONF_MQTT_HEX] == True:
+                    _LOGGER.error("Using HEX format")
+                else:
+                    _LOGGER.error("Using Dec format")
+                data = {
+                    CONF_ID: id_name,
+                    CONF_MQTT_NODE: user_input[CONF_MQTT_NODE],
+                    CONF_MQTT_LANGUAGE: user_input[CONF_MQTT_LANGUAGE],
+                    CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
+                    CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
+                }
+                _LOGGER.error(f"Title:{entryTitle} Data:{str(data)}")
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry,
+                    data=data,
+                    options={},
+                )
+
+                # This is the options entry, jeep it empty
+                return self.async_create_entry(title="", data={})
+
             except:
                 return self.async_show_form(
                     step_id="user",
