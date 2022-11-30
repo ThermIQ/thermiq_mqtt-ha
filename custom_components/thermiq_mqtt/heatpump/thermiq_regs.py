@@ -532,7 +532,7 @@ id_names = {
     'heating_stop_t': [
         'Heatstop',
         'Värmestopp',
-        'Lämmityksen pysäytys',
+        'Lämmitys pois',
         'Varmestopp',
         'Heizstopp',
     ],
@@ -927,7 +927,7 @@ id_names = {
         'EVU Function, Set state',
         'EVU Function, Set state',
     ],
-    'mode0': ['Off', 'Av', 'Vinossa', 'Off', 'Aus'],
+    'mode0': ['Off', 'Av', 'Pois päältä', 'Off', 'Aus'],
     'mode1': ['Auto', 'Auto', 'Auto', 'Auto', 'Auto'],
     'mode2': [
         'Heatpump only',
@@ -939,14 +939,14 @@ id_names = {
     'mode4': [
         'Heater only',
         'Elvärme',
-        'Av',
+        'Vain lisälämpö',
         'Kun elektrisk oppvarming',
         'Nur Elektroheizung',
     ],
     'mode8': [
         'Hot water only',
         'Bara varmvatten',
-        'Vain vedenlämmitin',
+        'Vain käyttövesituotanto',
         'Kun varmtvannsbereder',
         'Nur Warmwasserbereiter',
     ],
