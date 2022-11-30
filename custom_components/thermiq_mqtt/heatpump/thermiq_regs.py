@@ -455,7 +455,7 @@ id_names = {
     'hgw_water_t': [
         'Hotw. supplyline temp.',
         'Varmv.framledn.temp',
-        'Varaajan menolämpötila',
+        'HGW menolämpötila',
         'Varmtv.Tur temp',
         'Warmw.vorlauftemperatur',
     ],
@@ -539,7 +539,7 @@ id_names = {
     'reduction_t': [
         'Temp. reduction',
         'Temp. sänkning',
-        'Lämpötilan alennnus',
+        'Lämpötilan alennus',
         'Temp. senkning',
         'Nachtabsenkung',
     ],
