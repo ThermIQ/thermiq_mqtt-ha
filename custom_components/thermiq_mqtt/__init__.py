@@ -69,7 +69,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await hass.async_create_task(setup_input_select(heatpump))
         await hass.async_create_task(heatpump.setup_mqtt())
 
-
     # Load the platforms for heatpump
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -96,9 +95,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload HASL."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    if DOMAIN in hass.data:
+        worker = hass.data[DOMAIN]
+        await worker.update_heatpump_entry(entry)
 
 
 class ThermIQWorker:
@@ -122,6 +121,7 @@ class ThermIQWorker:
     def add_entry(self, config_entry: ConfigEntry):
         """Add entry."""
         heatpump = HeatPump(self._hass, config_entry)
+        await heatpump.update_config(config_entry)
         self._heatpumps[config_entry.data[CONF_ID]] = heatpump
         self._hass.bus.fire(
             f"{DOMAIN}_changed",
@@ -137,11 +137,10 @@ class ThermIQWorker:
         )
         self._heatpumps.pop(config_entry.data[CONF_ID])
 
-        # if self.is_idle():
-        # This was the last region, therefore stop the timer
-        # remove_listener = self._fetch_callback_listener
-        # if remove_listener is not None:
-        #    remove_listener()
+    async def update_heatpump_entry(self, config_entry: ConfigEntry):
+        heatpump = self._heatpumps[config_entry.data[CONF_ID]]
+        await heatpump.update_config(config_entry)
+        await self._hass.async_create_task(heatpump.setup_mqtt())
 
     def is_idle(self) -> bool:
         return not bool(self._heatpumps)

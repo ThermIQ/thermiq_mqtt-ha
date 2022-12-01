@@ -1,5 +1,8 @@
 import logging, json
 
+from collections.abc import Callable, Coroutine
+import attr
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 
@@ -48,6 +51,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class HeatPump:
+
+    _dbg = True
+    _mqtt_base = ""
+    _hexFormat = False
+    _langid = 0
+    unsubscribe_callback: Callable[[], None]
 
     # ###
     @callback
@@ -208,31 +217,9 @@ class HeatPump:
         self._hpstate = {}
         self._domain = DOMAIN
         self._id = entry.data[CONF_ID]
-        self._dbg = entry.data[CONF_MQTT_DBG]
-        self._mqtt_base = entry.data[CONF_MQTT_NODE] + "/"
-        self._dbg = entry.data[CONF_MQTT_DBG]
-        self._hexFormat = entry.data[CONF_MQTT_HEX]
-        lang = entry.data[CONF_MQTT_LANGUAGE]
-        self._langid = AVAILABLE_LANGUAGES.index(lang)
         self._id_reg = {}
+        self.unsubscribe_callback = None
 
-        _LOGGER.error("Language[%s]", self._langid)
-
-        _LOGGER.error(
-            f"{self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
-        )
-        self._data_topic = self._mqtt_base + "data"
-
-        if self._dbg is True:
-            self._mqtt_base = self._mqtt_base + "dbg_"
-            _LOGGER.error("MQTT Debug write enabled")
-        self._cmd_topic = self._mqtt_base + "write"
-        self._set_topic = self._mqtt_base + "set"
-
-        if self._hexFormat == True:
-            _LOGGER.error("Using HEX format")
-
-        self._hpstate["mqtt_counter"] = 0
 
         # Create reverse lookup dictionary (id_reg->reg_number)
 
@@ -241,10 +228,42 @@ class HeatPump:
             self._hpstate[v[0]] = -1
 
     async def setup_mqtt(self):
-        await self._hass.components.mqtt.async_subscribe(
+        self._hpstate["time_str"] = self._data_topic
+        self.unsubscribe_callback = await self._hass.components.mqtt.async_subscribe(
             self._data_topic,
             self.message_received,
         )
+
+    async def update_config(self, entry):
+        if self.unsubscribe_callback is not None:
+            self.unsubscribe_callback()
+        lang = entry.data[CONF_MQTT_LANGUAGE]
+        self._langid = AVAILABLE_LANGUAGES.index(lang)
+        self._dbg = entry.data[CONF_MQTT_DBG]
+        self._mqtt_base = entry.data[CONF_MQTT_NODE] + "/"
+        self._hexFormat = entry.data[CONF_MQTT_HEX]
+        self._data_topic = self._mqtt_base + "data"
+        self._cmd_topic = self._mqtt_base + "write"
+        self._set_topic = self._mqtt_base + "set"
+        self._hpstate["mqtt_counter"] = 0
+
+		# Provide some debug info
+        _LOGGER.error(
+            f"INFO: {self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
+        )
+        
+        if self._dbg is True:
+            self._mqtt_base = self._mqtt_base + "dbg_"
+            _LOGGER.error("INFO: MQTT Debug write enabled")
+
+        _LOGGER.error("Language[%s]", self._langid)
+ 
+        if self._hexFormat == True:
+            _LOGGER.error("INFO: Using HEX format")
+
+
+
+
 
     async def async_reset(self):
         """Reset this heatpump to default state."""

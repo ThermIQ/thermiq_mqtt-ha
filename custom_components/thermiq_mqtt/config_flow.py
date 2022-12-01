@@ -96,21 +96,6 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await self.async_set_unique_id(unique_id)
                 self._abort_if_unique_id_configured()
 
-                _LOGGER.error(f"[cfg_flow async_step_user] Title[{unique_id}]")
-                _LOGGER.error(f"ID[{id_name}]")
-
-                _LOGGER.error(f"mqtt_node: [{user_input[CONF_MQTT_NODE]}]")
-
-                _LOGGER.error(f"Language[{user_input[CONF_MQTT_LANGUAGE]}]")
-                if user_input[CONF_MQTT_DBG] is True:
-                    _LOGGER.error("MQTT Debug write enabled")
-                else:
-                    _LOGGER.error("MQTT Debug write disabled")
-
-                if user_input[CONF_MQTT_HEX] == True:
-                    _LOGGER.error("Using HEX format")
-                else:
-                    _LOGGER.error("Using Dec format")
 
                 return self.async_create_entry(
                     title=unique_id,
@@ -196,24 +181,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                 entryTitle = self.config_entry.title
                 id_name = self.config_entry.data[CONF_ID]
                 lang = AVAILABLE_LANGUAGES.index(user_input[CONF_MQTT_LANGUAGE])
-                _LOGGER.error(
-                    f"[opt_flow async_step_user] unique[{self.config_entry.unique_id}]"
-                )
-                _LOGGER.error(f"Title[{entryTitle}]")
-                _LOGGER.error(f"ID[{id_name}]")
 
-                _LOGGER.error(f"mqtt_node: [{user_input[CONF_MQTT_NODE]}]")
-
-                _LOGGER.error(f"Language[{user_input[CONF_MQTT_LANGUAGE]}]")
-                if user_input[CONF_MQTT_DBG] is True:
-                    _LOGGER.error("MQTT Debug write enabled")
-                else:
-                    _LOGGER.error("MQTT Debug write disabled")
-
-                if user_input[CONF_MQTT_HEX] == True:
-                    _LOGGER.error("Using HEX format")
-                else:
-                    _LOGGER.error("Using Dec format")
                 data = {
                     CONF_ID: id_name,
                     CONF_MQTT_NODE: user_input[CONF_MQTT_NODE],
@@ -221,7 +189,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                     CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
                     CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
                 }
-                _LOGGER.error(f"Title:{entryTitle} Data:{str(data)}")
+
                 self.hass.config_entries.async_update_entry(
                     self.config_entry,
                     data=data,
