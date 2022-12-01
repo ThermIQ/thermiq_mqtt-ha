@@ -8,6 +8,7 @@ Some background information on the ThermIQ-MQTT interface can be found here:
 https://thermiq.net
 
 **This integration will evolve over time**
+
 Please note that updating from Release 1.x to Release 2.0 requires some significant changes in your configuration and you need to update/cleanup your setup accordingly.
 
 
@@ -19,16 +20,17 @@ Please note that updating from Release 1.x to Release 2.0 requires some signific
 - A couple of Lovelace plugins
 
 ## Quick start
-1. Make sure that ThermIQ is properly setup and communicating with the MQTT server. You should have MQTT messages from the heatpump every 30s
+1. Make sure that ThermIQ is properly setup and communicating with the MQTT server. You should see MQTT messages in MQTT-Explorer from the heatpump every 30s
 2. Make sure that MQTT Integration in Home Assistant is setup and communicating with the MQTT server
 3. Make sure you have HACS set-up (https://github.com/custom-components/hacs).
-4. Make sure you have the required Lovelace plugins
+4. Make sure you have installed the required Lovelace plugins in HACS
 5. Go to the HACS integrations page, add ThermIQ integration and restart HA.
-6. Go to Integrations and add ThermIQ. 
--- The supplied lovelace config assumes you are Using the default "Unique ID: vp1".
--- The MQTT Nodename should be given without a / in the end
--- Use hexformat only if you have ThermIQ-MQTT fw 1.xx
--- Use debug if you want to try it out without actually writing to the heatpump
+6. Go to Integrations and add ThermIQ.
+-
+        - The supplied lovelace config assumes you are Using the default "Unique ID: vp1".
+        - The MQTT Nodename should be given without a / in the end
+        - Use hexformat only if you have ThermIQ-MQTT fw 1.xx
+        - Use debug if you want to try it out without actually writing to the heatpump
 7. Setup the lovelace card to show what the heatpump is doing
 
 ## Configuration
@@ -56,7 +58,7 @@ The lovelace setup requires the following custom cards to be installed in HACS
  vp_base_hw.jpg
  ```
 
-The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. It assumes you used vp1 as the Unique ID when setting up the integration. If you cahnge to another Unique ID or have more than one heatpump you should search and replace vp1 in this file.:
+The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. It assumes you used vp1 as the Unique ID when setting up the integration. If you change to another Unique ID or have more than one heatpump you should search and replace vp1 in this file.:
 
 ```yaml
 # ################################################
@@ -82,9 +84,11 @@ The Home Assistant server sometimes needs to be restarted once all configuration
 I recommend using [MQTT Explorer](https://mqtt-explorer.com/) for analysis of the MQTT setup.
 
 ## Register description
+The naming, translation and grouping of registers can be improved, your input is appreciated. Most of it is in the [thermiq_regs.py](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/custom_components/thermiq_mqtt/heatpump/thermiq_regs.py)  
+
 A first attempt to create a description of the function behind each register can be found here
 [REGISTERS.md](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/REGISTERS.md)
-The naming, translation and grouping of registers can be improved, your input is appreciated 
+
 
 ## Features and Limitations
 - Currently provides all data from the heatpump in the form of sensors and binary sensors
