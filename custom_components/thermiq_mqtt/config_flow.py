@@ -18,6 +18,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+#ToDo:
+#   Add check of Nodename
+#   Select list of languages
+#   check ID to be spaceless+[a-z/A-Z/0-9]
+
 
 class InvalidPostalCode(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""

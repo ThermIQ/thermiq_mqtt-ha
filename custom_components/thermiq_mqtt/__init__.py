@@ -58,7 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         worker = hass.data.setdefault(DOMAIN, ThermIQWorker(hass))
 
     # add new heatpump to worker
-    heatpump = worker.add_entry(entry)
+    heatpump = await worker.add_entry(entry)
     # Make config reload
     rld = entry.add_update_listener(reload_entry)
     entry.async_on_unload(rld)
@@ -118,7 +118,7 @@ class ThermIQWorker:
     def heatpumps(self):
         return self._heatpumps
 
-    def add_entry(self, config_entry: ConfigEntry):
+    async def add_entry(self, config_entry: ConfigEntry):
         """Add entry."""
         heatpump = HeatPump(self._hass, config_entry)
         await heatpump.update_config(config_entry)
