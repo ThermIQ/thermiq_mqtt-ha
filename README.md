@@ -36,6 +36,7 @@ Please note that updating from Release 1.x to Release 2.0 requires some signific
 ## Configuration
 #### Component Configuration in v2.x.x:
 Component configuration is now done in the graphical interface
+![Config](docs/config_small.jpg)
 
 #### Automations configuration
 No setup of automations is needed. You can use the normal "input_number" services to change a value in the heatpump.
