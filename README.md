@@ -58,13 +58,13 @@ The lovelace setup requires the following custom cards to be installed in HACS
  vp_base_hw.jpg
  ```
 
-The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. It assumes you used vp1 as the Unique ID when setting up the integration. If you change to another Unique ID or have more than one heatpump you should search and replace vp1 in this file.:
+The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. In HA do **“Edit Dashbord” - “Raw configuration editor”**, then copy and paste the lovelace file. This file assumes you used **vp1** as the **"Unique ID"** when setting up the integration. Please replace **_vp1** with **_yourid** if you customize your install or if adding more than one instance.
 
 ```yaml
 # ################################################
 # ##### ThermIQ Lovelace config. Add in Raw configuration editor
       - type: entities
-        title: ThermIQ
+        title: ThermIQ_vp1
         theme: default
         show_header_toggle: false
         entities:
