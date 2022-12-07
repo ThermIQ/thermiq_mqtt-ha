@@ -31,7 +31,7 @@ from ..const import (
     CONF_MQTT_NODE,
     CONF_MQTT_HEX,
     CONF_MQTT_DBG,
-    CONF_MQTT_LANGUAGE,
+    CONF_LANGUAGE,
     AVAILABLE_LANGUAGES,
 )
 
@@ -237,7 +237,7 @@ class HeatPump:
     async def update_config(self, entry):
         if self.unsubscribe_callback is not None:
             self.unsubscribe_callback()
-        lang = entry.data[CONF_MQTT_LANGUAGE]
+        lang = entry.data[CONF_LANGUAGE]
         self._langid = AVAILABLE_LANGUAGES.index(lang)
         self._dbg = entry.data[CONF_MQTT_DBG]
         self._mqtt_base = entry.data[CONF_MQTT_NODE] + "/"
