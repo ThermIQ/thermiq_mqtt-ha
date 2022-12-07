@@ -46,34 +46,37 @@ No setup of automations is needed. You can use the normal "input_number" service
 data: {"entity_id": "input_number.thermiq_mqtt_vp1_indoor_requested_t", "value":20}
 ```
 
-#### Lovelace Configuration:
-The lovelace setup requires the following custom cards to be installed in HACS
+#### Dashboard Configuration:
+The Dashboard setup requires the following custom cards to be installed in HACS
 ```
 - html-template-card from HTML Jinja2 Template card
 - numberbox-card from Number Box
 - fold-entity-row
 ```
- It is also necessary to move the three picture files below to the be in the lovelace path. They are currently coded to the **www/community/** directory (**local/community/**)
+ It is also necessary to move the three picture files below from github to be in the lovelace path. They are currently coded to the **www/community/** directory (**local/community/**)
  ```
  vp_base.jpg
  vp_base_hgw_on.jpg
  vp_base_hw.jpg
  ```
 
-The file [lovelace_config.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/lovelace_config.yaml) contains a status view and a comprehensive set of variables. The lovelace_config.yaml should be inserted in the lovelace raw configuration editor. In HA do **“Edit Dashbord” - “Raw configuration editor”**, then copy and paste the lovelace file. This file assumes you used **vp1** as the **"Unique ID"** when setting up the integration. Please replace **_vp1** with **_yourid** if you customize your install or if adding more than one instance.
+The file [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) contains a status view and a comprehensive set of variables. The can be added in the Dashboard editor. In HA do **“Edit Dashbord” - “+ Add Card” - "Manual"**, then copy and paste the card file. This file assumes you used **vp1** as the **"Unique ID"** when setting up the integration. Please replace **_vp1** with **_yourid** if you customize your install or when adding more than one instance.
 
 ```yaml
 # ################################################
-# ##### ThermIQ Lovelace config. Add in Raw configuration editor
-      - type: entities
-        title: ThermIQ_vp1
-        theme: default
-        show_header_toggle: false
-        entities:
-          - type: custom:html-template-card
-            title: null
-            ignore_line_breaks: true
-            content: >
+# ##### ThermIQ Dashboard Card. Add by 
+# "Edit Dashboard, + Add Card -> Manual" and paste this
+# You might want to replace **"_vp1"** if you used a non-default **"Unique ID"** 
+
+type: entities
+title: ThermIQ_vp1
+theme: default
+show_header_toggle: false
+entities:
+  - type: custom:html-template-card
+    title: null
+    ignore_line_breaks: true
+    content: >
  ...
  ...
  

@@ -103,6 +103,10 @@ class HeatPumpSensor(SensorEntity):
         self._heatpump = heatpump
         self._hpstate = heatpump._hpstate
 
+        # self._attr_native_value = state
+        # self._attr_native_unit_of_measurement = unit_of_measurement
+        self._attr_state_class = SensorStateClass.MEASUREMENT
+
         # set HA instance attributes directly (mostly don't use property)
         # self._attr_unique_id
         self.entity_id = f"sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
@@ -134,6 +138,9 @@ class HeatPumpSensor(SensorEntity):
 
         self._idx = device_id
         self._vp_reg = vp_reg
+        
+        # self.device_class [temperature, voltaage,
+        #self.state_class= measurement
 
         # Listen for the ThermIQ rec event indicating new data
         hass.bus.async_listen(
