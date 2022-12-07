@@ -21,6 +21,7 @@
         },
         "title": "Heatpump config",
         "description": "Set up a new ThermIQ_MQTT Instance"
+       }
     },
     "progress": {
       "slow_task": "This message will be displayed if `slow_task` is returned as `progress_action` for `async_show_progress`."
