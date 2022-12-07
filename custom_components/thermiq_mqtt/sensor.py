@@ -2,8 +2,8 @@ import logging
 from homeassistant.core import HomeAssistant, callback
 
 
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import (
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
+ffrom homeassistant.const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
