@@ -17,21 +17,21 @@ Please note that updating from Release 1.x to Release 2.0 requires some signific
 - A running Mosquitto MQTT broker (server). If you have one already you can use it otherwise install Mosquitto broker from HA Add-On Store
 - The HA MQTT Integration added in "Devices/Services" and properly configured for the above broker.
 - ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT to the above broker
-- A couple of Lovelace plugins
+- A couple of HACS plugins
 
 ## Quick start
 1. Make sure that ThermIQ is properly setup and communicating with the MQTT server. You should see MQTT messages in MQTT-Explorer from the heatpump every 30s
 2. Make sure that MQTT Integration in Home Assistant is setup and communicating with the MQTT server
 3. Make sure you have HACS set-up (https://github.com/custom-components/hacs).
-4. Make sure you have installed the required Lovelace plugins in HACS
+4. Make sure you have installed the required HACS plugins
 5. Go to the HACS integrations page, add ThermIQ integration and restart HA.
 6. Go to Integrations and add ThermIQ.
 -
-        - The supplied lovelace config assumes you are Using the default "Unique ID: vp1".
+        - The supplied Dashboard Card config assumes you are Using the default "Unique ID: vp1".
         - The MQTT Nodename should be given without a / in the end
         - Use hexformat only if you have ThermIQ-MQTT fw 1.xx
         - Use debug if you want to try it out without actually writing to the heatpump
-7. Setup the lovelace card to show what the heatpump is doing
+7. Setup the Dashboard card to show what the heatpump is doing
 
 ## Configuration
 #### Component Configuration in v2.x.x:
@@ -53,14 +53,14 @@ The Dashboard setup requires the following custom cards to be installed in HACS
 - numberbox-card from Number Box
 - fold-entity-row
 ```
- It is also necessary to move the three picture files below from github to be in the lovelace path. They are currently coded to the **www/community/** directory (**local/community/**)
+ It is also necessary to move the three picture files below from github to be in the Dashboard path. They are currently coded to the **www/community/** directory (**local/community/**)
  ```
  vp_base.jpg
  vp_base_hgw_on.jpg
  vp_base_hw.jpg
  ```
 
-The file [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) contains a status view and a comprehensive set of variables. The can be added in the Dashboard editor. In HA do **“Edit Dashbord” - “+ Add Card” - "Manual"**, then copy and paste the card file. This file assumes you used **vp1** as the **"Unique ID"** when setting up the integration. Please replace **_vp1** with **_yourid** if you customize your install or when adding more than one instance.
+The file [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) contains a status view and a comprehensive set of variables. The can be added in the Dashboard editor. In HA do **“Edit Dashbord” - “+ Add Card” - "Manual"**, then copy and paste this **"Card file"**. This file assumes you used **vp1** as the **"Unique ID"** when setting up the integration. Please replace **_vp1** with **_yourid** if you customize your install or when adding more than one instance.
 
 ```yaml
 # ################################################
@@ -84,9 +84,11 @@ entities:
 
 
 #### Debugging
+Make sure you see proper mqtt messages from the ThermIQ-MQTT in MQTT-Explorer before setting up HA
+
 The Home Assistant server sometimes needs to be restarted once all configuration is done
 
-I recommend using [MQTT Explorer](https://mqtt-explorer.com/) for analysis of the MQTT setup.
+I warmly recommend using [MQTT Explorer](https://mqtt-explorer.com/) for analysis of the MQTT setup.
 
 ## Register description
 The naming, translation and grouping of registers can be improved, your input is appreciated. Most of it is in the [thermiq_regs.py](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/custom_components/thermiq_mqtt/heatpump/thermiq_regs.py)  

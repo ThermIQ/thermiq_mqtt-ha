@@ -152,6 +152,7 @@ reg_id = {
 }
 
 # Translation dictionary
+#  ['en', 'se', 'fi', 'no', 'de'] 
 id_names = {  
   'outdoor_t'                    : ['Outdoor temp.', 'Utomhustemp.', 'Ulkolämpötila', 'Utendørstemp.', 'Außentemperatur'],
   'indoor_t'                     : ['Indoor temp.', 'Rumstemp. är', 'Huonelämpötila', 'Romstemp. er', 'Innentemperatur, Ist'],
@@ -285,7 +286,8 @@ id_names = {
   'msd1_dts2'                    : ['DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1', 'DTS2_MSD1'],
   'graph_display_offset'         : ['GrafCounterOffSet', 'GrafCounterOffSet', 'GrafCounterOffSet', 'GrafCounterOffSet', 'GrafCounterOffSet'],
   'room_sensor_set_t'            : ['Room sensor, Set actual','Rums sensor, Sätt nuvarande', 'Huoneanturin tavoitelämpötila', 'Room sensor, Set', 'Room sensor, Set'],
-  'heatpump_evu_block'           : ['EVU Function, Set state','EVU funktion, Läge','EVU toiminnon tila','EVU Function, Set state','EVU Function, Set state' ]n  "mode0": ["Off", "Av", "Pois päältä", "Off", "Aus"],
+  'heatpump_evu_block'           : ['EVU Function, Set state','EVU funktion, Läge','EVU toiminnon tila','EVU Function, Set state','EVU Function, Set state' ],
+  "mode0": ["Off", "Av", "Pois päältä", "Off", "Aus"],
     "mode1": ["Auto", "Auto", "Auto", "Auto", "Auto"],
     "mode2": ["Heatpump only", "Bara värmepump", "Vain lämpöpumppu", "Kun varmepumpe", "Nur Wärmepumpe"],
     "mode4": ["Heater only", "Elvärme", "Vain lisälämpö", "Kun elektrisk oppvarming", "Nur Elektroheizung"],

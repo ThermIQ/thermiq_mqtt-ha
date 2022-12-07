@@ -1,46 +1,45 @@
 {
-    "config": {
-      "flow_title":"Flow totle",
-      "abort": {
-        "already_configured": "The entered id name is already in use."
-      },
-      "error": {
-        "invalid_nodename": "The entered nodename is not valid",
-        "creation_error": "An error occured while creating configuration object",
-        "creation_error": "An error occured while updating configuration object",
-        "invalid_language": "An error occured while creating configuration object"
-      },
-      "step": {
-        "user": {
-          "data": {
-            "id_name": "Unique ID",
-            "mqtt_node": "MQTT Nodename",
-            "language": "Language",
-            "hexformat": "Use hexformat for registers i MQTT",
-            "thermiq_dbg": "Enable debug"
-          },
-          "title": "Heatpump config",
-          "description": "Description"
-        }
-      },
-      "progress": {
-        "slow_task": "This message will be displayed if `slow_task` is returned as `progress_action` for `async_show_progress`."
-      }
+  "config": {
+    "flow_title":"Flow title",
+    "abort": {
+      "already_configured": "The entered id name is already in use."
     },
-    "options": {
-      "abort": {
-        "already_configured": "The entered id name is already in use."
-      },
-      "step": {
-        "user": {
-          "data": {
-            "mqtt_node": "MQTT Nodename",
-            "language": "Language",
-            "hexformat": "Use hexformat for registers i MQTT",
-            "thermiq_dbg": "Enable debug"
-          },
-          "title": "Options"
-        }
+    "error": {
+      "invalid_nodename": "The entered MQTT Nodename is not valid",
+      "creation_id": "The Unique ID is not Unique or not valid",
+      "creation_error": "An error occured while updating configuration object",
+      "invalid_language": "An error occured while creating configuration object"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "id_name": "Unique ID",
+          "mqtt_node": "MQTT Nodename",
+          "language": "Language",
+          "hexformat": "Use hexformat for registers i MQTT",
+          "thermiq_dbg": "Enable debug"
+        },
+        "title": "Heatpump config",
+        "description": "Set up a new ThermIQ_MQTT Instance"
+    },
+    "progress": {
+      "slow_task": "This message will be displayed if `slow_task` is returned as `progress_action` for `async_show_progress`."
+    }
+  },
+  "options": {
+    "abort": {
+      "already_configured": "The entered id name is already in use."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "mqtt_node": "MQTT Nodename",
+          "language": "Language",
+          "hexformat": "Use hexformat for registers i MQTT",
+          "thermiq_dbg": "Enable debug"
+        },
+        "title": "Options"
       }
     }
   }
+}
