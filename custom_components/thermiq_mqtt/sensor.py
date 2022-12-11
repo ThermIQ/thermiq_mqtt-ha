@@ -1,5 +1,5 @@
 import logging
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant, callback 
 
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
