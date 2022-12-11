@@ -46,7 +46,7 @@ entities:
       <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('sensor.thermiq_mqtt_vp1_brine_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
       <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('sensor.thermiq_mqtt_vp1_supply_pump_on')=='on') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
       <ha-icon icon="mdi:alert-circle" id="hpwidget-ALERT" style="color:red;position:absolute;top:42px;left:82px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('sensor.thermiq_mqtt_vp1_communication_status')=='Ok') %}display:none{% endif %}"></ha-icon>
-      <ha-icon icon="mdi:stop" id="hpwidget-EVU" style="color:red;position:absolute;top:62px;left:82px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('sensor.thermiq_mqtt_vp1_heatpump_evu_block')=='0') %}display:none{% endif %}">EVU</ha-icon>
+      <ha-icon icon="mdi:stop" id="hpwidget-EVU" style="color:red;position:absolute;top:62px;left:82px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('sensor.thermiq_mqtt_vp1_heatpump_evu_block') | int ==0) %}display:none{% endif %}">EVU</ha-icon>
       </div>
       </div>
       
