@@ -13,9 +13,8 @@ from homeassistant.const import (
 from homeassistant.helpers.device_registry import DeviceEntryType
 
 from homeassistant.const import (
-    DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_TEMPERATURE,
     TEMP_CELSIUS,
+    PERCENTAGE
 )
 from .const import (
     DOMAIN,

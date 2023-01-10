@@ -14,10 +14,13 @@ from datetime import datetime
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
 from homeassistant.const import (
-    DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_TEMPERATURE,
     TEMP_CELSIUS,
+    PERCENTAGE
 )
+
+from homeassistant.components.sensor import SensorDeviceClass
+
+
 from .const import (
     DOMAIN,
     CONF_ID,
