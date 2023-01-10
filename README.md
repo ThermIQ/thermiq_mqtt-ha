@@ -110,5 +110,6 @@ https://github.com/tomrosenback/thermiq-node-red-homeassistant-config
 Contributions are welcome! If you'd like to contribute, feel free to pick up anything on the current [GitHub issues](https://github.com/ThermIQ/thermiq_mqtt-ha/issues) list!
 All help improving the integration is appreciated!
 
+ps. There is a also a Domoticz version available from Jack: [Domoticz](https://github.com/jackfagner/ThermIQ-Domoticz)
 
 
