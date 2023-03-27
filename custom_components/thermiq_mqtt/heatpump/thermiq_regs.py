@@ -146,6 +146,7 @@ reg_id = {
   'heatpump_evu_block'           : ['evu', 'generated_input',        '',                   0,      1, 0, 0   ],
   'mqtt_counter': ['mqtt_counter', 'generated_sensor', '', 0, 0, 0, 0],
     'time_str': ['time_str', 'generated_sensor', '', 0, 0, 0, 0],
+    'timestamp': ['timestamp', 'generated_sensor', '', 0, 0, 0, 0],
     'rssi': ['rssi', 'generated_sensor', '', 0, 0, 0, 0],
     'communication_status': ['communication_status','generated_sensor','',0,0,0,0],
 
@@ -290,6 +291,6 @@ id_names = {
   "mode0": ["Off", "Av", "Pois päältä", "Off", "Aus"],
     "mode1": ["Auto", "Auto", "Auto", "Auto", "Auto"],
     "mode2": ["Heatpump only", "Bara värmepump", "Vain lämpöpumppu", "Kun varmepumpe", "Nur Wärmepumpe"],
-    "mode4": ["Heater only", "Elvärme", "Vain lisälämpö", "Kun elektrisk oppvarming", "Nur Elektroheizung"],
-    "mode8": ["Hot water only", "Bara varmvatten", "Vain käyttövesituotanto", "Kun varmtvannsbereder", "Nur Warmwasserbereiter"],
+    "mode3": ["Heater only", "Elvärme", "Vain lisälämpö", "Kun elektrisk oppvarming", "Nur Elektroheizung"],
+    "mode4": ["Hot water only", "Bara varmvatten", "Vain käyttövesituotanto", "Kun varmtvannsbereder", "Nur Warmwasserbereiter"],
 }

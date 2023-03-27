@@ -53,6 +53,7 @@ class CustomInputSelect(InputSelect):
         await super().async_select_option(option)
         # is value updated by GUI?
         if self.heatpump._hpstate["mqtt_counter"] > 0:
+        	# Using first char in description as value to write is a kludge
             value = int(option[0])
             if value != self.heatpump._hpstate[self.reg]:
                 self.heatpump._hpstate[self.reg] = value
@@ -107,8 +108,8 @@ def create_input_select_entity(heatpump, name) -> CustomInputSelect:
             "0 - " + id_names["mode0"][heatpump._langid],
             "1 - " + id_names["mode1"][heatpump._langid],
             "2 - " + id_names["mode2"][heatpump._langid],
+            "3 - " + id_names["mode3"][heatpump._langid],
             "4 - " + id_names["mode4"][heatpump._langid],
-            "8 - " + id_names["mode8"][heatpump._langid],
         ],
         CONF_ICON: icon,
         CONF_INITIAL: None,
