@@ -1,7 +1,6 @@
 """Component for ThermIQ-MQTT support."""
 import logging
 from builtins import property
-import asyncio
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
@@ -31,8 +30,6 @@ PLATFORMS = [
     "binary_sensor",
 ]
 
-
-@asyncio.coroutine
 async def async_setup(hass, config):
     """Set up HASL integration"""
     _LOGGER.error("Set up ThermIQ-MQTT integration")
