@@ -248,7 +248,7 @@ class HeatPump:
         self._hpstate["mqtt_counter"] = 0
 
 		# Provide some debug info
-        _LOGGER.error(
+        _LOGGER.debug(
             f"INFO: {self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
         )
         
@@ -256,10 +256,10 @@ class HeatPump:
             self._mqtt_base = self._mqtt_base + "dbg_"
             _LOGGER.error("INFO: MQTT Debug write enabled")
 
-        _LOGGER.error("Language[%s]", self._langid)
+        _LOGGER.debug("Language[%s]", self._langid)
  
         if self._hexFormat == True:
-            _LOGGER.error("INFO: Using HEX format")
+            _LOGGER.debug("INFO: Using HEX format")
 
 
 
