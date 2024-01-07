@@ -14,7 +14,7 @@ from datetime import datetime
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
 from homeassistant.const import (
-    TEMP_CELSIUS,
+    UnitOfTemperature.CELSIUS,
     PERCENTAGE
 )
 
@@ -126,7 +126,7 @@ class HeatPumpSensor(SensorEntity):
             ]
         ):
             self._icon = "mdi:temperature-celsius"
-            self._unit = TEMP_CELSIUS
+            self._unit = UnitOfTemperature.CELSIUS
         elif vp_type in [
             "sensor_boolean",
         ]:
@@ -142,7 +142,7 @@ class HeatPumpSensor(SensorEntity):
         self._idx = device_id
         self._vp_reg = vp_reg
         
-        # self.device_class [temperature, voltaage,
+        # self.device_class [temperature, voltage,
         #self.state_class= measurement
 
         # Listen for the ThermIQ rec event indicating new data

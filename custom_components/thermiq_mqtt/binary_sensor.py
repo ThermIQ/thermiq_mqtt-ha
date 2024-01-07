@@ -13,7 +13,6 @@ from homeassistant.const import (
 from homeassistant.helpers.device_registry import DeviceEntryType
 
 from homeassistant.const import (
-    TEMP_CELSIUS,
     PERCENTAGE
 )
 from .const import (
@@ -89,7 +88,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
 
         # set HA instance attributes directly (mostly don't use property)
         # self._attr_unique_id
-        self.entity_id = f"sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
+        self.entity_id = f"binary_sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
 
         _LOGGER.debug("entity_id:" + self.entity_id)
         _LOGGER.debug("idx:" + device_id)
@@ -134,7 +133,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return STATE_ON if self._state else STATE_OFF
+        return (self._state)
 
     @property
     def vp_reg(self):
@@ -143,7 +142,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
 
     @property
     def is_on(self):
-        return self._state is True
+        return STATE_ON if (self._state) else STATE_OFF
 
     @property
     def sorter(self):
