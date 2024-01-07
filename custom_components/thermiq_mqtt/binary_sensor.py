@@ -133,7 +133,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return (self._state)
+        return True if (self._state) else False
 
     @property
     def vp_reg(self):

@@ -22,12 +22,12 @@ entities:
       @keyframes blink { to {visibility: hidden;}}
       </style>
       
-      <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_mqtt_vp1_alarm_indication_on')==true) %}background-color:red;{% endif %}">
+      <div style="height:330px;width:100%;{% if (states('binary_sensor.thermiq_mqtt_vp1_alarm_indication_on')=='True') %}background-color:red;{% endif %}">
       <div style="position:absolute;left:130px;">
-      {% if states('binary_sensor.thermiq_mqtt_vp1_hotwaterproduction_on')==true %}
+      {% if states('binary_sensor.thermiq_mqtt_vp1_hotwaterproduction_on')=='True' %}
       <div><img class="hp_basepict hw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base_hw.jpg" title=""></div>     
       {% else %}
-      {% if (states('binary_sensor.thermiq_mqtt_vp1_opt_hgw_installed')==true) and (states('binary_sensor.thermiq_mqtt_vp1_compressor_on')==true)  %}
+      {% if (states('binary_sensor.thermiq_mqtt_vp1_opt_hgw_installed')=='True') and (states('binary_sensor.thermiq_mqtt_vp1_compressor_on')=='True')  %}
       <div><img class="hp_basepict hgw" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base_hgwon.jpg" title=""></div> 
       {% else %}
       <div><img class="hp_basepict base active" style="position:absolute;top:0px;left:0px;height:300px;" alt="vp missing" src="/local/community/vp_base.jpg" title="ThermIQ"></div> 
@@ -39,14 +39,14 @@ entities:
       <div class="hpwidget-val" title="Boiler Temperature" style="position:absolute;top:89px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_VATTEN"></span>{{ states('sensor.thermiq_mqtt_vp1_boiler_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
       <div class="hpwidget-val" title="HGW Temperature" style="position:absolute;top:87px;left:76px;z-index:3;     <span class="hpwidget-name-span" id="hpwidget-HGW_VV"></span>{{ states('sensor.thermiq_mqtt_vp1_hgw_water_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
       <div class="hpwidget-val" title="Supply-line Temperature" style="position:absolute;top:131px;left:138px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_FRAM"></span>{{ states('sensor.thermiq_mqtt_vp1_supplyline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-      <div class="hpwidget-val" title="Supply pump" style="position:absolute;top:257px;left:146px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_vp1_opt_optimum_installed')==false) %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-CIRK_SPEED"></span>{{ states('sensor.thermiq_mqtt_vp1_supply_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
-      <div class="hpwidget-val" title="Brine pump" style="position:absolute;top:156px;left:8px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_vp1_opt_optimum_installed')==false) %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-BRINE_SPEED"></span>{{ states('sensor.thermiq_mqtt_vp1_brine_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
+      <div class="hpwidget-val" title="Supply pump" style="position:absolute;top:257px;left:146px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_vp1_opt_optimum_installed')=='False') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-CIRK_SPEED"></span>{{ states('sensor.thermiq_mqtt_vp1_supply_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
+      <div class="hpwidget-val" title="Brine pump" style="position:absolute;top:156px;left:8px;z-index:3;{% if (states('binary_sensor.thermiq_mqtt_vp1_opt_optimum_installed')=='False') %}display:none;{% endif %}"><span class="hpwidget-name-span" id="hpwidget-BRINE_SPEED"></span>{{ states('sensor.thermiq_mqtt_vp1_brine_pump_speed') }}<span class="hpwidget-unit-span">&nbsp;%</span></div>
       <div class="hpwidget-val" title="Return line Temperature" style="position:absolute;top:200px;left:146px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-T_RETUR"></span>{{ states('sensor.thermiq_mqtt_vp1_returnline_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
       <div class="hpwidget-val" title="Pressure pipe Temperature" style="position:absolute;top:125px;left:76px;z-index:3;"><span class="hpwidget-name-span" id="hpwidget-TRYCKR_T"></span>{{ states('sensor.thermiq_mqtt_vp1_pressurepipe_t') }}<span class="hpwidget-unit-span">&nbsp;C</span></div>
-      <ha-icon icon="mdi:flash" id="hpwidget-ELEFF" style="color:yellow;position:absolute;top:42px;left:82px;z-index:2;{% if ((states('binary_sensor.thermiq_mqtt_vp1_boiler_3kw_on')==false) and (states('binary_sensor.thermiq_mqtt_vp1_boiler_6kw_on')==false) ) %}display:none{% endif %}"></ha-icon>
-      <ha-icon icon="mdi:cog" id="hpwidget-KOMPR" style="position:absolute;top:155px;left:70px;--mdc-icon-size:45px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_compressor_on')==true) %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
-      <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_brine_pump_on')==true) %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
-      <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_supply_pump_on')==true) %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+      <ha-icon icon="mdi:flash" id="hpwidget-ELEFF" style="color:yellow;position:absolute;top:42px;left:82px;z-index:2;{% if ((states('binary_sensor.thermiq_mqtt_vp1_boiler_3kw_on')=='False') and (states('binary_sensor.thermiq_mqtt_vp1_boiler_6kw_on')=='False') ) %}display:none{% endif %}"></ha-icon>
+      <ha-icon icon="mdi:cog" id="hpwidget-KOMPR" style="position:absolute;top:155px;left:70px;--mdc-icon-size:45px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_compressor_on')=='True') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+      <ha-icon icon="mdi:fan" id="hpwidget-BRINESPIN" style="position:absolute;top:126px;left:11px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_brine_pump_on')=='True') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
+      <ha-icon icon="mdi:fan" id="hpwidget-CIRKPSPIN" style="position:absolute;top:228px;left:147px;z-index:2;{% if (states('binary_sensor.thermiq_mqtt_vp1_supply_pump_on')=='True') %}animation: rotating 2s linear infinite;{% endif %}"></ha-icon>
       <ha-icon icon="mdi:alert-circle" id="hpwidget-ALERT" style="color:red;position:absolute;top:42px;left:82px;z-index:4;animation: blink  1s steps(5, start) infinite;{% if (states('sensor.thermiq_mqtt_vp1_communication_status')=='Ok') %}display:none{% endif %}"></ha-icon>
       <ha-icon icon="mdi:stop" id="hpwidget-EVU" style="color:red;position:absolute;top:62px;left:82px;z-index:120;animation: blink  1s steps(5, start) infinite;{% if (states('sensor.thermiq_mqtt_vp1_heatpump_evu_block') | int ==0) %}display:none{% endif %}">EVU</ha-icon>
       </div>
