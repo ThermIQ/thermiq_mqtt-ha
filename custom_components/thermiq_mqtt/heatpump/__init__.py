@@ -247,7 +247,7 @@ class HeatPump:
         self._set_topic = self._mqtt_base + "set"
         self._hpstate["mqtt_counter"] = 0
 
-		# Provide some debug info
+        # Provide some debug info
         _LOGGER.debug(
             f"INFO: {self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
         )

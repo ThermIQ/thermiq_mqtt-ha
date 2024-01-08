@@ -14,7 +14,7 @@ from datetime import datetime
 from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
 from homeassistant.const import (
-    TEMP_CELSIUS,
+    UnitOfTemperature,
     PERCENTAGE
 )
 
@@ -126,7 +126,7 @@ class HeatPumpSensor(SensorEntity):
             ]
         ):
             self._icon = "mdi:temperature-celsius"
-            self._unit =TEMP_CELSIUS
+            self._unit =UnitOfTemperature.CELSIUS
         elif vp_type in [
             "sensor_boolean",
         ]:

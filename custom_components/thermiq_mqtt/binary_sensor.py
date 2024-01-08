@@ -1,15 +1,23 @@
 import logging
+from typing import TYPE_CHECKING, Literal, final
 from homeassistant.core import HomeAssistant, callback
 
 from homeassistant.const import STATE_OFF, STATE_ON
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+    BinarySensorEntityDescription,
+)
 from homeassistant.const import (
     ATTR_IDENTIFIERS,
     ATTR_MANUFACTURER,
     ATTR_MODEL,
     ATTR_NAME,
-)
+    STATE_OFF, 
+    STATE_ON, 
+    EntityCategory)
+    
 from homeassistant.helpers.device_registry import DeviceEntryType
 
 from homeassistant.const import (
@@ -31,6 +39,11 @@ from .heatpump.thermiq_regs import (
     reg_id,
 )
 
+if TYPE_CHECKING:
+    from functools import cached_property
+else:
+    from homeassistant.backports.functools import cached_property
+    
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -130,19 +143,20 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         """No need to poll. Coordinator notifies entity of updates."""
         return False
 
+    @final
     @property
-    def state(self):
+    def state(self) -> Literal["on", "off"]:
         """Return the state of the sensor."""
-        return True if (self._state) else False
+        return STATE_ON if (self._state) else STATE_OFF
 
     @property
     def vp_reg(self):
         """Return the device class of the sensor."""
         return self._vp_reg
 
-    @property
-    def is_on(self):
-        return STATE_ON if (self._state) else STATE_OFF
+    @cached_property
+    def is_on(self) -> bool:
+        return (self._state==True)
 
     @property
     def sorter(self):

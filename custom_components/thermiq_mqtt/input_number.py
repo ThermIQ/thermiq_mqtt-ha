@@ -16,7 +16,7 @@ from homeassistant.const import (
     CONF_MODE,
     CONF_NAME,
     CONF_UNIT_OF_MEASUREMENT,
-    TEMP_CELSIUS,
+    UnitOfTemperature,
 )
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import EntityPlatform
@@ -120,7 +120,7 @@ def create_input_number_entity(heatpump, name) -> CustomInputNumber:
         ]
     ):
         icon = "mdi:temperature-celsius"
-        unit = TEMP_CELSIUS
+        unit = UnitOfTemperature.CELSIUS
     else:
         unit = reg_id[name][2]
         icon = "mdi:gauge"
