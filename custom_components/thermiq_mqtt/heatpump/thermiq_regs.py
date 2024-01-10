@@ -148,6 +148,7 @@ reg_id = {
     'time_str': ['time_str', 'generated_sensor', '', 0, 0, 0, 0],
     'timestamp': ['timestamp', 'generated_sensor', '', 0, 0, 0, 0],
     'rssi': ['rssi', 'generated_sensor', '', 0, 0, 0, 0],
+    'app_info': ['app_info', 'generated_sensor', '', 0, 0, 0, 0],
     'communication_status': ['communication_status','generated_sensor','',0,0,0,0],
 
 }
