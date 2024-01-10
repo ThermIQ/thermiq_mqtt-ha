@@ -150,7 +150,7 @@ reg_id = {
     'rssi': ['rssi', 'generated_sensor', '', 0, 0, 0, 0],
     'app_info': ['app_info', 'generated_sensor', '', 0, 0, 0, 0],
     'communication_status': ['communication_status','generated_sensor','',0,0,0,0],
-
+ 
 }
 
 # Translation dictionary
