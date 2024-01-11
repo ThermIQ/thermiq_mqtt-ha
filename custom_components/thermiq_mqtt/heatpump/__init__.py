@@ -185,9 +185,6 @@ class HeatPump:
                 if "vp_read" in json_dict:
                     self._hpstate["communication_status"] = json_dict["vp_read"]
 
-                if "app_info" in json_dict:
-                    self._hpstate["app_info"] = json_dict["app_info"]
-
                     # self._hass.states.async_set(
                     #     self._domain
                     #     + "_"
@@ -204,6 +201,10 @@ class HeatPump:
                     #     + ".heatpump_communication_status",
                     #     "ok",
                     # )
+
+                if "app_info" in json_dict:
+                    self._hpstate["app_info"] = json_dict["app_info"]
+
 
                 self._hass.bus.fire(
                     self._domain + "_" + self._id + "_msg_rec_event", {}
