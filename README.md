@@ -4,12 +4,13 @@
 ![Screenshot](docs/Lovelace1.jpg)
 
 This integration allows you to use the ThermIQ-MQTT hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. 
-Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you also can read more about the background
+Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you also can read more about the background.
 
 # Steps to install
-1. Make sure you have the ThermIQ-MQTT interface installed in your heatpump and properly configured to communicate over MQTT to the above broker. For instructions, see [Thermiq.net](https://thermiq.net)
 1. Install the Mosquitto Add-on in Home Assistant.
-3. Verify that the ThermIQ is communicating with Mosquitto. You should see MQTT messages in MQTT-Explorer from the heatpump every 30s
+2. Install [MQTT Explorer](https://mqtt-explorer.com/) on your PC and verify that you can connect to Mosquitto
+3. Configure your ThermIQ-MQTT device according to the indstructions at [Thermiq.net](https://thermiq.net)
+1. Use MQTT-Explorer to verify that your ThermIQ-MQTT device is sending information to Mosquitto. You should see MQTT messages in MQTT-Explorer from the heatpump every 30s
 2. Install the MQTT Integration in Home Assistant and verify that it's communicating with the Mosquitto Add-on.
 3. Install [HACS](https://github.com/custom-components/hacs)
 5. Go to the HACS integrations page, add ThermIQ integration and restart HA.
