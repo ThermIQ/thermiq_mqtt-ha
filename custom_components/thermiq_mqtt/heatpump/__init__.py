@@ -23,6 +23,7 @@ from homeassistant.const import (
     ATTR_OPTION,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.components import mqtt
 
 
 from ..const import (
@@ -234,7 +235,8 @@ class HeatPump:
 
     async def setup_mqtt(self):
         self._hpstate["time_str"] = self._data_topic
-        self.unsubscribe_callback = await self._hass.components.mqtt.async_subscribe(
+        self.unsubscribe_callback = await mqtt.async_subscribe(
+            self._hass,
             self._data_topic,
             self.message_received,
         )
@@ -290,8 +292,8 @@ class HeatPump:
         _LOGGER.debug("update_state:" + command + " " + state_command)
         # self._data[state_command] = self._client.command(command)
         # hass.async_create_task(
-        #     hass.components.mqtt.async_publish(
-        #         conf.cmd_topic, self._data[state_command]
+        #     mqtt.async_publish(
+        #         self._hass, conf.cmd_topic, self._data[state_command]
         #     )
         # )
 
@@ -343,7 +345,7 @@ class HeatPump:
         _LOGGER.debug("topic:[%s]", topic)
         _LOGGER.debug("payload:[%s]", payload)
         self._hass.async_create_task(
-            self._hass.components.mqtt.async_publish(
+            mqtt.async_publish(
                 self._hass, topic, payload, qos=2, retain=False
             )
         )
