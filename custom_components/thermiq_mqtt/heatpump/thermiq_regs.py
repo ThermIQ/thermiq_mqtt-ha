@@ -77,7 +77,7 @@ reg_id = {
   'integral1_curve_n5'           : ['r39', 'temperature_input',      'ºC',              -5,      5,  4,  8  ],
   'heating_stop_t'               : ['r3a', 'temperature_input',      'ºC',               0,    200,  4,  8  ],
   'reduction_t'                  : ['r3b', 'temperature_input',      'ºC',               0,    100,  4, 10  ],
-  'room_factor'                  : ['r3c', 'temperature_input',      'ºC',               0,      4,  4, 11  ],
+  'room_factor'                  : ['r3c', 'sensor_input',           'factor',            0,      4,  4, 11  ],
   'integral2_curve_slope'        : ['r3d', 'temperature_input',      'ºC',               0,    200,  6,  0  ],
   'integral2_curve_min'          : ['r3e', 'temperature_input',      'ºC',               0,    200,  6,  1  ],
   'integral2_curve_max'          : ['r3f', 'temperature_input',      'ºC',               0,    200,  6,  2  ],
@@ -150,7 +150,7 @@ reg_id = {
     'rssi': ['rssi', 'generated_sensor', '', 0, 0, 0, 0],
     'app_info': ['app_info', 'generated_sensor', '', 0, 0, 0, 0],
     'communication_status': ['communication_status','generated_sensor','',0,0,0,0],
- 
+
 }
 
 # Translation dictionary
