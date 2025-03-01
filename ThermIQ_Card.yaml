@@ -81,6 +81,7 @@ entities:
         type: custom:numberbox-card
       - entity: input_number.vp1_electricity_low_hours
         type: custom:numberbox-card
+      - entity: input_boolean.vp1_force_evu
 # ThermIQ Heatpump control ##################################################################
   - type: custom:fold-entity-row
     head:
