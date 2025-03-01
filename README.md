@@ -47,6 +47,7 @@ From v2.3.0 the pictures used has changed from *.jpg to *.png format to facilita
   
 # ThermIQ Energy Control for **ThermIQ-Room2**
 You can optimize energy usage directly from Home Assistance by using the excellent **AIO Energy Management** Plugin from [here](https://github.com/kotope/aio_energy_management)  
+![Screenshot](docs/energy_control.png)
 
 Steps to install:
 1. Click **AIO Energy Management** [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=kotope&repository=aio_energy_management&category=integration) and install it
@@ -56,8 +57,9 @@ Steps to install:
    - **vp1_electricity_price_threshold** with a reasonable price range and step size of 0.01
    - **vp1_electricity_low_hours** with a a range from 0-23, Step size 1  
    
-    Create one switch helper  
+    Create two switch helpers  
    - **vp1_enable_energy_control**
+   - **vp1_force_evu**
    
 4. Add the following to your **configuration.yaml** file, use the correct nordpool/entso-e sensor for your setup
 ```
@@ -65,75 +67,82 @@ aio_energy_management:
     cheapest_hours:
     - nordpool_entity: sensor.nordpool_kwh_se3_sek_3_10_025
       unique_id: vp1_cheapest_hours
-      name: My Cheapest Hours
-      first_hour: 14
-      last_hour: 13
-      starting_today: true
+      name: VP1 Cheapest Hours
+      first_hour: 0
+      last_hour: 23
+      starting_today: false
       number_of_hours: input_number.vp1_electricity_low_hours
       sequential: False
       failsafe_starting_hour: 21
     calendar:
       name: My Energy Management Calendar
-      unique_id: vp1_energy_management_calendar
+      unique_id: my_energy_management_calendar
 ```
 
 5. Add the following to you **automations.yaml** file
 ```
 - alias: Update AIO Energy Management
-  description: "Update AIO cheapest hours based on current settings"
+  description: Update AIO cheapest hours based on current settings
   triggers:
-    - trigger: state
-      entity_id: input_number.vp1_electricity_low_hours
+  - trigger: state
+    entity_id: input_number.vp1_electricity_low_hours
   action:
     service: aio_energy_management.clear_data
     data:
       unique_id: vp1_cheapest_hours
-  
+  id: bc899c680e3e4bc1a57f6f20f92678cc
 - alias: Set EVU based on price
-  description: "Cheapest hours turn off EVU, (most expensive turns on))"
+  description: Cheapest hours turn off EVU, (most expensive turns on))
   triggers:
-    - trigger: time_pattern
-      hours: "*"
-      seconds: "10"
-    - trigger: state
-      entity_id: input_number.vp1_electricity_price_threshold
-    - trigger: state
-      entity_id: input_boolean.vp1_enable_energy_control
-    - trigger: state
-      entity_id:
-        - binary_sensor.vp1_cheapest_hours
-      attribute: updated_at
-    - trigger: homeassistant
-      event: start
+  - trigger: time_pattern
+    hours: '*'
+    seconds: '10'
+  - trigger: state
+    entity_id: input_number.vp1_electricity_price_threshold
+  - trigger: state
+    entity_id: input_boolean.vp1_enable_energy_control
+  - trigger: state
+    entity_id: input_boolean.vp1_force_evu
+  - trigger: state
+    entity_id:
+    - binary_sensor.vp1_cheapest_hours
+    attribute: updated_at
+  - trigger: homeassistant
+    event: start
   action:
   - if:
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_boolean.vp1_force_evu
+        state: 'off'
       - condition: or
         conditions:
         - condition: state
           entity_id: binary_sensor.vp1_cheapest_hours
-          state: "on"
+          state: 'on'
         - condition: state
           entity_id: input_boolean.vp1_enable_energy_control
-          state: "off"
+          state: 'off'
         - condition: numeric_state
           entity_id: sensor.nordpool_kwh_se3_sek_3_10_025
           below: input_number.vp1_electricity_price_threshold
     then:
-      - service: mqtt.publish
-        data_template:
-          topic: "ThermIQ/ThermIQ-room2/set"
-          payload: >-
-            {"EVU":0}
+    - service: mqtt.publish
+      data_template:
+        topic: ThermIQ/ThermIQ-room2-jas/set
+        payload: '{"EVU":0}'
     else:
-      - service: mqtt.publish
-        data_template:
-          topic: "ThermIQ/ThermIQ-room2/set"
-          payload: >-
-            {"EVU":1}
+    - service: mqtt.publish
+      data_template:
+        topic: ThermIQ/ThermIQ-room2-jas/set
+        payload: '{"EVU":1}'
 ```
 
 6. **Restart Home Assistant**
 7. You will now be able to use the **Energy Management** Tab in the ThermIQ panel to enable energy control, set your low cost limit and select the number of hours you want to have enabled. The AIO and ThermIQ-Room2 will make sure the hours selected are the cheapest ones. Use MQTT-Explorer to ensure you get the expected behaviour.
+
+
 
 # Misc
 #### Automations
