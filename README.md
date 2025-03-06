@@ -130,12 +130,12 @@ aio_energy_management:
     then:
     - service: mqtt.publish
       data_template:
-        topic: ThermIQ/ThermIQ-room2-jas/set
+        topic: ThermIQ/ThermIQ-mqtt/set
         payload: '{"EVU":0}'
     else:
     - service: mqtt.publish
       data_template:
-        topic: ThermIQ/ThermIQ-room2-jas/set
+        topic: ThermIQ/ThermIQ-mqtt/set
         payload: '{"EVU":1}'
 ```
 
