@@ -61,7 +61,7 @@ Steps to install:
    - **vp1_enable_energy_control**
    - **vp1_force_evu**
    
-4. Add the following to your **configuration.yaml** file, use the correct nordpool/entso-e sensor for your setup
+4. Add the following to your **configuration.yaml** file, use the correct nordpool/entso-e sensor for your setup. Make sure you match the mqtt topic to your setup
 ```
 aio_energy_management:
     cheapest_hours:
