@@ -104,9 +104,11 @@ aio_energy_management:
   - trigger: state
     entity_id: input_boolean.vp1_force_evu
   - trigger: state
+    entity_id: binary_sensor.vp1_cheapest_hours
+  - trigger: state
     entity_id:
     - binary_sensor.vp1_cheapest_hours
-    attribute: updated_at
+      attribute: updated_at
   - trigger: homeassistant
     event: start
   action:
