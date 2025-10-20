@@ -3,7 +3,7 @@
 
 ![Screenshot](docs/Lovelace1.jpg)
 
-This integration allows you to use the **ThermIQ-MQTT** and **ThermIQ-Room2** hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant.  
+This integration allows you to use the **ThermIQ-MQTT** and **ThermIQ-Room2** hardware interface to control and monitor your Thermia or Danfoss heatpump from Home Assistant. It is actively supported both here and at [Thermiq.net](https://thermiq.net)
 
 **Please support the continous development by buying a ThermiQ-room2 from ThermIQ, we are a small company and Your support makes a difference!**
 Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you also can read more about our products and background. 
@@ -171,5 +171,6 @@ Contributions are welcome! If you'd like to contribute, feel free to pick up any
 The naming, translation and grouping of registers can be improved, your input is appreciated. Most of it is in the [thermiq_regs.py](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/custom_components/thermiq_mqtt/heatpump/thermiq_regs.py)  
 
 All help improving the integration is appreciated!
+
 
 
