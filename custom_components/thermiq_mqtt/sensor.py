@@ -113,6 +113,7 @@ class HeatPumpSensor(SensorEntity):
         # set HA instance attributes directly (mostly don't use property)
         # self._attr_unique_id
         self.entity_id = f"sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
+        self._attr_unique_id = "uid-" + self.entity_id
 
         _LOGGER.debug("entity_id:" + self.entity_id)
         _LOGGER.debug("idx:" + device_id)
