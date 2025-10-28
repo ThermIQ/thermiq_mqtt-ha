@@ -15,7 +15,9 @@ from homeassistant.helpers.entity import Entity, async_generate_entity_id
 
 from homeassistant.const import (
     UnitOfTemperature,
-    PERCENTAGE
+    PERCENTAGE,
+    UnitOfElectricCurrent,
+    UnitOfTime
 )
 
 from homeassistant.components.sensor import SensorDeviceClass
@@ -77,7 +79,7 @@ async def async_setup_entry(
             if key in id_names:
                 friendly_name = id_names[key][heatpump._langid]
             else:
-                friendly_name = None
+                friendly_name = key
             vp_reg = reg_id[key][0]
             vp_type = reg_id[key][1]
             vp_unit = reg_id[key][2]
@@ -105,11 +107,6 @@ class HeatPumpSensor(SensorEntity):
         self.hass = hass
         self._heatpump = heatpump
         self._hpstate = heatpump._hpstate
-
-        # self._attr_native_value = state
-        # self._attr_native_unit_of_measurement = unit_of_measurement
-        self._attr_state_class = SensorStateClass.MEASUREMENT
-
         # set HA instance attributes directly (mostly don't use property)
         # self._attr_unique_id
         self.entity_id = f"sensor.{heatpump._domain}_{heatpump._id}_{device_id}"
@@ -119,8 +116,11 @@ class HeatPumpSensor(SensorEntity):
         _LOGGER.debug("idx:" + device_id)
         self._name = friendly_name
         self._state = None
-        self._icon = None
-        if (vp_type in ["temperature", "temperature_input",]) or (
+        self._icon = None        
+        self._attr_state_class = SensorStateClass.MEASUREMENT
+
+        # Override for known types
+        if (vp_type in ["temperature_input",]) or (
             vp_unit
             in [
                 "C",
@@ -128,9 +128,37 @@ class HeatPumpSensor(SensorEntity):
         ):
             self._icon = "mdi:temperature-celsius"
             self._unit =UnitOfTemperature.CELSIUS
-        elif vp_type in [
+            
+        if (vp_type in ["temperature",] ):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_device_class = SensorDeviceClass.TEMPERATURE
+            self._icon = "mdi:temperature-celsius"
+            self._unit =UnitOfTemperature.CELSIUS
+            
+        elif (vp_type in ["time",] ):
+            self._attr_state_class = SensorStateClass.TOTAL_INCREASING
+            self._attr_device_class = SensorDeviceClass.DURATION
+            self._icon = "mdi:clock-star-four-points-outline"
+            self._unit =UnitOfTime.HOURS
+            
+        elif (vp_type in ["sensor",]) and (
+            vp_unit
+            in [
+                "A",
+            ]
+            ):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_device_class = SensorDeviceClass.CURRENT
+            self._icon = "mdi:clock-star-four-points-outline"
+            self._unit =UnitOfElectricCurrent.AMPERE
+        
+
+
+
+
+        elif (vp_type in [
             "sensor_boolean",
-        ]:
+        ]):
             self._unit = ""
             self._icon = "mdi:alert"
         else:

@@ -72,7 +72,7 @@ async def async_setup_entry(
             if key in id_names:
                 friendly_name = id_names[key][heatpump._langid]
             else:
-                friendly_name = None
+                friendly_name = key
             vp_reg = reg_id[key][FIELD_REGNUM]
             vp_type = reg_id[key][FIELD_REGTYPE]
             bitmask = reg_id[key][FIELD_BITMASK]

@@ -63,6 +63,53 @@ entities:
       </div>
       
       
+      
+## Runtime statistics using apexChart
+  - type: custom:apexcharts-card
+    graph_span: 110 d
+    header:
+      title: Compressor runtime (h/week)
+      show: true
+    yaxis:
+      - decimals: 0
+        apex_config:
+          tickAmount: 3
+        min: 0
+    apex_config:
+      chart:
+        height: 150px
+    hours_12: false
+    span:
+      end: day
+    now:
+      show: false
+    series:
+      - entity: sensor.thermiq_mqtt_vp1_compressor_runtime_h
+        type: column
+        name: Total
+        group_by:
+          func: delta
+          duration: 1w
+        show:
+          legend_value: false
+        statistics:
+          type: mean
+          period: hour
+      - entity: sensor.thermiq_mqtt_vp1_hotwater_runtime_h
+        type: line
+        stroke_width: 1
+        name: Dedicated hotwater
+        group_by:
+          func: delta
+          duration: 1w
+        show:
+          legend_value: false
+        statistics:
+          type: mean
+          period: hour
+    show:
+      loading: false  
+
   - entity: input_select.thermiq_mqtt_vp1_main_mode
   - type: custom:numberbox-card
     entity: input_number.thermiq_mqtt_vp1_indoor_requested_t
