@@ -3,6 +3,7 @@
 # Component domain, used to store component data in hass data.
 DOMAIN = "thermiq_mqtt"
 MANUFACTURER = "ThermIQ.net"
+DEVVERSION ="1.1"
 
 # == ThermIQ Const
 CONF_ID = "id_name"

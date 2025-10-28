@@ -28,11 +28,12 @@ Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you a
    1. HACS->Frontend->Explore/Add [HTML Jinja2 Template card](https://github.com/PiotrMachowski/Home-Assistant-Lovelace-HTML-Jinja2-Template-card)
    2. HACS->Frontend->Explore/Add [Number Box](https://github.com/htmltiger/numberbox-card)
    3. HACS->Frontend->Explore/Add [fold-entity-row](https://github.com/thomasloven/lovelace-fold-entity-row)
-   4. Download/save the images [vp_base.png](vp_base.png), [vp_base_hgwon.png](vp_base_hgwon.png) and [vp_base_hw.png](vp_base_hw.png)
-   5. Upload the downloaded files to your Home Assistant machine to either the folder **www/community/** or (**local/community/**)
-   6. Go to your dashboard and add a new manual card
-   7. Copy/paste the contents of [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) into your manual card
-   8. Before you save the card, adjust the ID if you've used anything else than the default **vp1** when setting up the integration. If you do: Ctrl+F with find/replace is your friend.
+   4. HACS->Frontend->Explore/Add [apexcharts-card]https://github.com/RomRider)
+   5. Download/save the images [vp_base.png](vp_base.png), [vp_base_hgwon.png](vp_base_hgwon.png) and [vp_base_hw.png](vp_base_hw.png)
+   6. Upload the downloaded files to your Home Assistant machine to either the folder **www/community/** or (**local/community/**)
+   7. Go to your dashboard and add a new manual card
+   8. Copy/paste the contents of [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) into your manual card
+   9. Before you save the card, adjust the ID if you've used anything else than the default **vp1** when setting up the integration. If you do: Ctrl+F with find/replace is your friend.
   
 ### Debugging
 

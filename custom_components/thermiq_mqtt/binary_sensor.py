@@ -25,8 +25,11 @@ from homeassistant.const import (
 )
 from .const import (
     DOMAIN,
+    MANUFACTURER,
+    DEVVERSION,
     CONF_ID,
 )
+
 
 from .heatpump.thermiq_regs import (
     FIELD_BITMASK,
@@ -124,14 +127,15 @@ class HeatPumpBinarySensor(BinarySensorEntity):
             self._async_update_event,
         )
 
-        # Is this needed
-        self._attr_device_info = {
-            ATTR_IDENTIFIERS: {(heatpump._id, "ThermIQ-MQTT")},
-            ATTR_NAME: friendly_name,
-            ATTR_MANUFACTURER: "ThermIQ",
-            ATTR_MODEL: "v1.0",
+        # This is needed
+         self._attr_device_info = {
+            ATTR_IDENTIFIERS: {(DOMAIN,heatpump._id)},
+            ATTR_NAME: "Heatpump status",
+            ATTR_MANUFACTURER: MANUFACTURER,
+            ATTR_MODEL: DEVVERSION,
             "entry_type": DeviceEntryType.SERVICE,
         }
+
 
     @property
     def name(self):

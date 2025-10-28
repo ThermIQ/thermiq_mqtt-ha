@@ -26,6 +26,7 @@ from homeassistant.components.sensor import SensorDeviceClass
 from .const import (
     DOMAIN,
     MANUFACTURER,
+    DEVVERSION,
     CONF_ID,
 )
 
@@ -182,15 +183,15 @@ class HeatPumpSensor(SensorEntity):
         )
 
         # This is needed
-
+         self._attr_device_info = {
+            ATTR_IDENTIFIERS: {(DOMAIN,heatpump._id)},
+            ATTR_NAME: "Heatpump status",
+            ATTR_MANUFACTURER: MANUFACTURER,
+            ATTR_MODEL: DEVVERSION,
+            "entry_type": DeviceEntryType.SERVICE,
+        }
         
-        self._attr_device_info = {
-        self.device_info[ATTR_IDENTIFIERS] = {(DOMAIN, heatpump._id)}
-        self.device_info[ATTR_NAME] = friendly_name
-        self.device_info[ATTR_MANUFACTURER] = friendly_name
-        self.device_info[ATTR_MODEL] = DEVVERSION
-        self.device_info[entry_type] = DeviceEntryType.SERVICE
-        
+     
 
     @property
     def name(self):
