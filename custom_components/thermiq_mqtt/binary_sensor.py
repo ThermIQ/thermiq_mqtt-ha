@@ -128,7 +128,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         )
 
         # This is needed
-         self._attr_device_info = {
+        self._attr_device_info = {
             ATTR_IDENTIFIERS: {(DOMAIN,heatpump._id)},
             ATTR_NAME: "Heatpump status",
             ATTR_MANUFACTURER: MANUFACTURER,

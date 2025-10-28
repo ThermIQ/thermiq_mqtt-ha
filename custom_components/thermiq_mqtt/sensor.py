@@ -183,15 +183,15 @@ class HeatPumpSensor(SensorEntity):
         )
 
         # This is needed
-         self._attr_device_info = {
+        self._attr_device_info = {
             ATTR_IDENTIFIERS: {(DOMAIN,heatpump._id)},
             ATTR_NAME: "Heatpump status",
             ATTR_MANUFACTURER: MANUFACTURER,
             ATTR_MODEL: DEVVERSION,
             "entry_type": DeviceEntryType.SERVICE,
         }
-        
-     
+
+
 
     @property
     def name(self):
