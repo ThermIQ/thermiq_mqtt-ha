@@ -125,7 +125,7 @@ class HeatPumpSensor(SensorEntity):
         if (vp_type in ["temperature_input",]) or (
             vp_unit
             in [
-                "C",
+                "C","ºC",
             ]
         ):
             self._icon = "mdi:temperature-celsius"
@@ -137,7 +137,12 @@ class HeatPumpSensor(SensorEntity):
             self._icon = "mdi:temperature-celsius"
             self._unit =UnitOfTemperature.CELSIUS
             
-        elif (vp_type in ["time",] ):
+        elif (vp_type in ["time",] and (
+            vp_unit
+            in [
+                "h",
+            ]
+            )):
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_device_class = SensorDeviceClass.DURATION
             self._icon = "mdi:clock-star-four-points-outline"
@@ -155,8 +160,12 @@ class HeatPumpSensor(SensorEntity):
             self._unit =UnitOfElectricCurrent.AMPERE
         
 
-
-
+        elif (vp_unit in ["dBm",]):
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
+            self._icon = "mdi:wifi"
+            self._unit ='dBm'
+            
 
         elif (vp_type in [
             "sensor_boolean",
