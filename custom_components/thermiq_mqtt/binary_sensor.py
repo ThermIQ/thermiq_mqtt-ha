@@ -1,4 +1,5 @@
 import logging
+from numbers import Number
 from typing import TYPE_CHECKING, Literal, final
 from homeassistant.core import HomeAssistant, callback
 
@@ -14,10 +15,10 @@ from homeassistant.const import (
     ATTR_MANUFACTURER,
     ATTR_MODEL,
     ATTR_NAME,
-    STATE_OFF, 
-    STATE_ON, 
+    STATE_OFF,
+    STATE_ON,
     EntityCategory)
-    
+
 from homeassistant.helpers.device_registry import DeviceEntryType
 
 from homeassistant.const import (
@@ -45,7 +46,7 @@ from .heatpump.thermiq_regs import (
 
 from functools import cached_property
 
-    
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -70,6 +71,7 @@ async def async_setup_entry(
     for key in reg_id:
         if reg_id[key][1] in [
             "binary_sensor",
+            "generated_input_boolean"
         ]:
             device_id = key
             if key in id_names:
@@ -110,6 +112,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         _LOGGER.debug("idx:" + device_id)
         self._name = friendly_name
         self._state = None
+        self._attr_is_on=False
         self._icon = "mdi:flash-outline"
 
         self._entity_picture = None
@@ -119,7 +122,10 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         self._vp_reg = vp_reg
         self._bitmask = bitmask
         # ???
-        self._sorter = int("0x" + vp_reg[1:], 0) * 65536 + int(bitmask)
+        if isinstance(vp_reg,Number):
+            self._sorter = int("0x" + vp_reg[1:], 0) * 65536 + int(bitmask)
+        else:
+            self._sorter = 256 * 65536 + int(bitmask)
 
         # Listen for the ThermIQ rec event indicating new data
         hass.bus.async_listen(
@@ -182,6 +188,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
             _LOGGER.warning("Could not get data for %s", self._idx)
         else:
             self._state = (int(reg_state) & self._bitmask) > 0
+            self._attr_is_on = self._state
 
     async def _async_update_event(self, event):
         """Update the new state of the sensor."""
@@ -192,13 +199,15 @@ class HeatPumpBinarySensor(BinarySensorEntity):
             _LOGGER.debug("Could not get data for %s", self._idx)
             self._state = None
             bool_state = None
+            self._attr_is_on = False
         else:
             bool_state = (int(reg_state) & self._bitmask) > 0
 
         if self._state != bool_state:
             self._state = bool_state
+            self._attr_is_on = self._state
             self.async_schedule_update_ha_state()
-            _LOGGER.debug("async_update_ha: %s", str(bool_state))
+            _LOGGER.debug("async_update_ha: %s: [%s]",self._idx, str(bool_state))
 
     @property
     def device_class(self):

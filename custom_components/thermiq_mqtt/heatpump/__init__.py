@@ -1,28 +1,28 @@
 import logging, json
 
-from collections.abc import Callable, Coroutine
-import attr
+from collections.abc import Callable
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 
 from homeassistant.components.input_number import (
     ATTR_VALUE as INP_ATTR_VALUE,
     DOMAIN as NUMBER_DOMAIN,
-    SERVICE_RELOAD as NUMBER_SERVICE_RELOAD,
     SERVICE_SET_VALUE as NUMBER_SERVICE_SET_VALUE,
 )
 from homeassistant.components.input_select import (
     DOMAIN as SELECT_DOMAIN,
-    SERVICE_RELOAD as SELECT_SERVICE_RELOAD,
     SERVICE_SELECT_OPTION as SELECT_SERVICE_SET_OPTION,
+)
+from homeassistant.components.input_boolean import (
+    DOMAIN as BOOLEAN_DOMAIN,
 )
 
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_OPTION,
 )
-from homeassistant.core import HomeAssistant
+
 from homeassistant.components import mqtt
 
 
@@ -57,12 +57,14 @@ class HeatPump:
     _mqtt_base = ""
     _hexFormat = False
     _langid = 0
+
     unsubscribe_callback: Callable[[], None]
 
     # ###
     @callback
     async def message_received(self, message):
         """Handle new MQTT messages."""
+        from ..input_boolean import (SERVICE_SET_VALUES as BOOLEAN_SERVICE_SET_VALUE,)
         _LOGGER.debug("%s: message.payload:[%s]", self._id, message.payload)
         try:
             json_dict = json.loads(message.payload)
@@ -134,6 +136,27 @@ class HeatPump:
                                         blocking=False,
                                     )
                                 )
+                            if reg_id[self._id_reg[kstore]][1] in [
+                                "generated_input_boolean",
+                            ]:
+                                context = {
+                                    INP_ATTR_VALUE: json_dict[k],
+                                    ATTR_ENTITY_ID: "input_boolean."
+                                    + self._domain
+                                    + "_"
+                                    + self._id
+                                    + "_"
+                                    + self._id_reg[kstore],
+                                }
+                                self._hass.async_create_task(
+                                    self._hass.services.async_call(
+                                        BOOLEAN_DOMAIN,
+                                        BOOLEAN_SERVICE_SET_VALUE,
+                                        context,
+                                        blocking=False,
+                                    )
+                                )
+
                             if reg_id[self._id_reg[kstore]][1] == "select_input":
                                 mode = f"mode{json_dict[k]}"
 
@@ -258,13 +281,13 @@ class HeatPump:
         _LOGGER.debug(
             f"INFO: {self._domain}_{self._id} mqtt_node: [{entry.data[CONF_MQTT_NODE]}]"
         )
-        
+
         if self._dbg is True:
             self._mqtt_base = self._mqtt_base + "dbg_"
             _LOGGER.error("INFO: MQTT Debug write enabled")
 
         _LOGGER.debug("Language[%s]", self._langid)
- 
+
         if self._hexFormat == True:
             _LOGGER.debug("INFO: Using HEX format")
 
@@ -280,6 +303,11 @@ class HeatPump:
     @property
     def hpstate(self):
         return self._hpstate
+
+    def set_value(self, item, value):
+        """Set value for sensor."""
+        _LOGGER.debug("set_value(" + item + ")=" + str(value))
+        self._hpstate[item] = value
 
     def get_value(self, item):
         """Get value for sensor."""

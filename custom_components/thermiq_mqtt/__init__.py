@@ -3,18 +3,17 @@ import logging
 from builtins import property
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, Platform
 from homeassistant.core import HomeAssistant, Event
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
+from homeassistant.components.recorder import get_instance as recorder_get_instance
+from homeassistant.helpers.recorder import session_scope
+from homeassistant.helpers import entity_registry as er
 
 from .const import (
     DOMAIN,
     CONF_ID,
+    MIGRATION_VERSION
 )
-
-# from .automation import setup_automations
-from .input_number import setup_input_numbers
-from .input_select import setup_input_select
 
 # from .heatpump.sensor import HeatPumpSensor
 
@@ -22,8 +21,14 @@ from .heatpump import (
     HeatPump,
 )
 
-_LOGGER = logging.getLogger(__name__)
 
+# from .automation import setup_automations
+from .input_number import setup_input_numbers
+from .input_select import setup_input_selects
+from .input_boolean import setup_input_booleans
+
+_LOGGER = logging.getLogger(__name__)
+SERVICE_SET_VALUE = "set_value"
 
 PLATFORMS = [
     "sensor",
@@ -39,14 +44,215 @@ async def async_setup(hass, config):
     return True
 
 
-async def async_migrate_entry(hass, config_entry: ConfigEntry):
-    """Migrate configuration entry if needed"""
-    return True
+async def async_migrate_state_class(hass: HomeAssistant, config_entry) -> bool:
+    """Migrate sensor state classes with safety checks and logging.
+    """
+
+    # Check if migration has already been run
+    current_version = config_entry.data.get("migration_version", 0)
+    if current_version >= MIGRATION_VERSION:
+        _LOGGER.info("Migration already completed (version %s)", current_version)
+        return True
+
+    _LOGGER.info("Starting state class migration for ThermIQ sensors (version %s)", MIGRATION_VERSION)
+
+    # Verify recorder is available
+    recorder = recorder_get_instance(hass)
+    if recorder is None:
+        _LOGGER.error("Recorder not available, cannot perform migration")
+        return False
+
+    # Wait for recorder to be ready
+    if not recorder.recording:
+        _LOGGER.warning("Recorder not yet recording, migration may be incomplete")
+
+    try:
+        entity_reg = er.async_get(hass)
+
+        # Get the unique ID from config - adjust this to match your config structure
+        conf_id = config_entry.data.get(CONF_ID, "vp1")
+        domain_prefix = f"thermiq_mqtt_{conf_id}"
+        entity_id_prefix = f"sensor.{domain_prefix}_"
+
+        # List of time/runtime sensors that need migration
+        time_sensor_suffixes = [
+            "compressor_runtime_h",
+            "boiler_3kw_runtime_h",
+            "boiler_6kw_on_runtime_h",
+            "hotwater_runtime_h",
+            "passive_cooling_runtime_h",
+            "active_cooling_runtime_h",
+        ]
+
+        migrated_entities = []
+        failed_entities = []
+
+        for suffix in time_sensor_suffixes:
+            entity_id = f"{entity_id_prefix}{suffix}"
+
+            try:
+                entity_entry = entity_reg.async_get(entity_id)
+
+                if entity_entry is None:
+                    _LOGGER.debug("Entity %s not found in registry, skipping", entity_id)
+                    continue
+
+                _LOGGER.info("Migrating entity %s to TOTAL_INCREASING", entity_id)
+
+                # Migrate statistics metadata
+                success = await _migrate_statistics_metadata(hass, recorder, entity_id)
+
+                if success:
+                    migrated_entities.append(entity_id)
+                    _LOGGER.info("Successfully migrated %s", entity_id)
+                else:
+                    failed_entities.append(entity_id)
+                    _LOGGER.warning("Failed to migrate %s", entity_id)
+
+            except Exception as e:
+                _LOGGER.error("Error migrating %s: %s", entity_id, str(e), exc_info=True)
+                failed_entities.append(entity_id)
+
+        # Log summary
+        _LOGGER.info(
+            "Migration summary: %s succeeded, %s failed, %s total",
+            len(migrated_entities),
+            len(failed_entities),
+            len(time_sensor_suffixes)
+        )
+
+        if migrated_entities:
+            _LOGGER.info("Migrated entities: %s", ", ".join(migrated_entities))
+
+        if failed_entities:
+            _LOGGER.warning("Failed entities: %s", ", ".join(failed_entities))
+
+        # Mark migration as complete even if some entities failed
+        # (they might not exist yet, or be created later)
+        migration_data = {
+            **config_entry.data,
+            "migration_version": MIGRATION_VERSION,
+            "migration_date": datetime.now().isoformat(),
+            "migrated_entities": len(migrated_entities),
+        }
+
+        hass.config_entries.async_update_entry(config_entry, data=migration_data)
+
+        # Consider it successful if at least one entity was migrated
+        # or if no entities exist yet (fresh install)
+        return len(failed_entities) == 0 or len(migrated_entities) > 0
+
+    except Exception as e:
+        _LOGGER.error("Critical error during state class migration: %s", str(e), exc_info=True)
+        return False
+
+
+async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id: str) -> bool:
+    """
+    Migrate statistics metadata for a single entity.
+    Returns True if successful, False otherwise.
+    """
+
+    def _update_metadata(session):
+        """Update metadata within a database session."""
+        from sqlalchemy import update, select
+        from homeassistant.components.recorder.db_schema import StatisticsMeta
+
+        try:
+            # First check if metadata exists
+            stmt = select(StatisticsMeta).where(
+                StatisticsMeta.statistic_id == entity_id
+            )
+            result = session.execute(stmt)
+            existing = result.scalar_one_or_none()
+
+            if existing is None:
+                _LOGGER.debug("No statistics metadata found for %s (new sensor)", entity_id)
+                return True  # Not an error - sensor might be new
+
+            # Log current state
+            _LOGGER.debug(
+                "Current metadata for %s: has_mean=%s, has_sum=%s",
+                entity_id,
+                existing.has_mean,
+                existing.has_sum
+            )
+
+            # Update to TOTAL_INCREASING characteristics
+            # has_sum=True (accumulates), has_mean=False (not averaged)
+            update_stmt = (
+                update(StatisticsMeta)
+                .where(StatisticsMeta.statistic_id == entity_id)
+                .values(has_sum=True, has_mean=False)
+            )
+
+            result = session.execute(update_stmt)
+
+            if result.rowcount > 0:
+                _LOGGER.debug("Updated statistics metadata for %s", entity_id)
+                return True
+            else:
+                _LOGGER.warning("Failed to update statistics metadata for %s", entity_id)
+                return False
+
+        except Exception as e:
+            _LOGGER.error("Error in database operation for %s: %s", entity_id, str(e))
+            return False
+
+    # Run the database update in executor
+    try:
+        with session_scope(hass=hass, read_only=False) as session:
+            result = await hass.async_add_executor_job(_update_metadata, session)
+            return result
+    except Exception as e:
+        _LOGGER.error("Could not update statistics for %s: %s", entity_id, str(e), exc_info=True)
+        return False
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
+    """
+    Main migration entry point.
+
+    Call this from your __init__.py during async_setup_entry.
+
+    Returns:
+        bool: True if migration succeeded or was not needed, False if critical failure
+    """
+
+    _LOGGER.info("Checking for required migrations for ThermIQ")
+
+    try:
+        # Run state class migration
+        success = await async_migrate_state_class(hass, config_entry)
+
+        if not success:
+            _LOGGER.error("Migration failed - some entities may not function correctly")
+            # You can choose to return False here to prevent setup
+            # or return True to continue with warnings
+            return True  # Continue anyway - partial failure is acceptable
+
+        _LOGGER.info("All migrations completed successfully")
+        return True
+
+    except Exception as e:
+        _LOGGER.error("Unexpected error during migration: %s", str(e), exc_info=True)
+        return True  # Continue setup even if migration fails
+
+
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up component from a config entry, config_entry contains data from config entry database."""
+
+    # Perform migrations if needed
+    await async_migrate_entry(hass, entry)
+
+
     _LOGGER.info("Set up ThermIQ-MQTT integration entry " + entry.data[CONF_ID])
+
+    async def handle_hass_started(_event: Event) -> None:
+        """Event handler for when HA has started."""
+        await hass.async_create_task(heatpump.setup_mqtt())
 
     # One common ThermIQWorker serves all HeatPump objects
     if DOMAIN in hass.data:
@@ -59,12 +265,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Make config reload
     rld = entry.add_update_listener(reload_entry)
     entry.async_on_unload(rld)
-
-    async def handle_hass_started(_event: Event) -> None:
-        """Event handler for when HA has started."""
-        await hass.async_create_task(setup_input_numbers(heatpump))
-        await hass.async_create_task(setup_input_select(heatpump))
-        await hass.async_create_task(heatpump.setup_mqtt())
+    hass.async_create_task(setup_input_numbers(heatpump))
+    hass.async_create_task(setup_input_selects(heatpump))
+    hass.async_create_task(setup_input_booleans(heatpump))
 
     # Load the platforms for heatpump
     hass.async_create_task(
@@ -73,7 +276,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Wait for hass to start and then add the input_* entities
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, handle_hass_started)
-    # Make config reload
 
     return True
 

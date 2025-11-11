@@ -118,25 +118,21 @@ class HeatPumpSensor(SensorEntity):
         _LOGGER.debug("idx:" + device_id)
         self._name = friendly_name
         self._state = None
-        self._icon = None        
+        self._icon = None
         self._attr_state_class = SensorStateClass.MEASUREMENT
 
         # Override for known types
-        if (vp_type in ["temperature_input",]) or (
+        if (vp_type in ["temperature_input","temperature"]) or (
             vp_unit
             in [
-                "C","ºC",
+                "C","°C",
             ]
         ):
             self._icon = "mdi:temperature-celsius"
             self._unit =UnitOfTemperature.CELSIUS
-            
-        if (vp_type in ["temperature",] ):
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
-            self._icon = "mdi:temperature-celsius"
-            self._unit =UnitOfTemperature.CELSIUS
-            
+
         elif (vp_type in ["time",] and (
             vp_unit
             in [
@@ -147,7 +143,7 @@ class HeatPumpSensor(SensorEntity):
             self._attr_device_class = SensorDeviceClass.DURATION
             self._icon = "mdi:clock-star-four-points-outline"
             self._unit =UnitOfTime.HOURS
-            
+
         elif (vp_type in ["sensor",]) and (
             vp_unit
             in [
@@ -158,14 +154,14 @@ class HeatPumpSensor(SensorEntity):
             self._attr_device_class = SensorDeviceClass.CURRENT
             self._icon = "mdi:clock-star-four-points-outline"
             self._unit =UnitOfElectricCurrent.AMPERE
-        
+
 
         elif (vp_unit in ["dBm",]):
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
             self._icon = "mdi:wifi"
             self._unit ='dBm'
-            
+
 
         elif (vp_type in [
             "sensor_boolean",
@@ -181,7 +177,7 @@ class HeatPumpSensor(SensorEntity):
 
         self._idx = device_id
         self._vp_reg = vp_reg
-        
+
         # self.device_class [temperature, voltage,
         #self.state_class= measurement
 

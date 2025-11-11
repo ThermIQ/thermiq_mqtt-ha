@@ -15,12 +15,12 @@ from homeassistant.components.input_number import (
 from homeassistant.const import (
     CONF_ICON,
     CONF_ID,
+    CONF_UNIQUE_ID,
     CONF_MODE,
     CONF_NAME,
     CONF_UNIT_OF_MEASUREMENT,
     UnitOfTemperature,
 )
-#from homeassistant.helpers import entity_registry as er
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import EntityPlatform
@@ -48,7 +48,9 @@ PLATFORM = PLATFORM_INPUT_NUMBER
 class CustomInputNumber(InputNumber):
     register: str
     reg_id: str
+    reg: str
     heatpump: HeatPump
+    unique_id: str
 
     async def async_added_to_hass(self):
         """Run when entity about to be added to hass."""
@@ -60,16 +62,15 @@ class CustomInputNumber(InputNumber):
         if state := await self.async_get_last_state():
             with suppress(ValueError):
                 value = float(state.state)
+
         # Check against None because value can be 0
         if value is not None and self._minimum <= value <= self._maximum:
             self._current_value = value
         else:
             self._current_value = None #Keep as none to maintain historic values and avoid gaps when starting up. Will get a value with first mqtt message
+
     async def async_internal_will_remove_from_hass(self):
         await Entity.async_internal_will_remove_from_hass(self)
-
-    async def async_get_last_state(self):
-        pass
 
     async def async_set_value(self, value):
         _LOGGER.debug("inp %s", self.entity_id)
@@ -100,11 +101,6 @@ async def update_input_numbers(heatpump) -> None:
     platform: EntityPlatform = heatpump._hass.data[CONF_ENTITY_PLATFORM][PLATFORM][0]
     to_add: List[CustomInputNumber] = []
     entity_list = []
-    
-#    entity_registry  = er.async_get(heatpump._hass)
-
-    
-
 
     for key in reg_id:
         if reg_id[key][1] in [
@@ -116,12 +112,11 @@ async def update_input_numbers(heatpump) -> None:
             value = None
             entity_id = f"input_number.{heatpump._domain}_{heatpump._id}_{key}"
 
-
             inp = create_input_number_entity(heatpump, key,value)
             to_add.append(inp)
-#            entity_list.append(
-#                f"{PLATFORM}.{heatpump._domain}_{heatpump._id}" + "_" + key
-#            )
+            entity_list.append(
+                f"{PLATFORM}.{heatpump._domain}_{heatpump._id}" + "_" + key
+            )
 
     await platform.async_add_entities(to_add)
 
@@ -152,7 +147,7 @@ def create_input_number_entity(heatpump, name, value) -> CustomInputNumber:
         unit = reg_id[name][2]
         icon = "mdi:gauge"
     # "mdi:thermometer" ,"mdi:oil-temperature", "mdi:gauge", "mdi:speedometer", "mdi:alert"
-    
+
 
     config = {
         CONF_ID: entity_id,
@@ -176,4 +171,5 @@ def create_input_number_entity(heatpump, name, value) -> CustomInputNumber:
     _LOGGER.debug("entity_id:" + entity.entity_id)
     if value is not None:
         _LOGGER.debug("value:" + value)
+
     return entity

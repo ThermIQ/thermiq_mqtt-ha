@@ -5,6 +5,9 @@ DOMAIN = "thermiq_mqtt"
 MANUFACTURER = "ThermIQ.net"
 DEVVERSION ="1.1"
 
+# Database version, used to migrate old versions of data in the recorded history.
+MIGRATION_VERSION = 1
+
 # == ThermIQ Const
 CONF_ID = "id_name"
 CONF_MQTT_NODE = "mqtt_node"

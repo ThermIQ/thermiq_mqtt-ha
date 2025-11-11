@@ -44,9 +44,6 @@ class CustomInputSelect(InputSelect):
     async def async_internal_will_remove_from_hass(self):
         await Entity.async_internal_will_remove_from_hass(self)
 
-    async def async_get_last_state(self):
-        pass
-
     async def async_select_option(self, option: str) -> None:
         _LOGGER.debug("inp %s", self.entity_id)
         # We require that we have values from the hp before allowing updates from GUI
@@ -65,7 +62,7 @@ class CustomInputSelect(InputSelect):
                 await self.heatpump.send_mqtt_reg(self.reg_id, value, 0xFFFF)
 
 
-async def setup_input_select(heatpump) -> None:
+async def setup_input_selects(heatpump) -> None:
     """Setup input numbers."""
 
     await update_input_select(heatpump)
