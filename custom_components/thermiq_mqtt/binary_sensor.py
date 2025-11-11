@@ -71,7 +71,7 @@ async def async_setup_entry(
     for key in reg_id:
         if reg_id[key][1] in [
             "binary_sensor",
-            "generated_input_boolean"
+            #"generated_input_boolean"
         ]:
             device_id = key
             if key in id_names:
