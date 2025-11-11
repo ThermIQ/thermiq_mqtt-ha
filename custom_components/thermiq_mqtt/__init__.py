@@ -1,13 +1,16 @@
 """Component for ThermIQ-MQTT support."""
 import logging
 from builtins import property
+from datetime import datetime
+from sqlalchemy import update, select
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.components.recorder import get_instance as recorder_get_instance
-from homeassistant.helpers.recorder import session_scope
+
+from homeassistant.helpers.recorder import session_scope, get_instance as recorder_get_instance
 from homeassistant.helpers import entity_registry as er
+from homeassistant.components.recorder.db_schema import StatisticsMeta
 
 from .const import (
     DOMAIN,
@@ -155,8 +158,6 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
 
     def _update_metadata(session):
         """Update metadata within a database session."""
-        from sqlalchemy import update, select
-        from homeassistant.components.recorder.db_schema import StatisticsMeta
 
         try:
             # First check if metadata exists
@@ -187,6 +188,9 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
             )
 
             result = session.execute(update_stmt)
+            # Suggest to replace with but this is alread doen.
+            #homeassistant.components.recorder.get_instance(hass).async_add_executor_job()
+
 
             if result.rowcount > 0:
                 _LOGGER.debug("Updated statistics metadata for %s", entity_id)

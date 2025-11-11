@@ -1,4 +1,4 @@
- """Input boolean used for settings."""
+"""Input boolean used for settings."""
 import logging
 from typing import List, Any
 import voluptuous as vol
