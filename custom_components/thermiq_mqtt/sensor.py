@@ -125,7 +125,7 @@ class HeatPumpSensor(SensorEntity):
         if (vp_type in ["temperature_input","temperature"]) or (
             vp_unit
             in [
-                "C","°C",
+                "C","Â°C",
             ]
         ):
             self._icon = "mdi:temperature-celsius"
