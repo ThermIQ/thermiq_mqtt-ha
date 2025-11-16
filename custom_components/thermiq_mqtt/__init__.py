@@ -2,7 +2,7 @@
 import logging
 from builtins import property
 from datetime import datetime
-from sqlalchemy import update, select
+from sqlalchemy import update, select, delete
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event
@@ -10,7 +10,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 
 from homeassistant.helpers.recorder import session_scope, get_instance as recorder_get_instance
 from homeassistant.helpers import entity_registry as er
-from homeassistant.components.recorder.db_schema import StatisticsMeta
+from homeassistant.components.recorder.db_schema import StatisticsMeta, Statistics, StatisticsShortTerm
 
 from .const import (
     DOMAIN,
@@ -152,12 +152,21 @@ async def async_migrate_state_class(hass: HomeAssistant, config_entry) -> bool:
 
 async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id: str) -> bool:
     """
-    Migrate statistics metadata for a single entity.
+    Migrate statistics for a single entity from MEASUREMENT to TOTAL_INCREASING.
+
+    This preserves historical data by converting the statistics format:
+    - Copies 'mean' values to 'sum' (for runtime sensors, mean IS the cumulative value)
+    - Clears mean/min/max fields (not used by TOTAL_INCREASING)
+    - Updates metadata: has_sum=True, has_mean=False
+
+    This allows historical runtime data to be preserved while fixing the
+    incompatible state class issue.
+
     Returns True if successful, False otherwise.
     """
 
-    def _update_metadata():
-        """Update metadata within a database session."""
+    def _migrate_statistics():
+        """Migrate metadata and statistics data within a database session."""
 
         try:
             # Create the session inside the executor job
@@ -173,26 +182,71 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                     _LOGGER.debug("No statistics metadata found for %s (new sensor)", entity_id)
                     return True  # Not an error - sensor might be new
 
+                # Check if already migrated
+                if existing.has_sum and not existing.has_mean:
+                    _LOGGER.debug("Statistics for %s already migrated", entity_id)
+                    return True
+
                 # Log current state
-                _LOGGER.debug(
-                    "Current metadata for %s: has_mean=%s, has_sum=%s",
+                _LOGGER.info(
+                    "Migrating statistics for %s from MEASUREMENT to TOTAL_INCREASING (has_mean=%s, has_sum=%s)",
                     entity_id,
                     existing.has_mean,
                     existing.has_sum
                 )
 
-                # Update to TOTAL_INCREASING characteristics
+                metadata_id = existing.id
+
+                # Strategy: Convert mean-based statistics to cumulative sum
+                # For runtime sensors (hours), the mean value IS the cumulative runtime at that point
+                # We convert: mean -> sum, and clear mean/min/max
+
+                _LOGGER.info("Converting statistics data for %s from mean to cumulative sum", entity_id)
+
+                # Update Statistics table: convert mean to sum, clear mean/min/max
+                update_stats = (
+                    update(Statistics)
+                    .where(Statistics.metadata_id == metadata_id)
+                    .values(
+                        sum=Statistics.mean,  # The mean value is actually the cumulative hours
+                        mean=None,
+                        min=None,
+                        max=None
+                    )
+                )
+                stats_result = session.execute(update_stats)
+                _LOGGER.debug("Updated %s rows in Statistics", stats_result.rowcount)
+
+                # Update StatisticsShortTerm table: convert mean to sum, clear mean/min/max
+                update_short_term = (
+                    update(StatisticsShortTerm)
+                    .where(StatisticsShortTerm.metadata_id == metadata_id)
+                    .values(
+                        sum=StatisticsShortTerm.mean,  # The mean value is actually the cumulative hours
+                        mean=None,
+                        min=None,
+                        max=None
+                    )
+                )
+                short_term_result = session.execute(update_short_term)
+                _LOGGER.debug("Updated %s rows in StatisticsShortTerm", short_term_result.rowcount)
+
+                # Update metadata to TOTAL_INCREASING characteristics
                 # has_sum=True (accumulates), has_mean=False (not averaged)
-                update_stmt = (
+                update_meta = (
                     update(StatisticsMeta)
                     .where(StatisticsMeta.statistic_id == entity_id)
                     .values(has_sum=True, has_mean=False)
                 )
 
-                result = session.execute(update_stmt)
+                meta_result = session.execute(update_meta)
 
-                if result.rowcount > 0:
-                    _LOGGER.debug("Updated statistics metadata for %s", entity_id)
+                if meta_result.rowcount > 0:
+                    _LOGGER.info(
+                        "Successfully migrated %s: metadata updated, %s statistics records converted",
+                        entity_id,
+                        stats_result.rowcount + short_term_result.rowcount
+                    )
                     return True
                 else:
                     _LOGGER.warning("Failed to update statistics metadata for %s", entity_id)
@@ -204,10 +258,10 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
 
     # Run the database update in executor using the recorder instance
     try:
-        result = await recorder.async_add_executor_job(_update_metadata)
+        result = await recorder.async_add_executor_job(_migrate_statistics)
         return result
     except Exception as e:
-        _LOGGER.error("Could not update statistics for %s: %s", entity_id, str(e), exc_info=True)
+        _LOGGER.error("Could not migrate statistics for %s: %s", entity_id, str(e), exc_info=True)
         return False
 
 
