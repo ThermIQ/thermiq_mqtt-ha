@@ -154,13 +154,13 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
     """
     Migrate statistics for a single entity from MEASUREMENT to TOTAL_INCREASING.
 
-    This preserves historical data by converting the statistics format:
-    - Copies 'mean' values to 'sum' (for runtime sensors, mean IS the cumulative value)
-    - Clears mean/min/max fields (not used by TOTAL_INCREASING)
-    - Updates metadata: has_sum=True, has_mean=False
+    This preserves historical data by:
+    1. Converting mean values to sum values (for runtime sensors, mean IS cumulative)
+    2. Clearing mean/min/max fields (not used by TOTAL_INCREASING)
+    3. Updating metadata: has_sum=True, has_mean=False, mean_type=0
 
-    This allows historical runtime data to be preserved while fixing the
-    incompatible state class issue.
+    The key is updating mean_type from 1 (Arithmetic) to 0 (No mean) to prevent
+    Home Assistant's validation error about incompatible mean types.
 
     Returns True if successful, False otherwise.
     """
@@ -199,7 +199,7 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
 
                 # Strategy: Convert mean-based statistics to cumulative sum
                 # For runtime sensors (hours), the mean value IS the cumulative runtime at that point
-                # We convert: mean -> sum, and clear mean/min/max
+                # We convert: mean -> sum, clear mean/min/max, and update mean_type to 0
 
                 _LOGGER.info("Converting statistics data for %s from mean to cumulative sum", entity_id)
 
@@ -232,11 +232,12 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                 _LOGGER.debug("Updated %s rows in StatisticsShortTerm", short_term_result.rowcount)
 
                 # Update metadata to TOTAL_INCREASING characteristics
-                # has_sum=True (accumulates), has_mean=False (not averaged)
+                # has_sum=True, has_mean=False, mean_type=0 (No mean)
+                # Setting mean_type=0 is CRITICAL to prevent validation errors
                 update_meta = (
                     update(StatisticsMeta)
                     .where(StatisticsMeta.statistic_id == entity_id)
-                    .values(has_sum=True, has_mean=False)
+                    .values(has_sum=True, has_mean=False, mean_type=0)
                 )
 
                 meta_result = session.execute(update_meta)
