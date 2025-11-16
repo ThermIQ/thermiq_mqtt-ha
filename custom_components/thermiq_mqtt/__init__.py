@@ -203,12 +203,14 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
 
                 _LOGGER.info("Converting statistics data for %s from mean to cumulative sum", entity_id)
 
-                # Update Statistics table: convert mean to sum, clear mean/min/max
+                # Update Statistics table: convert mean to sum and state, clear mean/min/max
+                # For TOTAL_INCREASING, both sum and state should be the cumulative value
                 update_stats = (
                     update(Statistics)
                     .where(Statistics.metadata_id == metadata_id)
                     .values(
-                        sum=Statistics.mean,  # The mean value is actually the cumulative hours
+                        sum=Statistics.mean,    # The mean value is actually the cumulative hours
+                        state=Statistics.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
                         max=None
@@ -217,12 +219,13 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                 stats_result = session.execute(update_stats)
                 _LOGGER.debug("Updated %s rows in Statistics", stats_result.rowcount)
 
-                # Update StatisticsShortTerm table: convert mean to sum, clear mean/min/max
+                # Update StatisticsShortTerm table: convert mean to sum and state, clear mean/min/max
                 update_short_term = (
                     update(StatisticsShortTerm)
                     .where(StatisticsShortTerm.metadata_id == metadata_id)
                     .values(
-                        sum=StatisticsShortTerm.mean,  # The mean value is actually the cumulative hours
+                        sum=StatisticsShortTerm.mean,    # The mean value is actually the cumulative hours
+                        state=StatisticsShortTerm.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
                         max=None
