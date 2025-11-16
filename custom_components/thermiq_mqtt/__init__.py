@@ -156,58 +156,56 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
     Returns True if successful, False otherwise.
     """
 
-    def _update_metadata(session):
+    def _update_metadata():
         """Update metadata within a database session."""
 
         try:
-            # First check if metadata exists
-            stmt = select(StatisticsMeta).where(
-                StatisticsMeta.statistic_id == entity_id
-            )
-            result = session.execute(stmt)
-            existing = result.scalar_one_or_none()
+            # Create the session inside the executor job
+            with session_scope(hass=hass, read_only=False) as session:
+                # First check if metadata exists
+                stmt = select(StatisticsMeta).where(
+                    StatisticsMeta.statistic_id == entity_id
+                )
+                result = session.execute(stmt)
+                existing = result.scalar_one_or_none()
 
-            if existing is None:
-                _LOGGER.debug("No statistics metadata found for %s (new sensor)", entity_id)
-                return True  # Not an error - sensor might be new
+                if existing is None:
+                    _LOGGER.debug("No statistics metadata found for %s (new sensor)", entity_id)
+                    return True  # Not an error - sensor might be new
 
-            # Log current state
-            _LOGGER.debug(
-                "Current metadata for %s: has_mean=%s, has_sum=%s",
-                entity_id,
-                existing.has_mean,
-                existing.has_sum
-            )
+                # Log current state
+                _LOGGER.debug(
+                    "Current metadata for %s: has_mean=%s, has_sum=%s",
+                    entity_id,
+                    existing.has_mean,
+                    existing.has_sum
+                )
 
-            # Update to TOTAL_INCREASING characteristics
-            # has_sum=True (accumulates), has_mean=False (not averaged)
-            update_stmt = (
-                update(StatisticsMeta)
-                .where(StatisticsMeta.statistic_id == entity_id)
-                .values(has_sum=True, has_mean=False)
-            )
+                # Update to TOTAL_INCREASING characteristics
+                # has_sum=True (accumulates), has_mean=False (not averaged)
+                update_stmt = (
+                    update(StatisticsMeta)
+                    .where(StatisticsMeta.statistic_id == entity_id)
+                    .values(has_sum=True, has_mean=False)
+                )
 
-            result = session.execute(update_stmt)
-            # Suggest to replace with but this is alread doen.
-            #homeassistant.components.recorder.get_instance(hass).async_add_executor_job()
+                result = session.execute(update_stmt)
 
-
-            if result.rowcount > 0:
-                _LOGGER.debug("Updated statistics metadata for %s", entity_id)
-                return True
-            else:
-                _LOGGER.warning("Failed to update statistics metadata for %s", entity_id)
-                return False
+                if result.rowcount > 0:
+                    _LOGGER.debug("Updated statistics metadata for %s", entity_id)
+                    return True
+                else:
+                    _LOGGER.warning("Failed to update statistics metadata for %s", entity_id)
+                    return False
 
         except Exception as e:
             _LOGGER.error("Error in database operation for %s: %s", entity_id, str(e))
             return False
 
-    # Run the database update in executor
+    # Run the database update in executor using the recorder instance
     try:
-        with session_scope(hass=hass, read_only=False) as session:
-            result = await hass.async_add_executor_job(_update_metadata, session)
-            return result
+        result = await recorder.async_add_executor_job(_update_metadata)
+        return result
     except Exception as e:
         _LOGGER.error("Could not update statistics for %s: %s", entity_id, str(e), exc_info=True)
         return False
