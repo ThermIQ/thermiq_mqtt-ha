@@ -80,7 +80,8 @@ class HeatPump:
                     # if kstore == "evu":
                     #     kstore = "rf2"
                     # # Create hex notation if incoming register is decimal format
-                    if k[0] == "d":
+                    # Named registers must be longer than 4 characters to avoid confusion
+                    if k[0] == "d" and len(k) < 5:
                         reg = int(k[1:])
                         kstore = "r" + format(reg, "02x")
                         dstore = "d" + format(reg, "03d")

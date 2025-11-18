@@ -13,6 +13,8 @@ from homeassistant.components.input_boolean import (
 
 )
 
+
+
 from homeassistant.const import (
     CONF_ICON,
     CONF_ID,

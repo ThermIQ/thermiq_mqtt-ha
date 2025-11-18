@@ -1,7 +1,12 @@
 """Config flow"""
 import logging
 import voluptuous as vol
-from homeassistant import config_entries, exceptions
+from awesomeversion import AwesomeVersion
+from homeassistant import exceptions
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant import config_entries
+from homeassistant.const import __version__ as HAVERSION
+from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import selector
@@ -14,6 +19,7 @@ from .const import (
     CONF_MQTT_HEX,
     CONF_MQTT_DBG,
     CONF_LANGUAGE,
+    CONF_MIGRATE_DATA,
     AVAILABLE_LANGUAGES,
 )
 
@@ -36,7 +42,7 @@ class InvalidDomainName(exceptions.HomeAssistantError):
 class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Component config flow."""
 
-    VERSION = 1
+    VERSION = 2
 
     # FIXME: DOES NOT ACTUALLY VALIDATE ANYTHING! WE NEED THIS! =)
     async def validate_input(self, data):
@@ -45,7 +51,7 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
 
-        data_schema = vol.Schema(
+        DATA_SCHEMA  = vol.Schema(
             {
                 vol.Required(CONF_ID, default="vp1"): cv.string,
                 vol.Required(CONF_MQTT_NODE, default="ThermIQ/ThermIQ-mqtt"): cv.string,
@@ -57,11 +63,12 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ),
                 vol.Required(CONF_MQTT_HEX, default=False): cv.boolean,
                 vol.Required(CONF_MQTT_DBG, default=False): cv.boolean,
+                vol.Required(CONF_MIGRATE_DATA, default=False): cv.boolean,
             }
         )
 
         if user_input is None:
-            return self.async_show_form(step_id="user", data_schema=data_schema)
+            return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA)
         else:
 
             error_schema = vol.Schema(
@@ -83,6 +90,9 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     ): cv.boolean,
                     vol.Required(
                         CONF_MQTT_DBG, default=user_input[CONF_MQTT_DBG]
+                    ): cv.boolean,
+                    vol.Required(
+                        CONF_MIGRATE_DATA, default=user_input[CONF_MIGRATE_DATA]
                     ): cv.boolean,
                 }
             )
@@ -124,7 +134,6 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 )
 
             try:
-
                 return self.async_create_entry(
                     title=unique_id,
                     data={
@@ -133,6 +142,7 @@ class DomainConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_LANGUAGE: user_input[CONF_LANGUAGE],
                         CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
                         CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
+                        CONF_MIGRATE_DATA: user_input[CONF_MIGRATE_DATA],
                     },
                     options={},
                 )
@@ -154,7 +164,8 @@ class OptionsFlow(config_entries.OptionsFlow):
 
     def __init__(self, config_entry):
         """Initialize HASL options flow."""
-        self.config_entry = config_entry
+        if AwesomeVersion(HAVERSION) < "2024.11.99":
+            self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
@@ -168,7 +179,7 @@ class OptionsFlow(config_entries.OptionsFlow):
     async def async_step_user(self, user_input=None):
         s = self.config_entry.data.get(CONF_LANGUAGE)
 
-        data_schema = vol.Schema(
+        DATA_SCHEMA = vol.Schema(
             {
                 vol.Required(
                     CONF_MQTT_NODE, default=self.config_entry.data.get(CONF_MQTT_NODE)
@@ -188,11 +199,14 @@ class OptionsFlow(config_entries.OptionsFlow):
                 vol.Required(
                     CONF_MQTT_DBG, default=self.config_entry.data.get(CONF_MQTT_DBG)
                 ): cv.boolean,
+                vol.Required(
+                    CONF_MIGRATE_DATA, default=self.config_entry.data.get(CONF_MIGRATE_DATA, False)
+                ): cv.boolean,
             }
         )
 
         if user_input is None:
-            return self.async_show_form(step_id="user", data_schema=data_schema)
+            return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA)
         else:
             error_schema = vol.Schema(
                 {
@@ -212,6 +226,9 @@ class OptionsFlow(config_entries.OptionsFlow):
                     ): cv.boolean,
                     vol.Required(
                         CONF_MQTT_DBG, default=user_input[CONF_MQTT_DBG]
+                    ): cv.boolean,
+                    vol.Required(
+                        CONF_MIGRATE_DATA, default=user_input[CONF_MIGRATE_DATA]
                     ): cv.boolean,
                 }
             )
@@ -258,6 +275,7 @@ class OptionsFlow(config_entries.OptionsFlow):
                     CONF_LANGUAGE: user_input[CONF_LANGUAGE],
                     CONF_MQTT_HEX: user_input[CONF_MQTT_HEX],
                     CONF_MQTT_DBG: user_input[CONF_MQTT_DBG],
+                    CONF_MIGRATE_DATA: user_input[CONF_MIGRATE_DATA],
                 }
 
                 self.hass.config_entries.async_update_entry(

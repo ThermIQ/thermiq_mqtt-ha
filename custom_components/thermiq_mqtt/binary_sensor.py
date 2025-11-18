@@ -71,7 +71,7 @@ async def async_setup_entry(
     for key in reg_id:
         if reg_id[key][1] in [
             "binary_sensor",
-            #"generated_input_boolean"
+            "generated_input_boolean"
         ]:
             device_id = key
             if key in id_names:
@@ -183,7 +183,7 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         """Update the new state of the sensor."""
 
         _LOGGER.debug("update: " + self._idx)
-        reg_state = self._hpstate.get_value(self._vp_reg)
+        reg_state = self._hpstate[self._vp_reg]
         if self._state is None:
             _LOGGER.warning("Could not get data for %s", self._idx)
         else:

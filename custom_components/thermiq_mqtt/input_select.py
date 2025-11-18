@@ -50,7 +50,7 @@ class CustomInputSelect(InputSelect):
         await super().async_select_option(option)
         # is value updated by GUI?
         if self.heatpump._hpstate["mqtt_counter"] > 0:
-        	# Using first char in description as value to write is a kludge
+            # Using first char in description as value to write is a kludge
             value = int(option[0])
             if value != self.heatpump._hpstate[self.reg]:
                 self.heatpump._hpstate[self.reg] = value
