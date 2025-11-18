@@ -12,7 +12,7 @@ from homeassistant.components.input_number import (
 )
 from homeassistant.components.input_select import (
     DOMAIN as SELECT_DOMAIN,
-    SERVICE_SELECT_OPTION as SELECT_SERVICE_SET_OPTION,
+
 )
 from homeassistant.components.input_boolean import (
     DOMAIN as BOOLEAN_DOMAIN,
@@ -21,6 +21,7 @@ from homeassistant.components.input_boolean import (
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_OPTION,
+    SERVICE_SELECT_OPTION as SELECT_SERVICE_SET_OPTION,
 )
 
 from homeassistant.components import mqtt
@@ -64,7 +65,7 @@ class HeatPump:
     @callback
     async def message_received(self, message):
         """Handle new MQTT messages."""
-        from ..input_boolean import (SERVICE_SET_VALUES as BOOLEAN_SERVICE_SET_VALUE,)
+        from ..input_boolean import (SERVICE_SET_VALUE as BOOLEAN_SERVICE_SET_VALUE,)
         _LOGGER.debug("%s: message.payload:[%s]", self._id, message.payload)
         try:
             json_dict = json.loads(message.payload)
@@ -77,8 +78,9 @@ class HeatPump:
                     #     kstore = "rf0"
                     # if kstore == "timestamp":
                     #     kstore = "rf1"
-                    # if kstore == "evu":
-                    #     kstore = "rf2"
+                    if kstore == "evu":
+                        kstore = 'evu'
+                        dstore='d300'
                     # # Create hex notation if incoming register is decimal format
                     # Named registers must be longer than 4 characters to avoid confusion
                     if k[0] == "d" and len(k) < 5:

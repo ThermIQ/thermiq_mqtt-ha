@@ -50,7 +50,7 @@ class CustomInputNumber(InputNumber):
     reg_id: str
     reg: str
     heatpump: HeatPump
-    unique_id: str
+    #unique_id: str
 
     async def async_added_to_hass(self):
         """Run when entity about to be added to hass."""

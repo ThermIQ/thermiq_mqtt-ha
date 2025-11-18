@@ -1,6 +1,6 @@
 {
   "config": {
-    "flow_title":"Flow title",
+    "flow_title": "Flow title",
     "abort": {
       "already_configured": "The entered id name is already in use."
     },
@@ -17,11 +17,12 @@
           "mqtt_node": "MQTT Nodename",
           "language": "Language",
           "hexformat": "Use hexformat for registers i MQTT",
-          "thermiq_dbg": "Enable debug"
+          "thermiq_dbg": "Enable MQTT debug by adding '_dbg' to Nodename",
+          "migrate_data": "Request migration of old data in recorder database (may take time)"
         },
         "title": "Heatpump config",
         "description": "Set up a new ThermIQ_MQTT Instance"
-       }
+      }
     },
     "progress": {
       "slow_task": "This message will be displayed if `slow_task` is returned as `progress_action` for `async_show_progress`."
@@ -37,7 +38,8 @@
           "mqtt_node": "MQTT Nodename",
           "language": "Language",
           "hexformat": "Use hexformat for registers i MQTT",
-          "thermiq_dbg": "Enable debug"
+          "thermiq_dbg": "Enable MQTT debug by adding '_dbg' to Nodename",
+          "migrate_data": "Request migration of old data in recorder database (may take time)"
         },
         "title": "Options"
       }

@@ -33,7 +33,7 @@ Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you a
    6. Upload the downloaded files to your Home Assistant machine to either the folder **www/community/** or (**local/community/**)
    7. Go to your dashboard and add a new manual card
    8. Copy/paste the contents of [ThermIQ_Card.yaml](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/ThermIQ_Card.yaml) into your manual card
-   9. Before you save the card, adjust the ID if you've used anything else than the default **vp1** when setting up the integration. If you do: Ctrl+F with find/replace is your friend.
+   9. Before you save the card, adjust the ID if you've used anything else than the default **vp1** when setting up the integration. [hint: Ctrl+F with find/replace is your friend]
   
 ### Debugging
 
@@ -45,6 +45,11 @@ Make sure you use the right MQTT Nodename when configuring the HA Integration. T
 
 From v2.3.0 the pictures used has changed from *.jpg to *.png format to facilitate dark mode. You might want to update the dashboard-card
 
+From v3.x:
+   - the units used in the db recorder have been corrected, an attempt to upgrade the existing database is done at start. Also try the "Developer Tools" Statistics tab if built in conversions fail
+   - The EVU is now a boolean value better representing the ON/OFF function
+   - The Lovelace card has breaking changes, adding a max peak powerconsumption per hour. See below for instructions.
+
   
 # ThermIQ Energy Control for **ThermIQ-Room2**
 You can optimize energy usage directly from Home Assistance by using the excellent **AIO Energy Management** Plugin from [here](https://github.com/kotope/aio_energy_management)  
@@ -53,10 +58,11 @@ You can optimize energy usage directly from Home Assistance by using the excelle
 Steps to install:
 1. Click **AIO Energy Management** [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=kotope&repository=aio_energy_management&category=integration) and install it
 2. Follow the instructions on how to configure [**AIO Energy Management** together with either Nordpool or Entso-e](https://github.com/kotope/aio_energy_management)
-3. In HA->Settings->Devices&Services-> Helpers, Create two new number helpers 
+3. In HA->Settings->Devices&Services-> Helpers, Create three new number helpers 
 
    - **vp1_electricity_price_threshold** with a reasonable price range and step size of 0.01
-   - **vp1_electricity_low_hours** with a a range from 0-23, Step size 1  
+   - **vp1_electricity_low_hours** with a a range from 0-23, Step size 1
+     **vp1_powerconsumption_max** with a range from 0-20, Step size 0.25  
    
     Create two switch helpers  
    - **vp1_enable_energy_control**
@@ -80,8 +86,11 @@ aio_energy_management:
       unique_id: my_energy_management_calendar
 ```
 
-5. Add the following to you **automations.yaml** file
+5. Add the following to you **automations.yaml** file, use the correct nordpool/entso-e sensor for your setup. Make sure you match the mqtt topic to your setup
 ```
+# Update the nordpool sensor and accumulated_consumption_current_hour_helge
+# Change the MQTT topic
+#
 - alias: Update AIO Energy Management
   description: Update AIO cheapest hours based on current settings
   triggers:
@@ -92,12 +101,13 @@ aio_energy_management:
     data:
       unique_id: vp1_cheapest_hours
   id: bc899c680e3e4bc1a57f6f20f92678cc
+
 - alias: Set EVU based on price
   description: Cheapest hours turn off EVU, (most expensive turns on))
   triggers:
   - trigger: time_pattern
     hours: '*'
-    seconds: '10'
+    minutes: '1'
   - trigger: state
     entity_id: input_number.vp1_electricity_price_threshold
   - trigger: state
@@ -105,13 +115,16 @@ aio_energy_management:
   - trigger: state
     entity_id: input_boolean.vp1_force_evu
   - trigger: state
-    entity_id: binary_sensor.vp1_cheapest_hours
-  - trigger: state
     entity_id:
     - binary_sensor.vp1_cheapest_hours
-      attribute: updated_at
+    attribute: updated_at
+  - trigger: state
+    entity_id: binary_sensor.vp1_cheapest_hours
   - trigger: homeassistant
     event: start
+  - trigger: template
+    value_template: '{{ states(''sensor.accumulated_consumption_current_hour_helge'')
+      > states(''input_number.vp1_powerconsumption_max'')  }}'
   action:
   - if:
     - condition: and
@@ -130,20 +143,24 @@ aio_energy_management:
         - condition: numeric_state
           entity_id: sensor.nordpool_kwh_se3_sek_3_10_025
           below: input_number.vp1_electricity_price_threshold
+      - condition: numeric_state
+        entity_id: sensor.accumulated_consumption_current_hour_helge
+        below: input_number.vp1_powerconsumption_max
     then:
     - service: mqtt.publish
       data_template:
-        topic: ThermIQ/ThermIQ-mqtt/set
+        topic: ThermIQ/ThermIQ-room2-jas/set
         payload: '{"EVU":0}'
     else:
     - service: mqtt.publish
       data_template:
-        topic: ThermIQ/ThermIQ-mqtt/set
+        topic: ThermIQ/ThermIQ-room2-jas/set
         payload: '{"EVU":1}'
+  id: 04d33b769f62434d8f560e6c17af2841
 ```
 
 6. **Restart Home Assistant**
-7. You will now be able to use the **Energy Management** Tab in the ThermIQ panel to enable energy control, set your low cost limit and select the number of hours you want to have enabled. The AIO and ThermIQ-Room2 will make sure the hours selected are the cheapest ones. Use MQTT-Explorer to ensure you get the expected behaviour.
+7. You will now be able to use the **Energy Management** Tab in the ThermIQ panel to enable energy control, set your low cost limit and select the number of hours you want to have enabled and a max hourly power cutoff to avoid peak power charges. The AIO and ThermIQ-Room2 will make sure the hours selected are the cheapest ones. Use MQTT-Explorer to ensure you get the expected behaviour.
 
 
 

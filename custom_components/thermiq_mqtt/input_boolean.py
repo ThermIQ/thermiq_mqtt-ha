@@ -43,13 +43,14 @@ _LOGGER = logging.getLogger(__name__)
 
 
 PLATFORM = PLATFORM_INPUT_BOOLEAN
-SERVICE_SET_VALUES = "async_set_value"
+SERVICE_SET_VALUE = "async_set_value"
 
 
 class CustomInputBoolean(InputBoolean):
     register: str
     reg_id: str
     reg: str
+    bitmask: int
     heatpump: HeatPump
 
     async def async_added_to_hass(self) -> None:
@@ -79,17 +80,19 @@ class CustomInputBoolean(InputBoolean):
         _LOGGER.debug("inp %s", self.entity_id)
         _LOGGER.debug("async_set: %s [%s]", self.entity_id, value)
         # is value updated by GUI?
+        if value:
+            self._attr_is_on = True
+            self.async_write_ha_state()
+            reg=1
+        else:
+            self._attr_is_on = False
+            self.async_write_ha_state()
+            reg=0
+        # We require that we have values from the hp before sending MQTT msgs
         mqtt_ctr=self.heatpump._hpstate['mqtt_counter']
         if mqtt_ctr > 0:
-            if value is True:
-                self._attr_is_on = True
-                ret=1
-            else:
-                self._attr_is_on = False
-                ret=0
-            self.async_write_ha_state()
-            if self.heatpump._hpstate[self.reg] != ret:
-                self.heatpump._hpstate[self.reg] = ret
+            if self.heatpump._hpstate[self.reg] != reg:
+                self.heatpump._hpstate[self.reg] = reg
                 self.heatpump._hass.bus.fire(
                     # This will reload all sensor entities in this heatpump
                     f"{self.heatpump._domain}_{self.heatpump._id}_msg_rec_event",
@@ -112,24 +115,25 @@ async def update_input_boolean(heatpump) -> None:
     entity_list = []
 
     for key in reg_id:
-        if reg_id[key][1] in [
+        if reg_id[key][FIELD_REGTYPE] in [
             "generated_input_boolean",
         ]:
             value = None
             entity_id = f"input_boolean.{heatpump._domain}_{heatpump._id}_{key}"
+            bitmask=reg_id[key][FIELD_BITMASK]
 
 
-            inp = create_input_boolean_entity(heatpump, key,value)
+            inp = create_input_boolean_entity(heatpump, key,value,bitmask)
             to_add.append(inp)
 #            entity_list.append(
 #                f"{PLATFORM}.{heatpump._domain}_{heatpump._id}" + "_" + key
 #            )
 
     await platform.async_add_entities(to_add)
-    platform.async_register_entity_service(SERVICE_SET_VALUES,{ vol.Required('value'): vol.Coerce(bool)}, "async_set_value")
+    platform.async_register_entity_service(SERVICE_SET_VALUE,{ vol.Required('value'): vol.Coerce(bool)}, "async_set_value")
 
 
-def create_input_boolean_entity(heatpump, name, value) -> CustomInputBoolean:
+def create_input_boolean_entity(heatpump, name, value, bitmask) -> CustomInputBoolean:
     """Create a CustomInputBoolean instance."""
 
     entity_id = f"{heatpump._domain}_{heatpump._id}_{name}"
@@ -149,11 +153,11 @@ def create_input_boolean_entity(heatpump, name, value) -> CustomInputBoolean:
     }
 
     entity = CustomInputBoolean.from_yaml(config)
-    entity.reg = reg_id[name][0]
+    entity.reg = reg_id[name][FIELD_REGNUM]
     entity.reg_id = name
     entity.heatpump = heatpump
     # Bitmask is all bits
-    entity.bitmask = 0xFFFF
+    entity.bitmask = bitmask
 
     _LOGGER.debug("entity_id:" + entity.entity_id)
     if value is not None:

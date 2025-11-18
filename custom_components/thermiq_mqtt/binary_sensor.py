@@ -194,6 +194,8 @@ class HeatPumpBinarySensor(BinarySensorEntity):
         """Update the new state of the sensor."""
 
         _LOGGER.debug("event: " + self._idx)
+        if self._vp_reg=='evu':
+            _LOGGER.debug("EVU reg state read special")
         reg_state = self._hpstate[self._vp_reg]
         if reg_state is None:
             _LOGGER.debug("Could not get data for %s", self._idx)
