@@ -1,6 +1,6 @@
 {
     "name": "ThermIQ MQTT",
     "hacs": "0.24.0",
-    "homeassistant": "2024.11.99",
+    "homeassistant": "2022.01",
     "render_readme": true
 }
