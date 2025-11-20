@@ -8,6 +8,15 @@ This integration allows you to use the **ThermIQ-MQTT** and **ThermIQ-Room2** ha
 **Please support the continous development by buying a ThermiQ-room2 from ThermIQ, we are a small company and Your support makes a difference!**
 Get the neccessary hardware from [Thermiq.net](https://thermiq.net), where you also can read more about our products and background. 
 
+
+## Important release notes
+From v3.x:
+   - the units used in the db recorder have been corrected, an attempt to upgrade the existing database is done at start. Also try the "Developer Tools" Statistics tab if built in conversions fail
+   - The EVU is now a boolean value better representing the ON/OFF function
+   - The Lovelace card has breaking changes, adding a max peak powerconsumption per hour. See below for instructions.
+
+
+
 # Steps to install ThermIQ HA Integration
 1. Install the Mosquitto Add-on in Home Assistant.
 2. Install [MQTT Explorer](https://mqtt-explorer.com/) on your PC and verify that you can connect to Mosquitto
@@ -45,11 +54,6 @@ Make sure you use the right MQTT Nodename when configuring the HA Integration. T
 
 From v2.3.0 the pictures used has changed from *.jpg to *.png format to facilitate dark mode. You might want to update the dashboard-card
 
-From v3.x:
-   - the units used in the db recorder have been corrected, an attempt to upgrade the existing database is done at start. Also try the "Developer Tools" Statistics tab if built in conversions fail
-   - The EVU is now a boolean value better representing the ON/OFF function
-   - The Lovelace card has breaking changes, adding a max peak powerconsumption per hour. See below for instructions.
-
   
 # ThermIQ Energy Control for **ThermIQ-Room2**
 You can optimize energy usage directly from Home Assistance by using the excellent **AIO Energy Management** Plugin from [here](https://github.com/kotope/aio_energy_management)  
@@ -62,12 +66,12 @@ Steps to install:
 
    - **vp1_electricity_price_threshold** with a reasonable price range and step size of 0.01
    - **vp1_electricity_low_hours** with a a range from 0-23, Step size 1
-     **vp1_powerconsumption_max** with a range from 0-20, Step size 0.25  
+   - **vp1_powerconsumption_max** with a range from 0-20, Step size 0.25  
    
     Create two switch helpers  
    - **vp1_enable_energy_control**
    - **vp1_force_evu**
-   
+     
 4. Add the following to your **configuration.yaml** file, use the correct nordpool/entso-e sensor for your setup. 
 ```
 aio_energy_management:
@@ -189,6 +193,7 @@ Contributions are welcome! If you'd like to contribute, feel free to pick up any
 The naming, translation and grouping of registers can be improved, your input is appreciated. Most of it is in the [thermiq_regs.py](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/custom_components/thermiq_mqtt/heatpump/thermiq_regs.py)  
 
 All help improving the integration is appreciated!
+
 
 
 
