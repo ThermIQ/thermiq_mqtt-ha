@@ -88,7 +88,7 @@ aio_energy_management:
 
 5. Add the following to you **automations.yaml** file, use the correct nordpool/entso-e sensor for your setup. Make sure you match the mqtt topic to your setup
 ```
-# Update the nordpool sensor and accumulated_consumption_current_hour_helge
+# Update the nordpool sensor and accumulated_consumption_current_hour
 # Change the MQTT topic
 #
 - alias: Update AIO Energy Management
@@ -123,7 +123,7 @@ aio_energy_management:
   - trigger: homeassistant
     event: start
   - trigger: template
-    value_template: '{{ states(''sensor.accumulated_consumption_current_hour_helge'')
+    value_template: '{{ states(''sensor.accumulated_consumption_current_hour'')
       > states(''input_number.vp1_powerconsumption_max'')  }}'
   action:
   - if:
@@ -144,7 +144,7 @@ aio_energy_management:
           entity_id: sensor.nordpool_kwh_se3_sek_3_10_025
           below: input_number.vp1_electricity_price_threshold
       - condition: numeric_state
-        entity_id: sensor.accumulated_consumption_current_hour_helge
+        entity_id: sensor.accumulated_consumption_current_hour
         below: input_number.vp1_powerconsumption_max
     then:
     - service: mqtt.publish
