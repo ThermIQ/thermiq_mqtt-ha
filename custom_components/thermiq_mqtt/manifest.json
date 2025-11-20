@@ -12,5 +12,5 @@
   "documentation": "https://github.com/thermiq/thermiq_mqtt-ha",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/thermiq/thermiq_mqtt-ha/issues",
-  "version": "3.0.5"
+  "version": "3.1.0"
 }

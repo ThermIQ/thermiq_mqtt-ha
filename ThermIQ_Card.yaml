@@ -105,8 +105,7 @@ entities:
         show:
           legend_value: false
         statistics:
-          type: mean
-          period: hour
+          type: sum
     show:
       loading: false  
 
