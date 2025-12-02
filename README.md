@@ -179,6 +179,11 @@ data: {"entity_id": "input_number.thermiq_mqtt_vp1_indoor_requested_t", "value":
 #### Available data
 The data available is listed in [REGISTERS.md](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/REGISTERS.md)
 
+#### Forced legionella heating
+See this [thread](https://github.com/ThermIQ/thermiq_mqtt-ha/issues/66#issuecomment-3594762404) for a possible way of forcing a legionella run when energy is cheap
+
+
+
 #### Features and Limitations
 - Currently provides all data from the heatpump in the form of sensors and binary sensors
 - Allows control over the heatpump 
@@ -193,6 +198,7 @@ Contributions are welcome! If you'd like to contribute, feel free to pick up any
 The naming, translation and grouping of registers can be improved, your input is appreciated. Most of it is in the [thermiq_regs.py](https://github.com/ThermIQ/thermiq_mqtt-ha/blob/master/custom_components/thermiq_mqtt/heatpump/thermiq_regs.py)  
 
 All help improving the integration is appreciated!
+
 
 
 
