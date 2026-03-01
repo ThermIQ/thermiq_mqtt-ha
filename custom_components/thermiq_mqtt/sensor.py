@@ -249,7 +249,3 @@ class HeatPumpSensor(SensorEntity):
             self.async_schedule_update_ha_state()
             _LOGGER.debug("async_update_ha: %s", str(state))
 
-    @property
-    def device_class(self):
-        """Return the class of this device."""
-        return f"{DOMAIN}_HeatPumpSensor"
