@@ -1,67 +1,81 @@
-"""Tests for config_flow.py.
+"""Tests for the ThermIQ config flow validation paths.
 
-Verifies that:
-- Bare except: clauses have been replaced with except Exception:
-- Config flow validates MQTT node names
-- Language validation works
+The flow object is driven directly (not via flow.async_init) so the test
+does not have to set up the integration's mqtt/recorder dependencies.
 """
 
 import pytest
-import ast
-import os
-import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from homeassistant.data_entry_flow import AbortFlow, FlowResultType
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.thermiq_mqtt.config_flow import DomainConfigFlow
+from custom_components.thermiq_mqtt.const import DOMAIN
 
-class TestBareExceptsRemoved:
-    """Verify that bare except: clauses have been replaced."""
-
-    def test_no_bare_excepts_in_config_flow(self):
-        """config_flow.py should not contain bare 'except:' clauses.
-
-        Bare except catches SystemExit and KeyboardInterrupt, which is dangerous.
-        All except clauses should specify at least 'Exception'.
-        """
-        config_flow_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "custom_components",
-            "thermiq_mqtt",
-            "config_flow.py",
-        )
-
-        with open(config_flow_path) as f:
-            source = f.read()
-
-        tree = ast.parse(source)
-
-        bare_excepts = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ExceptHandler):
-                if node.type is None:
-                    bare_excepts.append(node.lineno)
-
-        assert bare_excepts == [], (
-            f"Found bare 'except:' clauses at lines {bare_excepts}. "
-            "Use 'except Exception:' instead."
-        )
+VALID_INPUT = {
+    "id_name": "vp1",
+    "mqtt_node": "ThermIQ/ThermIQ-mqtt",
+    "language": "en",
+    "hexformat": False,
+    "thermiq_dbg": False,
+    "migrate_data": False,
+}
 
 
-class TestAvailableLanguages:
-    """Test language configuration."""
+def _make_flow(hass):
+    flow = DomainConfigFlow()
+    flow.hass = hass
+    flow.handler = DOMAIN
+    flow.context = {}
+    return flow
 
-    def test_available_languages(self):
-        """AVAILABLE_LANGUAGES should have no duplicates."""
-        from custom_components.thermiq_mqtt.const import AVAILABLE_LANGUAGES
 
-        assert len(AVAILABLE_LANGUAGES) == len(
-            set(AVAILABLE_LANGUAGES)
-        ), f"Duplicate languages found: {AVAILABLE_LANGUAGES}"
+async def test_form_is_shown(hass):
+    flow = _make_flow(hass)
+    result = await flow.async_step_user(None)
+    assert result["type"] == FlowResultType.FORM
+    assert not result.get("errors")
 
-    def test_expected_languages(self):
-        """Should support en, se, fi, no, de."""
-        from custom_components.thermiq_mqtt.const import AVAILABLE_LANGUAGES
 
-        for lang in ["en", "se", "fi", "no", "de"]:
-            assert lang in AVAILABLE_LANGUAGES
+async def test_valid_input_creates_entry(hass):
+    flow = _make_flow(hass)
+    result = await flow.async_step_user(dict(VALID_INPUT))
+    assert result["type"] == FlowResultType.CREATE_ENTRY
+    assert result["title"] == f"{DOMAIN}_vp1"
+    assert result["data"]["id_name"] == "vp1"
+    assert result["data"]["mqtt_node"] == "ThermIQ/ThermIQ-mqtt"
+
+
+@pytest.mark.parametrize("bad_id", ["VP 1", "vp-1", "Vp1", "vp/1", ""])
+async def test_id_name_must_be_slug_safe(hass, bad_id):
+    flow = _make_flow(hass)
+    result = await flow.async_step_user({**VALID_INPUT, "id_name": bad_id})
+    assert result["type"] == FlowResultType.FORM
+    assert result["errors"] == {"base": "creation_id"}
+
+
+async def test_invalid_mqtt_node_is_rejected(hass):
+    flow = _make_flow(hass)
+    result = await flow.async_step_user({**VALID_INPUT, "mqtt_node": "Therm#IQ"})
+    assert result["type"] == FlowResultType.FORM
+    assert result["errors"] == {"base": "invalid_nodename"}
+
+
+async def test_trailing_slash_is_stripped_from_mqtt_node(hass):
+    flow = _make_flow(hass)
+    result = await flow.async_step_user(
+        {**VALID_INPUT, "mqtt_node": "ThermIQ/ThermIQ-mqtt/"}
+    )
+    assert result["type"] == FlowResultType.CREATE_ENTRY
+    assert result["data"]["mqtt_node"] == "ThermIQ/ThermIQ-mqtt"
+
+
+async def test_duplicate_id_aborts(hass):
+    MockConfigEntry(
+        domain=DOMAIN, unique_id=f"{DOMAIN}_vp1", data=VALID_INPUT
+    ).add_to_hass(hass)
+    flow = _make_flow(hass)
+    # Driving the flow object directly means AbortFlow propagates as an
+    # exception (the flow manager would turn it into an abort result)
+    with pytest.raises(AbortFlow, match="already_configured"):
+        await flow.async_step_user(dict(VALID_INPUT))
