@@ -1,6 +1,5 @@
 """Number entities for ThermIQ heat pump settings."""
 import logging
-from contextlib import suppress
 
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import UnitOfTemperature
@@ -108,7 +107,7 @@ class HeatPumpNumber(NumberEntity):
     async def async_set_native_value(self, value: float) -> None:
         """Set the value, and send MQTT command to heat pump."""
         # Only send if we've received at least one MQTT message
-        if self._heatpump._hpstate.get("mqtt_counter", -1) < 0:
+        if self._heatpump._hpstate.get("mqtt_counter", -1) <= 0:
             return
 
         current = self._heatpump._hpstate.get(self._reg)
@@ -131,11 +130,6 @@ class HeatPumpNumber(NumberEntity):
                 self._async_update_event,
             )
         )
-        # Restore last known value if heat pump hasn't sent data yet
-        if self.native_value is None:
-            if state := await self.async_get_last_state():
-                with suppress(ValueError):
-                    self._heatpump._hpstate[self._reg] = float(state.state)
 
     async def _async_update_event(self, event) -> None:
         """Handle heat pump state update event."""
