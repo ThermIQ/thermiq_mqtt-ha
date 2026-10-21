@@ -1,4 +1,5 @@
 """Component for ThermIQ-MQTT support."""
+
 from __future__ import annotations
 import logging
 from datetime import datetime
@@ -1124,7 +1125,6 @@ class ThermIQWorker:
         return heatpump
 
     def remove_entry(self, config_entry: ConfigEntry) -> None:
-
         """Remove entry."""
         self._hass.bus.fire(
             f"{DOMAIN}_changed",

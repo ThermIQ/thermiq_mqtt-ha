@@ -150,7 +150,9 @@ class HeatPumpSensor(SensorEntity):
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
 
-        elif vp_type in ["time",] and (
+        elif vp_type in [
+            "time",
+        ] and (
             vp_unit
             in [
                 "h",
@@ -161,7 +163,12 @@ class HeatPumpSensor(SensorEntity):
             self._icon = "mdi:clock-star-four-points-outline"
             self._unit = UnitOfTime.HOURS
 
-        elif (vp_type in ["sensor",]) and (
+        elif (
+            vp_type
+            in [
+                "sensor",
+            ]
+        ) and (
             vp_unit
             in [
                 "A",
@@ -202,7 +209,6 @@ class HeatPumpSensor(SensorEntity):
         self._vp_reg = vp_reg
 
     async def async_added_to_hass(self) -> None:
-
         """Register the update listener; removed automatically on unload."""
         self.async_on_remove(
             self.hass.bus.async_listen(

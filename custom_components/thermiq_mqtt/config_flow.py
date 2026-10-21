@@ -1,4 +1,5 @@
 """Config flow"""
+
 import logging
 import re
 import voluptuous as vol

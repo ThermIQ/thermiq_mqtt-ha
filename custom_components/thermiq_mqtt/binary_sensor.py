@@ -166,7 +166,6 @@ class HeatPumpBinarySensor(BinarySensorEntity):
             self._sorter = 256 * 65536
 
     async def async_added_to_hass(self) -> None:
-
         """Register the update listener; removed automatically on unload."""
         self.async_on_remove(
             self.hass.bus.async_listen(
