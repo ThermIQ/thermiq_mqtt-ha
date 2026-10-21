@@ -1,0 +1,35 @@
+name: Claude Code
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize]
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  # Required by claude-code-action@v1 to fetch an OIDC token; without it the
+  # job fails with "Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable"
+  id-token: write
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    # Run on @claude mentions, PR reviews, or issues labeled 'claude'
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request') ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'claude'))
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--max-turns 10"
