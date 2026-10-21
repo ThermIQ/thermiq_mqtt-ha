@@ -5,7 +5,7 @@ DOMAIN = "thermiq_mqtt"
 
 # Database version, used to migrate old versions of data in the recorded history.
 DATABASE_VERSION = 1.6
-CONF_DB_VERSION =  "database_version"
+CONF_DB_VERSION = "database_version"
 CONF_MIGRATE_DATA = "migrate_data"
 
 # == ThermIQ Const
@@ -16,5 +16,3 @@ CONF_MQTT_HEX = "hexformat"
 CONF_LANGUAGE = "language"
 
 AVAILABLE_LANGUAGES = ["en", "se", "fi", "no", "de"]
-
-

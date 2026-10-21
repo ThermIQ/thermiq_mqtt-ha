@@ -100,7 +100,7 @@ class ThermIQSwitch(SwitchEntity):
         self._hpstate[self._reg] = value
         self._heatpump._hass.bus.fire(
             f"{self._heatpump._domain}_{self._heatpump._id}_msg_rec_event", {}
-            )
+        )
         await self._heatpump.send_mqtt_reg(self._key, value, 0xFFFF)
 
     async def async_added_to_hass(self) -> None:

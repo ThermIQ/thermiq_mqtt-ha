@@ -10,9 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.const import ( 
-		EVENT_HOMEASSISTANT_STARTED, 
-		UnitOfTemperature )
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, UnitOfTemperature
 from homeassistant.helpers.recorder import (
     session_scope,
     get_instance as recorder_get_instance,
@@ -100,6 +98,7 @@ FRONTEND_REGISTERED = f"{DOMAIN}_frontend_registered"
 # after the patch. That is why every HACS card works and only ours did not.
 CARD_DELIVERY = "resource"
 
+
 async def _async_register_lovelace_resource(hass: HomeAssistant, url: str) -> bool:
     """List the card in Lovelace's resource collection.
     Returns True only if the card is now listed, so the caller knows whether
@@ -138,6 +137,8 @@ async def _async_register_lovelace_resource(hass: HomeAssistant, url: str) -> bo
     await resources.async_create_item({"res_type": "module", "url": url})
     _LOGGER.debug("Registered the ThermIQ card as a Lovelace resource: %s", url)
     return True
+
+
 async def async_register_frontend(hass: HomeAssistant) -> None:
     """Serve the widget card and register it with the frontend.
 
@@ -198,6 +199,7 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     await async_register_frontend(hass)
     return True
 
+
 # This call is for the ThermIQ global entry migration, not per-heatpump migration
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     _LOGGER.info("Migrate ThermIQ-MQTT integration")
@@ -246,7 +248,7 @@ async def async_migrate_state_temperature_celsius(
                 "temperature_input",
                 "generated_input",
             ]:
-                unit=reg_id[key][2]
+                unit = reg_id[key][2]
                 if len(unit) > 0 and unit[-1:] == "C":
                     # Decimal temperature cannot be converted automatically
                     if not (unit[:1] == "0"):
@@ -260,10 +262,10 @@ async def async_migrate_state_temperature_celsius(
 
         for key in entities:
             try:
-                entity_id= f"{entity_id_prefix}{key}"
-                unit=reg_id[key][2]
-                decimal=False
-                if len(unit)>0:
+                entity_id = f"{entity_id_prefix}{key}"
+                unit = reg_id[key][2]
+                decimal = False
+                if len(unit) > 0:
                     decimal = unit[:1] == "0"
                 entity_entry = entity_reg.async_get(entity_id)
 
@@ -314,6 +316,8 @@ async def async_migrate_state_temperature_celsius(
             "Critical error during state class migration: %s", str(e), exc_info=True
         )
         return False
+
+
 async def _migrate_celsius(
     hass: HomeAssistant, recorder, entity_id: str, decimal: bool
 ) -> bool:
@@ -550,7 +554,7 @@ async def _migrate_statistics_metadata(
                     update(Statistics)
                     .where(Statistics.metadata_id == metadata_id)
                     .values(
-                        sum=Statistics.mean,    # The mean value is actually the cumulative hours
+                        sum=Statistics.mean,  # The mean value is actually the cumulative hours
                         state=Statistics.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
@@ -565,7 +569,7 @@ async def _migrate_statistics_metadata(
                     update(StatisticsShortTerm)
                     .where(StatisticsShortTerm.metadata_id == metadata_id)
                     .values(
-                        sum=StatisticsShortTerm.mean,    # The mean value is actually the cumulative hours
+                        sum=StatisticsShortTerm.mean,  # The mean value is actually the cumulative hours
                         state=StatisticsShortTerm.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
@@ -605,7 +609,6 @@ async def _migrate_statistics_metadata(
             _LOGGER.error("Error in database operation for %s: %s", entity_id, str(e))
             return False
 
-
     try:
         result = await recorder.async_add_executor_job(_migrate_statistics)
         return bool(result)
@@ -625,7 +628,6 @@ async def _async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -
     Returns:
         bool: True if migration succeeded or was not needed, False if critical failure
     """
-
 
     current_version = config_entry.data.get(CONF_DB_VERSION, 0)
     _LOGGER.info(
@@ -647,10 +649,10 @@ async def _async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -
 
     # Mark migration request as disabled to avoid endless loops
     migration_data = {
-            **config_entry.data,
-            CONF_MIGRATE_DATA: False,
-            "migration_date": datetime.now().isoformat(),
-        }
+        **config_entry.data,
+        CONF_MIGRATE_DATA: False,
+        "migration_date": datetime.now().isoformat(),
+    }
     hass.config_entries.async_update_entry(config_entry, data=migration_data)
 
     try:
@@ -1015,6 +1017,8 @@ def _remove_stale_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
             device.name or device.id,
         )
         registry.async_update_device(device.id, remove_config_entry_id=entry.entry_id)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up component from a config entry, config_entry contains data from config entry database."""
     _LOGGER.info("Setup ThermIQ-MQTT [%s]", entry.data.get(CONF_ID, "unknown"))
@@ -1082,6 +1086,8 @@ async def async_remove_config_entry_device(
     always be removed.
     """
     return True
+
+
 async def reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     if DOMAIN in hass.data:
         worker = hass.data[DOMAIN]

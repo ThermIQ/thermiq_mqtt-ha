@@ -138,7 +138,7 @@ class HeatPumpSensor(SensorEntity):
         self._unit: str | None = vp_unit
 
         # Override for known types
-        if (vp_type in ["temperature_input","temperature"]) or (
+        if (vp_type in ["temperature_input", "temperature"]) or (
             vp_unit
             in [
                 "C",
@@ -146,13 +146,11 @@ class HeatPumpSensor(SensorEntity):
             ]
         ):
             self._icon = "mdi:temperature-celsius"
-            self._unit =UnitOfTemperature.CELSIUS
+            self._unit = UnitOfTemperature.CELSIUS
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
 
-        elif vp_type in [
-            "time",
-        ] and (
+        elif vp_type in ["time",] and (
             vp_unit
             in [
                 "h",
@@ -161,24 +159,18 @@ class HeatPumpSensor(SensorEntity):
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_device_class = SensorDeviceClass.DURATION
             self._icon = "mdi:clock-star-four-points-outline"
-            self._unit =UnitOfTime.HOURS
+            self._unit = UnitOfTime.HOURS
 
-        elif (
-            vp_type
-            in [
-                "sensor",
-            ]
-        ) and (
+        elif (vp_type in ["sensor",]) and (
             vp_unit
             in [
                 "A",
             ]
-            ):
+        ):
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_device_class = SensorDeviceClass.CURRENT
             self._icon = "mdi:flash"
-            self._unit =UnitOfElectricCurrent.AMPERE
-
+            self._unit = UnitOfElectricCurrent.AMPERE
 
         elif vp_unit in [
             "dBm",
@@ -209,10 +201,7 @@ class HeatPumpSensor(SensorEntity):
         self._idx = device_id
         self._vp_reg = vp_reg
 
-
     async def async_added_to_hass(self) -> None:
-
-
 
         """Register the update listener; removed automatically on unload."""
         self.async_on_remove(
@@ -239,6 +228,7 @@ class HeatPumpSensor(SensorEntity):
         report has nothing to show but `unknown`, forever.
         """
         return self._heatpump.available and self._heatpump.supports(self._vp_reg)
+
     @property
     def native_value(self) -> Any:
         """Return the native value of the sensor."""

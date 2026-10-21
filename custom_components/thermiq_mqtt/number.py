@@ -96,7 +96,7 @@ class ThermIQNumber(NumberEntity):
         value = self._hpstate.get(self._reg)
         if isinstance(value, (int, float)):
             return value
-            return None
+        return None
 
     async def async_set_native_value(self, value: float) -> None:
         """Write a new value to the heatpump."""
@@ -115,7 +115,7 @@ class ThermIQNumber(NumberEntity):
         # Refresh all entities of this heatpump
         self._heatpump._hass.bus.fire(
             f"{self._heatpump._domain}_{self._heatpump._id}_msg_rec_event", {}
-            )
+        )
         await self._heatpump.send_mqtt_reg(self._key, value, 0xFFFF)
 
     async def async_added_to_hass(self) -> None:

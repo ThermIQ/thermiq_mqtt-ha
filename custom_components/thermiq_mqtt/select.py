@@ -86,7 +86,7 @@ class ThermIQSelect(SelectEntity):
         try:
             return self._option_by_value.get(int(value))
         except (TypeError, ValueError):
-        	return None
+            return None
 
     async def async_select_option(self, option: str) -> None:
         """Write the selected mode to the heatpump."""
@@ -106,7 +106,7 @@ class ThermIQSelect(SelectEntity):
         self._hpstate[self._reg] = value
         self._heatpump._hass.bus.fire(
             f"{self._heatpump._domain}_{self._heatpump._id}_msg_rec_event", {}
-            )
+        )
         await self._heatpump.send_mqtt_reg(self._key, value, 0xFFFF)
 
     async def async_added_to_hass(self) -> None:
