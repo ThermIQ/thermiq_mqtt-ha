@@ -5,8 +5,8 @@ on:
     branches:
       - master
       - dev
-  # Also run on pull requests, so problems are visible before a merge rather
-  # than after it
+  # Also validate pull requests: without this, HACS validation, hassfest and
+  # black --check only ran after a branch was already merged into master
   pull_request:
 
 jobs:
@@ -31,21 +31,10 @@ jobs:
         - uses: "actions/checkout@v4"
         - uses: "actions/setup-python@v5"
           with:
-            python-version: "3.12"
-        # pinned so a new black release cannot turn CI red on its own
-        - run: python3 -m pip install black==25.11.0
-        # Blocking, but only over tests/ - those files are already formatted,
-        # so keeping them that way costs nothing. Reformatting the whole
-        # codebase would be a large unrelated diff.
-        - run: black --check tests/
-        # Reporting only, never blocking: --diff prints exactly what black
-        # would change in the rest of the tree, so the drift is visible in the
-        # log without anyone being forced to act on it. Drop continue-on-error
-        # once a reformatting pass has happened, and the check starts to mean
-        # something.
-        - name: Report formatting drift in the rest of the tree
-          run: black --check --diff .
-          continue-on-error: true
+            python-version: "3.x"
+        # Single source of truth for the black pin: requirements_test.txt
+        - run: python3 -m pip install "$(grep '^black==' requirements_test.txt)"
+        - run: black --check .
 
   test:
     runs-on: "ubuntu-latest"
@@ -54,10 +43,8 @@ jobs:
         - uses: "actions/checkout@v4"
         - uses: "actions/setup-python@v5"
           with:
-            python-version: "3.13"
-        - name: Install dependencies
-          run: |
-            python3 -m pip install --upgrade pip
-            python3 -m pip install -r requirements_test.txt
-        - name: Run tests
-          run: python3 -m pytest tests/ -v
+            python-version: "3.14"
+        - run: python3 -m pip install -r requirements_test.txt
+        - run: python3 -m pytest tests -v
+        - name: Type check
+          run: python3 -m mypy
