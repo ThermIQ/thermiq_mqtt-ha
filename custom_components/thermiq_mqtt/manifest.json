@@ -1,6 +1,9 @@
 {
   "domain": "thermiq_mqtt",
   "name": "ThermIQ MQTT Integration",
+  "after_dependencies": [
+    "lovelace"
+  ],
   "codeowners": [
     "@thermiq"
   ],
@@ -12,7 +15,11 @@
     "frontend"
   ],
   "documentation": "https://github.com/thermiq/thermiq_mqtt-ha",
+  "integration_type": "hub",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/thermiq/thermiq_mqtt-ha/issues",
-  "version": "3.1.0"
+  "loggers": [
+    "custom_components.thermiq_mqtt"
+  ],
+  "version": "3.5.11"
 }

@@ -1,18 +1,22 @@
 """Component for ThermIQ-MQTT support."""
+from __future__ import annotations
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from sqlalchemy import update, select
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.const import (
-    EVENT_HOMEASSISTANT_STARTED,
-    UnitOfTemperature
+from homeassistant.const import ( 
+		EVENT_HOMEASSISTANT_STARTED, 
+		UnitOfTemperature )
+from homeassistant.helpers.recorder import (
+    session_scope,
+    get_instance as recorder_get_instance,
 )
-from homeassistant.helpers.recorder import session_scope, get_instance as recorder_get_instance
 from homeassistant.components.recorder.statistics import async_change_statistics_unit
 from homeassistant.helpers import entity_registry as er
 from homeassistant.components.recorder.db_schema import (
@@ -23,6 +27,7 @@ from homeassistant.components.recorder.db_schema import (
     StatesMeta,
 )
 from homeassistant.components import persistent_notification
+from homeassistant.helpers import device_registry as dr
 
 from .const import (
     DOMAIN,
@@ -43,7 +48,6 @@ from .heatpump.thermiq_regs import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-SERVICE_SET_VALUE = "set_value"
 
 PLATFORMS = [
     "sensor",
@@ -53,16 +57,88 @@ PLATFORMS = [
     "switch",
 ]
 
-# The dashboard widget ships inside the integration, so installing it is the
-# whole install: nothing to copy into www/ and no Lovelace resource to register
-# by hand. Bumping CARD_VERSION busts the browser cache for the card.
+# The dashboard widget ships inside the integration, so installing via HACS is
+# the whole install: nothing to copy into www/ and no resource to register by
+# hand. Bumping CARD_VERSION busts the browser cache for the card.
 FRONTEND_URL_BASE = f"/{DOMAIN}_frontend"
 CARD_FILENAME = "thermiq-widget-card.js"
-CARD_VERSION = "1.1.1"
+CARD_VERSION = "1.5.0"
+CARD_URL = f"{FRONTEND_URL_BASE}/{CARD_FILENAME}"
 FRONTEND_REGISTERED = f"{DOMAIN}_frontend_registered"
 
+# How the card module reaches the browser.
+#
+#   "extra_js"  - add_extra_js_url. The module is imported from the frontend
+#                 index at page bootstrap. What we have always shipped.
+#   "resource"  - registered in Lovelace's own resource list, the documented
+#                 route every HACS card uses.
+#
+# Never both: each mechanism imports the module under its own URL, and a
+# second evaluation of the module calls customElements.define with a name that
+# already exists, which throws.
+#
+# "resource" is the default because "extra_js" is measurably broken, for a
+# reason that took a browser to find (#28).
+#
+# add_extra_js_url imports the card from the frontend index, at page
+# bootstrap - earlier than any other custom card, which all arrive later as
+# Lovelace resources. Something in a loaded page then patches
+# customElements.define in place: it is native at document-start and a
+# polyfill implementation by the time the dashboard renders, with its own
+# internal registry. A define() that ran before that patch lands in the
+# native registry and is invisible to the patched one Home Assistant then
+# queries - so the element exists, window.customCards lists it, the card's
+# own banner is in the console, and Lovelace still reports "Custom element
+# doesn't exist", permanently, for that page load.
+#
+# Measured on a live installation, same browser, same steps:
+#
+#   extra_js   first load: undefined, 0 widgets | after Ctrl+F5: undefined, 0
+#   resource   first load: function,  1 widget  | after Ctrl+F5: function,  1
+#
+# Being a resource puts us in the same load phase as every other custom card,
+# after the patch. That is why every HACS card works and only ours did not.
+CARD_DELIVERY = "resource"
 
-async def async_register_frontend(hass):
+async def _async_register_lovelace_resource(hass: HomeAssistant, url: str) -> bool:
+    """List the card in Lovelace's resource collection.
+    Returns True only if the card is now listed, so the caller knows whether
+    it still has to fall back to add_extra_js_url. False for every reason it
+    cannot be: Lovelace not set up yet, YAML-mode resources (which the user
+    owns in configuration.yaml and we must not touch), or an internal API that
+    moved - none of which should stop the integration loading.
+    An existing entry for the same file is updated rather than duplicated, so
+    a CARD_VERSION bump changes the ?v= in place instead of leaving the old
+    URL behind to be imported alongside the new one.
+    """
+    try:
+        from homeassistant.components.lovelace.const import LOVELACE_DATA
+    except ImportError:  # pragma: no cover - only on a frontend-less build
+        return False
+    data = hass.data.get(LOVELACE_DATA)
+    if data is None:
+        _LOGGER.debug("Lovelace is not set up yet; using add_extra_js_url instead")
+        return False
+    if getattr(data, "resource_mode", None) != "storage":
+        # YAML mode: the resource list is the user's file, not ours to edit.
+        _LOGGER.debug("Lovelace resources are in YAML mode; not adding the card")
+        return False
+    resources = data.resources
+    if not resources.loaded:
+        await resources.async_load()
+        resources.loaded = True
+    for item in resources.async_items():
+        existing = str(item.get("url", ""))
+        if existing.split("?", 1)[0] != CARD_URL:
+            continue
+        if existing != url:
+            await resources.async_update_item(item["id"], {"url": url})
+            _LOGGER.debug("Updated the ThermIQ card resource to %s", url)
+        return True
+    await resources.async_create_item({"res_type": "module", "url": url})
+    _LOGGER.debug("Registered the ThermIQ card as a Lovelace resource: %s", url)
+    return True
+async def async_register_frontend(hass: HomeAssistant) -> None:
     """Serve the widget card and register it with the frontend.
 
     Registering the static path twice raises, and add_extra_js_url would queue
@@ -78,14 +154,30 @@ async def async_register_frontend(hass):
                 StaticPathConfig(
                     FRONTEND_URL_BASE,
                     str(frontend_dir),
-                    # the template is edited in place during development, so
-                    # it must not be cached indefinitely
-                    cache_headers=False,
+                    # Cache like every other frontend module. With
+                    # cache_headers=False this path served no Cache-Control at
+                    # all, so the browser revalidated the card over the network
+                    # on every single page load - while Home Assistant's own
+                    # bundle and every HACS module came straight from disk
+                    # cache with max-age=31d. The frontend imports the card
+                    # with a bare dynamic import() that nothing awaits, so
+                    # losing that race means Lovelace builds its cards before
+                    # the element is defined. Freshness comes from the ?v=
+                    # cache-buster for the card, and from the card's own
+                    # fetch(..., {cache: "no-store"}) for the template, which
+                    # bypasses the HTTP cache regardless of these headers.
+                    cache_headers=True,
                 )
             ]
         )
-        add_extra_js_url(hass, f"{FRONTEND_URL_BASE}/{CARD_FILENAME}?v={CARD_VERSION}")
-    except Exception as err:
+        versioned = f"{CARD_URL}?v={CARD_VERSION}"
+        if CARD_DELIVERY == "resource" and await _async_register_lovelace_resource(
+            hass, versioned
+        ):
+            pass  # listed as a Lovelace resource; must not also add_extra_js_url
+        else:
+            add_extra_js_url(hass, versioned)
+    except Exception as err:  # noqa: BLE001 - the integration must still load
         _LOGGER.error(
             "Could not register the ThermIQ dashboard card: %s. "
             "The integration works, but the widget must be installed manually",
@@ -97,7 +189,7 @@ async def async_register_frontend(hass):
     _LOGGER.debug("Registered ThermIQ widget card at %s", FRONTEND_URL_BASE)
 
 
-async def async_setup(hass, config):
+async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Set up HASL integration"""
     _LOGGER.info("Setup ThermIQ-MQTT integration")
 
@@ -107,22 +199,26 @@ async def async_setup(hass, config):
     return True
 
 # This call is for the ThermIQ global entry migration, not per-heatpump migration
-async def async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     _LOGGER.info("Migrate ThermIQ-MQTT integration")
     return True
 
 
-async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_entry) -> bool:
-    """Migrate sensor state classes with safety checks and logging.
-    """
+async def async_migrate_state_temperature_celsius(
+    hass: HomeAssistant, config_entry: ConfigEntry
+) -> bool:
+    """Migrate sensor state classes with safety checks and logging."""
 
     # Check if migration has already been run
     current_version = config_entry.data.get(CONF_DB_VERSION, 0)
     if current_version >= DATABASE_VERSION:
         _LOGGER.info("Migration already completed (version %s)", current_version)
         return True
-
-    _LOGGER.info("Starting state class migration for ThermIQ-MQTT  temperature sensors from %s to %s)", current_version, DATABASE_VERSION)
+    _LOGGER.info(
+        "Starting state class migration for ThermIQ-MQTT  temperature sensors from %s to %s)",
+        current_version,
+        DATABASE_VERSION,
+    )
 
     # Verify recorder is available
     recorder = recorder_get_instance(hass)
@@ -148,12 +244,12 @@ async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_en
             if reg_id[key][1] in [
                 "temperature",
                 "temperature_input",
-                "generated_input"
+                "generated_input",
             ]:
                 unit=reg_id[key][2]
-                if len(unit)>0 and unit[-1:] == 'C':
+                if len(unit) > 0 and unit[-1:] == "C":
                     # Decimal temperature cannot be converted automatically
-                    if not (unit[:1] == '0'):
+                    if not (unit[:1] == "0"):
                         entities.append(key)
 
         # List of time/runtime sensors that needs migration
@@ -168,11 +264,13 @@ async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_en
                 unit=reg_id[key][2]
                 decimal=False
                 if len(unit)>0:
-                    decimal=unit[:1] == '0'
+                    decimal = unit[:1] == "0"
                 entity_entry = entity_reg.async_get(entity_id)
 
                 if entity_entry is None:
-                    _LOGGER.debug("Entity %s not found in registry, skipping", entity_id)
+                    _LOGGER.debug(
+                        "Entity %s not found in registry, skipping", entity_id
+                    )
                     continue
 
                 _LOGGER.info("Migrating entity %s to temperature celsius", entity_id)
@@ -188,7 +286,9 @@ async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_en
                     _LOGGER.warning("Failed to migrate %s", entity_id)
 
             except Exception as e:
-                _LOGGER.error("Error migrating %s: %s", entity_id, str(e), exc_info=True)
+                _LOGGER.error(
+                    "Error migrating %s: %s", entity_id, str(e), exc_info=True
+                )
                 failed_entities.append(entity_id)
 
         # Log summary
@@ -196,7 +296,7 @@ async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_en
             "Migration summary: %s succeeded, %s failed, %s total",
             len(migrated_entities),
             len(failed_entities),
-            len(entities)
+            len(entities),
         )
 
         if migrated_entities:
@@ -210,10 +310,13 @@ async def async_migrate_state_temperature_celsius(hass: HomeAssistant, config_en
         return len(failed_entities) == 0 or len(migrated_entities) > 0
 
     except Exception as e:
-        _LOGGER.error("Critical error during state class migration: %s", str(e), exc_info=True)
+        _LOGGER.error(
+            "Critical error during state class migration: %s", str(e), exc_info=True
+        )
         return False
-
-async def _migrate_celsius(hass: HomeAssistant, recorder, entity_id: str, decimal) -> bool:
+async def _migrate_celsius(
+    hass: HomeAssistant, recorder, entity_id: str, decimal: bool
+) -> bool:
     """
     Migrate statistics metadata for a single entity.
 
@@ -242,17 +345,17 @@ async def _migrate_celsius(hass: HomeAssistant, recorder, entity_id: str, decima
 
             unit = existing.unit_of_measurement
             if unit is None:
-                unit = ''
+                unit = ""
             if not decimal and unit != UnitOfTemperature.CELSIUS:
                 update_unit = (
                     update(StatisticsMeta)
                     .where(StatisticsMeta.statistic_id == entity_id)
-                    .values(
-                        unit_of_measurement=UnitOfTemperature.CELSIUS
-                    )
+                    .values(unit_of_measurement=UnitOfTemperature.CELSIUS)
                 )
                 stats_result = session.execute(update_unit)
-                _LOGGER.debug("Updated %s rows in StatisticsMeta", stats_result.rowcount)
+                _LOGGER.debug(
+                    "Updated %s rows in StatisticsMeta", stats_result.rowcount
+                )
             return (True, unit)
 
     try:
@@ -262,7 +365,7 @@ async def _migrate_celsius(hass: HomeAssistant, recorder, entity_id: str, decima
             return True
 
         if decimal:
-            decimal_unit = '0.1' + UnitOfTemperature.CELSIUS
+            decimal_unit = "0.1" + UnitOfTemperature.CELSIUS
             if unit != decimal_unit:
                 # Called from the event loop as required
                 async_change_statistics_unit(
@@ -275,13 +378,16 @@ async def _migrate_celsius(hass: HomeAssistant, recorder, entity_id: str, decima
                 _LOGGER.debug("No unit change needed for %s", entity_id)
         return True
     except Exception as e:
-        _LOGGER.error("Could not update celsius for %s: %s", entity_id, str(e), exc_info=True)
+        _LOGGER.error(
+            "Could not update celsius for %s: %s", entity_id, str(e), exc_info=True
+        )
         return False
 
 
-async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) -> bool:
-    """Migrate sensor state classes with safety checks and logging.
-    """
+async def async_migrate_state_class_inc_hour(
+    hass: HomeAssistant, config_entry: ConfigEntry
+) -> bool:
+    """Migrate sensor state classes with safety checks and logging."""
 
     # Check if migration has already been run
     current_version = config_entry.data.get(CONF_DB_VERSION, 0)
@@ -289,7 +395,11 @@ async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) 
         _LOGGER.info("Migration already completed (version %s)", current_version)
         return True
 
-    _LOGGER.info("Starting state class migration for ThermIQ sensors from %s to %s)", current_version, DATABASE_VERSION)
+    _LOGGER.info(
+        "Starting state class migration for ThermIQ sensors from %s to %s)",
+        current_version,
+        DATABASE_VERSION,
+    )
 
     # Verify recorder is available
     recorder = recorder_get_instance(hass)
@@ -329,7 +439,9 @@ async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) 
                 entity_entry = entity_reg.async_get(entity_id)
 
                 if entity_entry is None:
-                    _LOGGER.debug("Entity %s not found in registry, skipping", entity_id)
+                    _LOGGER.debug(
+                        "Entity %s not found in registry, skipping", entity_id
+                    )
                     continue
 
                 _LOGGER.info("Migrating entity %s to TOTAL_INCREASING", entity_id)
@@ -345,7 +457,9 @@ async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) 
                     _LOGGER.warning("Failed to migrate %s", entity_id)
 
             except Exception as e:
-                _LOGGER.error("Error migrating %s: %s", entity_id, str(e), exc_info=True)
+                _LOGGER.error(
+                    "Error migrating %s: %s", entity_id, str(e), exc_info=True
+                )
                 failed_entities.append(entity_id)
 
         # Log summary
@@ -353,7 +467,7 @@ async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) 
             "Migration summary: %s succeeded, %s failed, %s total",
             len(migrated_entities),
             len(failed_entities),
-            len(time_sensor_suffixes)
+            len(time_sensor_suffixes),
         )
 
         if migrated_entities:
@@ -367,11 +481,15 @@ async def async_migrate_state_class_inc_hour(hass: HomeAssistant, config_entry) 
         return len(failed_entities) == 0 or len(migrated_entities) > 0
 
     except Exception as e:
-        _LOGGER.error("Critical error during state class migration: %s", str(e), exc_info=True)
+        _LOGGER.error(
+            "Critical error during state class migration: %s", str(e), exc_info=True
+        )
         return False
 
 
-async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id: str) -> bool:
+async def _migrate_statistics_metadata(
+    hass: HomeAssistant, recorder, entity_id: str
+) -> bool:
     """
     Migrate statistics for a single entity from MEASUREMENT to TOTAL_INCREASING.
     This preserves historical data by:
@@ -397,7 +515,9 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                 existing = result.scalar_one_or_none()
 
                 if existing is None:
-                    _LOGGER.debug("No statistics metadata found for %s (new sensor)", entity_id)
+                    _LOGGER.debug(
+                        "No statistics metadata found for %s (new sensor)", entity_id
+                    )
                     return True  # Not an error - sensor might be new
 
                 # Check if already migrated
@@ -410,7 +530,7 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                     "Migrating statistics for %s from MEASUREMENT to TOTAL_INCREASING (has_mean=%s, has_sum=%s)",
                     entity_id,
                     existing.has_mean,
-                    existing.has_sum
+                    existing.has_sum,
                 )
 
                 metadata_id = existing.id
@@ -419,7 +539,10 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                 # For runtime sensors (hours), the mean value IS the cumulative runtime at that point
                 # We convert: mean -> sum, clear mean/min/max, and update mean_type to 0
 
-                _LOGGER.info("Converting statistics data for %s from mean to cumulative sum", entity_id)
+                _LOGGER.info(
+                    "Converting statistics data for %s from mean to cumulative sum",
+                    entity_id,
+                )
 
                 # Update Statistics table: convert mean to sum and state, clear mean/min/max
                 # For TOTAL_INCREASING, both sum and state should be the cumulative value
@@ -431,7 +554,7 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                         state=Statistics.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
-                        max=None
+                        max=None,
                     )
                 )
                 stats_result = session.execute(update_stats)
@@ -446,11 +569,13 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                         state=StatisticsShortTerm.mean,  # State is also the cumulative value at that time
                         mean=None,
                         min=None,
-                        max=None
+                        max=None,
                     )
                 )
                 short_term_result = session.execute(update_short_term)
-                _LOGGER.debug("Updated %s rows in StatisticsShortTerm", short_term_result.rowcount)
+                _LOGGER.debug(
+                    "Updated %s rows in StatisticsShortTerm", short_term_result.rowcount
+                )
 
                 # Update metadata to TOTAL_INCREASING characteristics
                 # has_sum=True, has_mean=False, mean_type=0 (No mean)
@@ -467,11 +592,13 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
                     _LOGGER.info(
                         "Successfully migrated %s: metadata updated, %s statistics records converted",
                         entity_id,
-                        stats_result.rowcount + short_term_result.rowcount
+                        stats_result.rowcount + short_term_result.rowcount,
                     )
                     return True
                 else:
-                    _LOGGER.warning("Failed to update statistics metadata for %s", entity_id)
+                    _LOGGER.warning(
+                        "Failed to update statistics metadata for %s", entity_id
+                    )
                     return False
 
         except Exception as e:
@@ -481,13 +608,15 @@ async def _migrate_statistics_metadata(hass: HomeAssistant, recorder, entity_id:
 
     try:
         result = await recorder.async_add_executor_job(_migrate_statistics)
-        return result
+        return bool(result)
     except Exception as e:
-        _LOGGER.error("Could not migrate statistics for %s: %s", entity_id, str(e), exc_info=True)
+        _LOGGER.error(
+            "Could not migrate statistics for %s: %s", entity_id, str(e), exc_info=True
+        )
         return False
 
 
-async def _async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
+async def _async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """
     Main migration entry point.
 
@@ -499,11 +628,19 @@ async def _async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
 
 
     current_version = config_entry.data.get(CONF_DB_VERSION, 0)
-    _LOGGER.info("Checking for possible migrations for ThermIQ [%s] data. Current installed version: %s, Update %s", config_entry.data[CONF_ID], current_version, DATABASE_VERSION)
+    _LOGGER.info(
+        "Checking for possible migrations for ThermIQ [%s] data. Current installed version: %s, Update %s",
+        config_entry.data[CONF_ID],
+        current_version,
+        DATABASE_VERSION,
+    )
     # Check if migration has already been run
     if current_version >= DATABASE_VERSION:
-        if (config_entry.data.get(CONF_MIGRATE_DATA, True)):
-            _LOGGER.info("Data migration requested for ThermIQ-MQTT [%s]", config_entry.data.get(CONF_ID, "unknown"))
+        if config_entry.data.get(CONF_MIGRATE_DATA, True):
+            _LOGGER.info(
+                "Data migration requested for ThermIQ-MQTT [%s]",
+                config_entry.data.get(CONF_ID, "unknown"),
+            )
         else:
             _LOGGER.info("Migration already completed (version %s)", current_version)
             return True
@@ -519,7 +656,9 @@ async def _async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
     try:
         success1 = await async_migrate_state_temperature_celsius(hass, config_entry)
         if not success1:
-            _LOGGER.error("Migration to temperature celsius - some entities may not function correctly")
+            _LOGGER.error(
+                "Migration to temperature celsius - some entities may not function correctly"
+            )
             # You can choose to return False here to prevent setup
             # or return True to continue with warnings
             # return True  # Continue anyway - partial failure is acceptable
@@ -530,7 +669,9 @@ async def _async_migrate_entry(hass: HomeAssistant, config_entry) -> bool:
         success2 = await async_migrate_state_class_inc_hour(hass, config_entry)
 
         if not success2:
-            _LOGGER.error("Migration to increasing hours failed - some entities may not function correctly")
+            _LOGGER.error(
+                "Migration to increasing hours failed - some entities may not function correctly"
+            )
             # You can choose to return False here to prevent setup
             # or return True to continue with warnings
             # return True  # Continue anyway - partial failure is acceptable
@@ -856,9 +997,28 @@ def _notify_entity_id_changes(
     )
 
 
+def _remove_stale_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Drop device entries left behind by older versions.
+    This integration deliberately creates no devices: with ~190 entities under
+    one device, Home Assistant would prefix every friendly name with the
+    device name and they would all be too long (see 729669a). But versions up
+    to v3.3.1 - and upstream - did create one, and Home Assistant keeps a
+    device for as long as a config entry references it. The result is an empty
+    device that looks like a broken heatpump, reported in #28.
+    Anything attached to this entry can only be such a leftover, so it goes.
+    """
+    registry = dr.async_get(hass)
+    for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
+        _LOGGER.info(
+            "Removing stale device [%s] left by an earlier version; this "
+            "integration does not group entities under a device",
+            device.name or device.id,
+        )
+        registry.async_update_device(device.id, remove_config_entry_id=entry.entry_id)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up component from a config entry, config_entry contains data from config entry database."""
     _LOGGER.info("Setup ThermIQ-MQTT [%s]", entry.data.get(CONF_ID, "unknown"))
+    _remove_stale_devices(hass, entry)
     await _async_migrate_entry(hass, entry)
 
     async def handle_hass_started(_event: Event) -> None:
@@ -879,7 +1039,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Load all platforms (sensor, binary_sensor, number, select, switch) and
     # await them so the entities are fully set up before this entry is marked
-    # done (avoids races where consumers access the platform data too early)
+    # done (avoids races where consumers access the data before it is ready)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Subscribe to MQTT
@@ -895,9 +1055,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = bool(await hass.config_entries.async_unload_platforms(entry, PLATFORMS))
     if unload_ok:
         worker = hass.data[DOMAIN]
         # Unsubscribe MQTT and remove the generated helper entities so a
@@ -913,6 +1073,15 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return unload_ok
 
 
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry
+) -> bool:
+    """Allow removing devices from the UI/registry.
+    The integration no longer creates devices (entity names would get the
+    device name prefixed), so any remaining device entry is stale and may
+    always be removed.
+    """
+    return True
 async def reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     if DOMAIN in hass.data:
         worker = hass.data[DOMAIN]
@@ -922,22 +1091,22 @@ async def reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 class ThermIQWorker:
     """worker object. Stored in hass.data."""
 
-    def __init__(self, hass: HomeAssistant):
+    def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the instance."""
         self._hass = hass
-        self._heatpumps = {}
+        self._heatpumps: dict[str, HeatPump] = {}
         self._fetch_callback_listener = None
         self._worker = True
 
     @property
-    def worker(self):
+    def worker(self) -> bool:
         return self._worker
 
     @property
-    def heatpumps(self):
+    def heatpumps(self) -> dict[str, HeatPump]:
         return self._heatpumps
 
-    async def add_entry(self, config_entry: ConfigEntry):
+    async def add_entry(self, config_entry: ConfigEntry) -> HeatPump:
         """Add entry."""
         heatpump = HeatPump(self._hass, config_entry)
         await heatpump.update_config(config_entry)
@@ -948,11 +1117,8 @@ class ThermIQWorker:
         )
         return heatpump
 
-    def get_entry(self, config_entry: ConfigEntry):
-        """Get heatpump for a config entry."""
-        return self._heatpumps[config_entry.data[CONF_ID]]
+    def remove_entry(self, config_entry: ConfigEntry) -> None:
 
-    def remove_entry(self, config_entry: ConfigEntry):
         """Remove entry."""
         self._hass.bus.fire(
             f"{DOMAIN}_changed",
@@ -960,7 +1126,7 @@ class ThermIQWorker:
         )
         self._heatpumps.pop(config_entry.data[CONF_ID])
 
-    async def update_heatpump_entry(self, config_entry: ConfigEntry):
+    async def update_heatpump_entry(self, config_entry: ConfigEntry) -> None:
         heatpump = self._heatpumps[config_entry.data[CONF_ID]]
         await heatpump.update_config(config_entry)
         await self._hass.async_create_task(heatpump.setup_mqtt())

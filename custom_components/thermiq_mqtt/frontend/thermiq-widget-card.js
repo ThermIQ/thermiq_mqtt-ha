@@ -18,11 +18,14 @@
  * happened when the template moved out of www/ and into the integration.
  *
  * Editing workflow: edit heatpump_widget.j2 next to this file in the
- * integration folder and reload the page. The integration serves this
- * directory with caching disabled, so no cache-busting is needed.
+ * integration folder and reload the page. The template is fetched with
+ * cache: "no-store", which bypasses the HTTP cache, so edits show up on the
+ * next reload even though the directory is served with normal cache headers.
+ * Editing *this* file needs CARD_VERSION in __init__.py bumped, because the
+ * browser caches it against the ?v= in the import URL.
  */
 
-const VERSION = "1.1.1";
+const VERSION = "1.2.0";
 const DEFAULT_URL = "/thermiq_mqtt_frontend/heatpump_widget.j2";
 const DEFAULT_PREFIX = "thermiq_mqtt_vp1"; // integration domain + entry id
 
@@ -164,7 +167,33 @@ class ThermiqWidgetCard extends HTMLElement {
   async _init() {
     this.style.display = "block";
     this._root = document.createElement("div");
-    this.appendChild(this._root);
+    // The template positions every element absolutely against its container,
+    // so something here has to be that container. Without it the nearest
+    // positioned ancestor is hui-view-container and the widget lays itself out
+    // against the whole view - drawing over the header, wherever the card
+    // happens to sit. It only looked right as an entities row because
+    // something in that chain happened to be positioned.
+    //
+    // No padding here: an absolutely positioned child resolves against the
+    // padding *box*, which includes the padding, so padding would add height
+    // without insetting anything. The template already insets itself - its
+    // outer div starts at left:15px and its topmost pill at top:14px.
+    this._root.style.position = "relative";
+    // Wrapped in an ha-card so it reads as a card - background, radius and
+    // elevation from the active theme, like every other card in the view.
+    // `card: false` opts out, for anyone nesting this inside a card of their
+    // own and not wanting two.
+    if (this._config.card === false) {
+      this.appendChild(this._root);
+    } else {
+      const card = document.createElement("ha-card");
+      // On the card, not on the containing block: padding on the containing
+      // block would not inset absolutely positioned children at all, because
+      // their containing block is its padding box.
+      card.style.padding = "16px";
+      card.appendChild(this._root);
+      this.appendChild(card);
+    }
     try {
       this._template = await loadTemplate(this._config.template_url);
       const prefix = this._config.entity_prefix || DEFAULT_PREFIX;
@@ -209,6 +238,48 @@ class ThermiqWidgetCard extends HTMLElement {
     const tpl = document.createElement("template");
     tpl.innerHTML = msg.result;
     morphChildren(this._root, tpl.content);
+    if (!this._fitted) {
+      this._fitted = true;
+      requestAnimationFrame(() => this._fit());
+    }
+  }
+
+  /* Shrink the box to the drawing, so the drawing can be centred.
+   *
+   * Every element in the template is absolutely positioned, and an absolutely
+   * positioned child contributes nothing to its container's intrinsic size -
+   * so the drawing's width is invisible to CSS. `width: max-content` and
+   * friends all resolve to zero here. The only way to know how wide it is, is
+   * to look. Measured once, after the first render has laid out.
+   *
+   * Deliberately not a constant: it comes out of whatever the template drew,
+   * so re-vendoring a wider template does not silently mis-centre it. */
+  _fit() {
+    const box = this._root.getBoundingClientRect();
+    if (!box.width) return;
+    let left = Infinity;
+    let right = 0;
+    for (const el of this._root.querySelectorAll("*")) {
+      const style = getComputedStyle(el);
+      if (style.position !== "absolute") continue;
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) continue;
+      left = Math.min(left, rect.left - box.left);
+      right = Math.max(right, rect.right - box.left);
+    }
+    if (!isFinite(left) || right <= 0) return;
+
+    // width = left + right, not right: the drawing does not start at the box's
+    // left edge, it starts `left` in. Centring a box of width `right` would
+    // leave the drawing off-centre by left/2 - measured at 14px, which is
+    // visible. Padding the box by `left` on the right instead makes it
+    // symmetric about the drawing, so auto margins centre what you can see.
+    const width = Math.ceil(left + right);
+    if (width >= box.width) return; // no room to centre into
+    this._root.style.width = width + "px";
+    this._root.style.marginLeft = "auto";
+    this._root.style.marginRight = "auto";
   }
 
   connectedCallback() {
@@ -222,18 +293,27 @@ class ThermiqWidgetCard extends HTMLElement {
   }
 }
 
-customElements.define("thermiq-widget-card", ThermiqWidgetCard);
+// Defining a name twice throws, and the throw aborts the rest of this module.
+// Two evaluations are possible whenever the browser sees two distinct URLs for
+// this file - a stale ?v= alongside a fresh one, or the same card delivered
+// both as an extra JS module and as a Lovelace resource - and the module map
+// keys on the full URL, so each is fetched and run separately. Losing the
+// second race silently is fine; taking the card down with an uncaught
+// NotSupportedError is not.
+if (!customElements.get("thermiq-widget-card")) {
+  customElements.define("thermiq-widget-card", ThermiqWidgetCard);
 
-window.customCards = window.customCards || [];
-window.customCards.push({
-  type: "thermiq-widget-card",
-  name: "ThermIQ Widget Card",
-  description:
-    "Animated heat-pump schematic rendered from a Jinja2 template file with flicker-free DOM morphing.",
-});
+  window.customCards = window.customCards || [];
+  window.customCards.push({
+    type: "thermiq-widget-card",
+    name: "ThermIQ Widget Card",
+    description:
+      "Animated heat-pump schematic rendered from a Jinja2 template file with flicker-free DOM morphing.",
+  });
 
-console.info(
-  `%c THERMIQ-WIDGET-CARD %c v${VERSION} `,
-  "color:white;background:#0288d1;font-weight:700;",
-  "color:#0288d1;background:white;font-weight:700;"
-);
+  console.info(
+    `%c THERMIQ-WIDGET-CARD %c v${VERSION} `,
+    "color:white;background:#0288d1;font-weight:700;",
+    "color:#0288d1;background:white;font-weight:700;"
+  );
+}
