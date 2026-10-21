@@ -34,6 +34,7 @@ jobs:
             python-version: "3.x"
         # Single source of truth for the black pin: requirements_test.txt
         - run: python3 -m pip install "$(grep '^black==' requirements_test.txt)"
+        - run: black --version
         - run: black --check .
 
   test:
