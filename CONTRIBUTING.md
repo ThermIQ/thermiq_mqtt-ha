@@ -59,3 +59,16 @@ file.
 ## License
 
 By contributing, you agree that your contributions will be licensed under its MIT License.
+
+## Two files have a downstream consumer
+
+[thermiq-bridge](https://github.com/larsablixth/thermiq-bridge) generates its
+register table and its widget renderer from two files in this repository:
+
+- `custom_components/thermiq_mqtt/heatpump/thermiq_regs.py`
+- `custom_components/thermiq_mqtt/frontend/heatpump_widget.j2`
+
+It vendors copies and checks them against this repository weekly, so changing
+either here turns that project's build red until it re-vendors and
+regenerates. Nothing to do on this side - but if you add a register or change
+the widget, that is why a notification arrives from another repository.
