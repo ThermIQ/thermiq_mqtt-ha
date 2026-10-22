@@ -63,124 +63,123 @@ cards:
         head:
           type: section
           label: Energy management
-        entities: 
+        entities:
           - entity: input_boolean.vp1_enable_energy_control
           - entity: input_number.vp1_electricity_price_threshold
           - entity: input_number.vp1_electricity_low_hours
           - entity: input_number.vp1_powerconsumption_max
           - entity: input_boolean.vp1_force_evu
-
-# ThermIQ Heatpump control ##################################################################
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Heatpump Control 
-    entities:          
+    # ThermIQ Heatpump control ##################################################################
       - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Main Status
-    entities:
-      - entity: sensor.thermiq_mqtt_vp1_outdoor_t
-      - entity: sensor.thermiq_mqtt_vp1_indoor_t
-      - entity: sensor.thermiq_mqtt_vp1_supplyline_t
-      - entity: sensor.thermiq_mqtt_vp1_returnline_t
-      - entity: sensor.thermiq_mqtt_vp1_boiler_t
-      - entity: sensor.thermiq_mqtt_vp1_integral1
-      - entity: sensor.thermiq_mqtt_vp1_brine_out_t
-      - entity: sensor.thermiq_mqtt_vp1_brine_in_t
-      - entity: sensor.thermiq_mqtt_vp1_supply_shunt_t
-      - entity: sensor.thermiq_mqtt_vp1_cooling_t
-      - entity: sensor.thermiq_mqtt_vp1_supply_pump_speed
-      - entity: sensor.thermiq_mqtt_vp1_brine_pump_speed
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Runtimes
-    entities:
-      - entity: sensor.thermiq_mqtt_vp1_compressor_runtime_h
-      - entity: sensor.thermiq_mqtt_vp1_boiler_3kw_runtime_h
-      - entity: sensor.thermiq_mqtt_vp1_boiler_6kw_on_runtime_h
-      - entity: sensor.thermiq_mqtt_vp1_hotwater_runtime_h
-      - entity: sensor.thermiq_mqtt_vp1_passive_cooling_runtime_h
-      - entity: sensor.thermiq_mqtt_vp1_active_cooling_runtime_h
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Heater settings (A1)
-    entities:
-      - entity: number.thermiq_mqtt_vp1_indoor_requested_t
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_slope
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_min
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_max
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_p5
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_0
-      - entity: number.thermiq_mqtt_vp1_integral1_curve_n5
-      - entity: number.thermiq_mqtt_vp1_heating_stop_t
-      - entity: number.thermiq_mqtt_vp1_reduction_t
-      - entity: number.thermiq_mqtt_vp1_room_factor
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Hot-water settings
-    entities:
-      - entity: number.thermiq_mqtt_vp1_hotwater_start_t
-      - entity: number.thermiq_mqtt_vp1_hotwater_runtime_m
-      - entity: number.thermiq_mqtt_vp1_heatpump_runtime_m
-      - entity: number.thermiq_mqtt_vp1_legionella_interval_d
-      - entity: number.thermiq_mqtt_vp1_legionella_stop_t
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Curve 2 (A2)
-    entities:
-      - entity: number.thermiq_mqtt_vp1_integral2_curve_slope
-      - entity: number.thermiq_mqtt_vp1_integral2_curve_min
-      - entity: number.thermiq_mqtt_vp1_integral2_curve_max
-      - entity: number.thermiq_mqtt_vp1_integral2_curve_target
-      - entity: number.thermiq_mqtt_vp1_integral2_curve_actual
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Heater limits 
-    entities:
-      - entity: number.thermiq_mqtt_vp1_integral1_a_limit
-      - entity: number.thermiq_mqtt_vp1_integral1_hysteresis_t
-      - entity: number.thermiq_mqtt_vp1_returnline_max_t
-      - entity: number.thermiq_mqtt_vp1_start_interval_min_m
-      - entity: number.thermiq_mqtt_vp1_brine_min_t
-      - entity: number.thermiq_mqtt_vp1_pressure_pipe_limit_t
-      - entity: number.thermiq_mqtt_vp1_outdoor_stop_t
-      - entity: number.thermiq_mqtt_vp1_cooling_target_t
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Curve 2 limits
-    entities:
-      - entity: number.thermiq_mqtt_vp1_integral2_a_limit
-      - entity: number.thermiq_mqtt_vp1_integral2_hysteresis_t
-      - entity: number.thermiq_mqtt_vp1_elect_boiler_steps_max
-      - entity: number.thermiq_mqtt_vp1_current_consumption_max_a
-      - entity: number.thermiq_mqtt_vp1_shunt_time_s
-      - entity: number.thermiq_mqtt_vp1_hotwater_stop_t
-  - type: custom:fold-entity-row
-    head:
-      type: section
-      label: Misc control
-    entities:
-      - entity: sensor.thermiq_mqtt_vp1_language
-      - entity: sensor.thermiq_mqtt_vp1_manual_test_mode_on
-      - entity: sensor.thermiq_mqtt_vp1_factory_reset_req
-      - entity: sensor.thermiq_mqtt_vp1_runtime_counters_reset_req
-      - entity: number.thermiq_mqtt_vp1_outdoor_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_supplyline_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_returnline_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_boiler_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_brine_in_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_brine_out_sensor_offset_t
-      - entity: number.thermiq_mqtt_vp1_heatingsystem_type
-      - entity: number.thermiq_mqtt_vp1_internal_logging_t
-      - entity: number.thermiq_mqtt_vp1_brine_runout_t
-      - entity: number.thermiq_mqtt_vp1_brine_run_in_t
-      - entity: number.thermiq_mqtt_vp1_legionella_run_on
-      - entity: number.thermiq_mqtt_vp1_legionella_run_length_h
+        head:
+          type: section
+          label: Heatpump Control
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Main Status
+            entities:
+              - entity: sensor.thermiq_mqtt_vp1_outdoor_t
+              - entity: sensor.thermiq_mqtt_vp1_indoor_t
+              - entity: sensor.thermiq_mqtt_vp1_supplyline_t
+              - entity: sensor.thermiq_mqtt_vp1_returnline_t
+              - entity: sensor.thermiq_mqtt_vp1_boiler_t
+              - entity: sensor.thermiq_mqtt_vp1_integral1
+              - entity: sensor.thermiq_mqtt_vp1_brine_out_t
+              - entity: sensor.thermiq_mqtt_vp1_brine_in_t
+              - entity: sensor.thermiq_mqtt_vp1_supply_shunt_t
+              - entity: sensor.thermiq_mqtt_vp1_cooling_t
+              - entity: sensor.thermiq_mqtt_vp1_supply_pump_speed
+              - entity: sensor.thermiq_mqtt_vp1_brine_pump_speed
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Runtimes
+            entities:
+              - entity: sensor.thermiq_mqtt_vp1_compressor_runtime_h
+              - entity: sensor.thermiq_mqtt_vp1_boiler_3kw_runtime_h
+              - entity: sensor.thermiq_mqtt_vp1_boiler_6kw_on_runtime_h
+              - entity: sensor.thermiq_mqtt_vp1_hotwater_runtime_h
+              - entity: sensor.thermiq_mqtt_vp1_passive_cooling_runtime_h
+              - entity: sensor.thermiq_mqtt_vp1_active_cooling_runtime_h
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Heater settings (A1)
+            entities:
+              - entity: number.thermiq_mqtt_vp1_indoor_requested_t
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_slope
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_min
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_max
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_p5
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_0
+              - entity: number.thermiq_mqtt_vp1_integral1_curve_n5
+              - entity: number.thermiq_mqtt_vp1_heating_stop_t
+              - entity: number.thermiq_mqtt_vp1_reduction_t
+              - entity: number.thermiq_mqtt_vp1_room_factor
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Hot-water settings
+            entities:
+              - entity: number.thermiq_mqtt_vp1_hotwater_start_t
+              - entity: number.thermiq_mqtt_vp1_hotwater_runtime_m
+              - entity: number.thermiq_mqtt_vp1_heatpump_runtime_m
+              - entity: number.thermiq_mqtt_vp1_legionella_interval_d
+              - entity: number.thermiq_mqtt_vp1_legionella_stop_t
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Curve 2 (A2)
+            entities:
+              - entity: number.thermiq_mqtt_vp1_integral2_curve_slope
+              - entity: number.thermiq_mqtt_vp1_integral2_curve_min
+              - entity: number.thermiq_mqtt_vp1_integral2_curve_max
+              - entity: number.thermiq_mqtt_vp1_integral2_curve_target
+              - entity: number.thermiq_mqtt_vp1_integral2_curve_actual
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Heater limits
+            entities:
+              - entity: number.thermiq_mqtt_vp1_integral1_a_limit
+              - entity: number.thermiq_mqtt_vp1_integral1_hysteresis_t
+              - entity: number.thermiq_mqtt_vp1_returnline_max_t
+              - entity: number.thermiq_mqtt_vp1_start_interval_min_m
+              - entity: number.thermiq_mqtt_vp1_brine_min_t
+              - entity: number.thermiq_mqtt_vp1_pressure_pipe_limit_t
+              - entity: number.thermiq_mqtt_vp1_outdoor_stop_t
+              - entity: number.thermiq_mqtt_vp1_cooling_target_t
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Curve 2 limits
+            entities:
+              - entity: number.thermiq_mqtt_vp1_integral2_a_limit
+              - entity: number.thermiq_mqtt_vp1_integral2_hysteresis_t
+              - entity: number.thermiq_mqtt_vp1_elect_boiler_steps_max
+              - entity: number.thermiq_mqtt_vp1_current_consumption_max_a
+              - entity: number.thermiq_mqtt_vp1_shunt_time_s
+              - entity: number.thermiq_mqtt_vp1_hotwater_stop_t
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Misc control
+            entities:
+              - entity: sensor.thermiq_mqtt_vp1_language
+              - entity: sensor.thermiq_mqtt_vp1_manual_test_mode_on
+              - entity: sensor.thermiq_mqtt_vp1_factory_reset_req
+              - entity: sensor.thermiq_mqtt_vp1_runtime_counters_reset_req
+              - entity: number.thermiq_mqtt_vp1_outdoor_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_supplyline_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_returnline_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_boiler_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_brine_in_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_brine_out_sensor_offset_t
+              - entity: number.thermiq_mqtt_vp1_heatingsystem_type
+              - entity: number.thermiq_mqtt_vp1_internal_logging_t
+              - entity: number.thermiq_mqtt_vp1_brine_runout_t
+              - entity: number.thermiq_mqtt_vp1_brine_run_in_t
+              - entity: number.thermiq_mqtt_vp1_legionella_run_on
+              - entity: number.thermiq_mqtt_vp1_legionella_run_length_h
