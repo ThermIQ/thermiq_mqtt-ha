@@ -14,7 +14,7 @@ jobs:
     runs-on: "ubuntu-latest"
     name: Validate
     steps:
-        - uses: "actions/checkout@v4"
+        - uses: "actions/checkout@v7.0.1"
         - name: HACS validation
           uses: "hacs/action@main"
           with:
@@ -28,8 +28,8 @@ jobs:
     runs-on: "ubuntu-latest"
     name: Check style formatting
     steps:
-        - uses: "actions/checkout@v4"
-        - uses: "actions/setup-python@v5"
+        - uses: "actions/checkout@v7.0.1"
+        - uses: "actions/setup-python@v7.0.0"
           with:
             python-version: "3.x"
         # Single source of truth for the black pin: requirements_test.txt
@@ -41,8 +41,8 @@ jobs:
     runs-on: "ubuntu-latest"
     name: Run tests
     steps:
-        - uses: "actions/checkout@v4"
-        - uses: "actions/setup-python@v5"
+        - uses: "actions/checkout@v7.0.1"
+        - uses: "actions/setup-python@v7.0.0"
           with:
             python-version: "3.14"
         - run: python3 -m pip install -r requirements_test.txt
