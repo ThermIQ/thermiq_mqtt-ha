@@ -1,4 +1,4 @@
 # Pinned so CI is reproducible; Dependabot proposes updates weekly
 pytest-homeassistant-custom-component==0.13.346
 mypy==2.2.0
-black==25.11.0
+black>=26.3.1
